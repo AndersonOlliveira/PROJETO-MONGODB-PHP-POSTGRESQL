@@ -1,0 +1,106 @@
+# Projeto MVC PHP - Conexão MongoDB e PostgreSQL
+
+Este projeto é uma estrutura **MVC em PHP puro**, sem uso do Composer, que integra **MongoDB** e **PostgreSQL (via PgAdmin)**. Ele serve como base para aplicações que precisem de múltiplos bancos de dados sem depender de frameworks ou pacotes externos.
+
+---
+
+## Tecnologias Utilizadas
+
+- **PHP:** 7.4 ou superior  (versão de sua prefêrencia)_
+- **MongoDB:** php_mongodb-1.16.1-7.4-ts-vc15-x64 (ou compatível)  
+- **PostgreSQL:** 15.x (gerenciado via PgAdmin)  
+- **Servidor Web:** Apache ou Nginx  
+- **Sistema Operacional:** Linux, Windows ou MacOS  
+
+> O projeto **não utiliza Composer**. Todas as classes são carregadas manualmente via `require`/`include`.
+
+---
+
+## Estrutura do Projeto
+/controllers
+SuaController.php
+/models
+MongoConnection.php
+SeuModel.php
+/public
+index.php
+.env
+.gitignore
+README.md
+
+## Configuração do Ambiente
+
+### 1️⃣ Configurar o arquivo `.env`
+
+Crie um arquivo `.env` na raiz do projeto com as credenciais do MongoDB e PostgreSQL:
+
+```env
+# MongoDB
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_DB=meu_banco
+MONGO_USER=
+MONGO_PASS=
+
+# PostgreSQL
+PG_HOST=localhost
+PG_PORT=5432
+PG_DB=meu_banco_pg
+PG_USER=postgres
+PG_PASS=senha
+
+Executar o MongoDB sem Composer
+
+Como não estamos usando Composer, usamos a extensão nativa do PHP para MongoDB (mongodb):
+
+Instale a extensão via PECL: via Linux ou
+
+pecl install mongodb
+
+Windows baixar DLL do site:
+
+https://pecl.php.net/package/mongodb/1.20.0/windows 
+versão utilizada 
+php_mongodb-1.16.1-7.4-ts-vc15-x64 
+7.4 Thread Safe (TS) x64
+
+link para dowloand https://pecl.php.net/package/mongodb/1.16.1/windows
+
+
+## instrução 
+Acesse: MongoDB PHP Driver
+
+Escolha a versão compatível com:
+
+Sua versão do PHP (ex: 7.4, 8.2)
+
+Arquitetura (x64 ou x86)
+
+Thread Safe (TS) ou Non Thread Safe (NTS) de acordo com seu PHP
+
+O arquivo será um .dll (ex: php_mongodb.dll)
+
+Copiar a DLL para a pasta ext
+
+Localize a pasta onde seu PHP está instalado (ex: C:\php)
+
+Dentro dela existe a pasta ext (ex: C:\php\ext)
+
+Copie o arquivo php_mongodb.dll para esta pasta
+
+Editar o php.ini
+
+Abra o arquivo php.ini do seu PHP (ex: C:\php\php.ini)
+
+Procure a seção de extensões
+
+Adicione a linha:
+extension=mongodb
+**Não precisa colocar o .dll no nome, apenas mongodb.**
+
+
+Reiniciar o servidor
+
+Se estiver usando Apache: reinicie o Apache
+
+Se estiver usando Nginx + PHP-FPM: reinicie o serviço do PHP-FPM
