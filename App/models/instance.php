@@ -28,9 +28,13 @@ class instance extends MongoConect  {
     public function findById($id)
     {
         $filter = ['_id' => new MongoDB\BSON\ObjectId($id)];
+    
         $query = new MongoDB\Driver\Query($filter);
         $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
         $results = $cursor->toArray();
+
+        // print_r($results);
+
         return $results[0] ?? null;
     }
 

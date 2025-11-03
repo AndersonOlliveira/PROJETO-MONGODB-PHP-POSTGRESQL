@@ -17,7 +17,8 @@
 
 <?php
   $base = '/projeto74/mvc';
-  $listar = $base . '/listar/1000';
+//   $listar = $base . '/listar/123';
+  $listar = $base . '/listar/6900e90b003e1a6216aa53f7';
 ?>
 
 <a href="<?= $listar ?>" class="btn btn-primary">Ver usuário 123</a>

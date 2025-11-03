@@ -30,18 +30,37 @@ class App
             $url = $this->parseUrl();
 
             $controller = ucfirst($url[0] ?? 'home') . 'Controller';
+          
+              //se for enviando um número como parametro ele executa aqui
+            if(is_numeric($url[1])){
 
-            
-            if (isset($url[1]) && is_numeric($url[1])) {
+                if (isset($url[1]) && is_numeric($url[1])) {
                 $method = ($url[0] ?? 'index') . '_id'; 
 
                
                 $this->params = [$url[1]];    
                 
             } else {
-                $method = $url[1] ?? 'index';
+                $method = $url[1] ?? 'index' ;
                 $this->params = array_slice($url, 2);
             }
+           } else {
+            if (isset($url[1])) {
+                 $id = $url[1];
+                  if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
+                    $method = ($url[0] ?? 'index') . '_id'; // Ex: listar_id
+                    $this->params = [$id];
+                } else {
+             $method = $url[1];
+             $this->params = array_slice($url, 2);
+             }
+            } else {
+                $method = 'index';
+                $this->params = [];
+            }
+
+           }
+            
         }
 
         $this->controller = $controller;
