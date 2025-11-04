@@ -27,15 +27,26 @@ class instance extends MongoConect  {
 
     public function findById($id)
     {
-        $filter = ['_id' => new MongoDB\BSON\ObjectId($id)];
+        //verifica se e um hash id do mongo
+        if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
+         
+            $filter = ['processo_id' => new MongoDB\BSON\ObjectId($id)];
+          
+        } else {
+            $filter = ['processo_id' => $id];
+        
+        }
+     
+        
+        $option = ['projection' => ['configuracao_json' => 1, 'data_cadastro' => 1,
+        'transacao_id' => 1, 'id_processo' => 1, 'campo_aquisicao' => 1, 'status' => 1,
+        'resposta_json' => 1, 'resposta' => 1, '_id' => 0]];
     
-        $query = new MongoDB\Driver\Query($filter);
+        $query = new MongoDB\Driver\Query($filter, $option);
         $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
         $results = $cursor->toArray();
-
-        // print_r($results);
-
-        return $results[0] ?? null;
+        
+         return $results ?? null;
     }
 
     public function insert($data)

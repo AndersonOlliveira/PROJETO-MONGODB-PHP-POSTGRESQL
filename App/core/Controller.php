@@ -30,6 +30,41 @@ class Controller {
         return new $model();
     }
 
+     public function Utilis($className) {
+        // require_once "App/Utilis/$dados.php";
+        // return new $Utilis();
+       $file = __DIR__ . "../../Utilis/{$className}.php";
+       
+        if (!file_exists($file)) {
+            throw new \Exception("Arquivo {$file} não encontrado!");
+        }
+
+        require_once $file;
+
+        if (!class_exists($className)) {
+            throw new \Exception("Classe {$className} não encontrada dentro do arquivo!");
+        }
+
+        return new $className();
+    }
+
+    public function loadFrom($folder, $className)
+    {
+        $file = __DIR__ . "/../{$folder}/{$className}.php";
+
+        if (!file_exists($file)) {
+            throw new \Exception("Arquivo {$file} não encontrado!");
+        }
+
+        require_once $file;
+
+        if (!class_exists($className)) {
+            throw new \Exception("Classe {$className} não encontrada dentro do arquivo!");
+        }
+
+        return new $className();
+    }
+
     protected function MongoConect($modelName)
     {
 

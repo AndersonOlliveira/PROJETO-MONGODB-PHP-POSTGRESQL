@@ -27,9 +27,9 @@ class Model {
         
         try {
             $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;user=$user;password=$pass";
-            $pdo = new PDO($dsn);
+            $this->db = new PDO($dsn);
              // Conecta ao banco de dados
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             echo "Connected to PostgreSQL successfully!";
             // $this->db = new PDO($dsn, $user, $pass);

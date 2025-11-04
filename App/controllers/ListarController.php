@@ -2,12 +2,34 @@
 
 
 class ListarController extends Controller {
+
+    protected $utils;
+    protected $tratamento;
+
+
+     public function __construct()
+     {
+        // require_once __DIR__ . '/../Utilis/Arquivos.php';
+        // $this->tratamento = $this->Utilis('Arquivos');
+        
+         $this->utils = $this->Utilis('Arquivos');
+        // $this->utils->teste();
+
+        // Carrega de App/Arquivos ()
+        // $this->tratamento = $this->loadFrom('Arquivos', 'Arquivos');
+
+        
+     }
     
     
      public function listar(){
 
-        return $this->view('listar');
+        $return = $this->model('process');
+        $returns = $return->list_processo();
         
+        $re = $this->utils->get_dados_id($returns);
+
+        return $this->view('listar');
     } 
     
      public function listar_id($id = null){
