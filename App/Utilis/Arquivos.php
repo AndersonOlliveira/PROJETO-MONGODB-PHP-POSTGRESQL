@@ -21,7 +21,10 @@ class Arquivos {
             // print_r($this->utils->findById($values['processo_id']));
             $dados[$key]['resultado'] = $this->utils->findById($values['processo_id']);
          }
-        //  print_r($dados);
+        
+		  echo "<pre>";
+
+		  print_r($dados);
           echo "</pre>";
         
            $retorno = self::tratamento_dados($dados);

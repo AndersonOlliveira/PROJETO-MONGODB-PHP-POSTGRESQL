@@ -8,6 +8,7 @@ class instance extends MongoConect  {
     private $manager;
     private $dbname;
     private $collection;
+    private $collection_json;
 
     public function __construct()
     {
@@ -15,6 +16,7 @@ class instance extends MongoConect  {
         $this->manager = $conn->getManager();
         $this->dbname = $conn->getDBName();
         $this->collection = $conn->getDBColetion();
+        $this->collection_json = $conn->getDBColetion_json();
     }
 
     public function all()
@@ -30,20 +32,22 @@ class instance extends MongoConect  {
         //verifica se e um hash id do mongo
         if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
          
-            $filter = ['processo_id' => new MongoDB\BSON\ObjectId($id)];
+            $filter = ['id' => new MongoDB\BSON\ObjectId($id)];
           
         } else {
-            $filter = ['processo_id' => $id];
+            $filter = ['id' => $id];
         
         }
      
         
         $option = ['projection' => ['configuracao_json' => 1, 'data_cadastro' => 1,
         'transacao_id' => 1, 'id_processo' => 1, 'campo_aquisicao' => 1, 'status' => 1,
-        'resposta_json' => 1, 'resposta' => 1, '_id' => 0]];
+        'resposta_json' => 1, 'resposta' => 1, 
+        'new_status' => 1, 'sucesso' => 1, 'id' => 1 ,'_id' => 0]];
     
         $query = new MongoDB\Driver\Query($filter, $option);
-        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
+        // $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
+        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
         $results = $cursor->toArray();
         
          return $results ?? null;
