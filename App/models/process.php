@@ -24,9 +24,9 @@ class process extends Model {
 			progestor.processo as p 
 		WHERE 
 			p.finalizado = true 
-			
-		ORDER BY
-			random() 
+			and 
+			p.processo_id = 353
+	
 		LIMIT 
 			1000;";
 

@@ -32,10 +32,10 @@ class instance extends MongoConect  {
         //verifica se e um hash id do mongo
         if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
          
-            $filter = ['id' => new MongoDB\BSON\ObjectId($id)];
+            $filter = ['id_processo' => new MongoDB\BSON\ObjectId($id)];
           
         } else {
-            $filter = ['id' => $id];
+            $filter = ['id_processo' => $id];
         
         }
      
@@ -48,11 +48,29 @@ class instance extends MongoConect  {
         $query = new MongoDB\Driver\Query($filter, $option);
         // $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
         $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
-        $results = $cursor->toArray();
+        $results = iterator_to_array($cursor);;
+        // $results = $cursor->toArray();
         
          return $results ?? null;
     }
 
+    public function listarDadosDosProcessos()
+    {
+        $option = [
+            'projection' => [
+                'id_processo' => 1,
+                'status' => 1,
+                'resposta_json' => 1,
+                'new_status' => 1,
+                'sucesso' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query([], $option);
+        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
+        return iterator_to_array($cursor);
+    }
     public function insert($data)
     {
         $bulk = new MongoDB\Driver\BulkWrite;

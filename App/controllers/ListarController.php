@@ -26,10 +26,15 @@ class ListarController extends Controller {
 
         $return = $this->model('process');
         $returns = $return->list_processo();
-        
-        $re = $this->utils->get_dados_id($returns);
 
-        return $this->view('listar');
+
+        
+        // $re = $this->utils->get_dados_id($returns);
+        $re = $this->utils->teste();
+
+
+
+        return $this->view('listar' , ['usuarios' =>  $re]);
     } 
     
      public function listar_id($id = null){
