@@ -1,7 +1,5 @@
 <?php
 
-
-
 class process extends Model {
  
      public function list_processo()
@@ -19,16 +17,18 @@ class process extends Model {
 			p.loja,
 			p.finalizado,
 			p.data_finalizacao,
-			p.pause
-		FROM 
-			progestor.processo as p 
+			p.pause,
+			t.transacao_id,
+			t.id_processo
+			FROM
+		   progestor.transacao t INNER JOIN 
+			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-			p.finalizado = true 
-			and 
-			p.processo_id = 353
-	
-		LIMIT 
-			1000;";
+			t.status = 2 AND 
+			t.sucesso = true AND
+			-- p.finalizado = false 
+			
+			p.processo_id = 360;";
 
           $result = $this->db->query($sql);
 

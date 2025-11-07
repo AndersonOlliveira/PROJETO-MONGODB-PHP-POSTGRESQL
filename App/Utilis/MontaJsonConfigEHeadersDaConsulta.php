@@ -43,7 +43,7 @@ class MontaJsonConfigEHeadersDaConsulta
 		foreach ($plugins as $plugin) {
 
 
-			echo 'info do plugin: ' . $plugin['plugin'] . "<br>";
+			// echo 'info do plugin: ' . $plugin['plugin'] . "<br>";
 
  			$campos = $this->CapturaCamposDoPlugin->execute($plugin['plugin']);
 

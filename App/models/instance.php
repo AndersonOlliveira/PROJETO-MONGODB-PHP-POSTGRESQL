@@ -27,7 +27,7 @@ class instance extends MongoConect  {
 
     }
 
-    public function findById($id)
+    public function findById($id,$id_transacao)
     {
         //verifica se e um hash id do mongo
         if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
@@ -35,7 +35,8 @@ class instance extends MongoConect  {
             $filter = ['id_processo' => new MongoDB\BSON\ObjectId($id)];
           
         } else {
-            $filter = ['id_processo' => $id];
+           
+            $filter = ['id_processo' => $id, 'transacao_id' => $id_transacao];
         
         }
      
@@ -49,8 +50,7 @@ class instance extends MongoConect  {
         // $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
         $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
         $results = iterator_to_array($cursor);;
-        // $results = $cursor->toArray();
-        
+        // $results = $cursor->toArray();        
          return $results ?? null;
     }
 

@@ -29,8 +29,8 @@ class ListarController extends Controller {
 
 
         
-        // $re = $this->utils->get_dados_id($returns);
-        $re = $this->utils->teste();
+        $re = $this->utils->get_dados_id($returns);
+        // $re = $this->utils->teste();
 
 
 

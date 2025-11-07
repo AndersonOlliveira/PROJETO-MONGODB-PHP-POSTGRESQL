@@ -24,141 +24,79 @@ class Arquivos
 
 		require_once __DIR__ . '/../models/GravaRespostaPlugin.php';
 		$this->GravaRespostaPlugin = new GravaRespostaPlugin();
-		
+
 		require_once __DIR__ . '/../models/process.php';
 		$this->teste = new process();
-		
+
 		require_once __DIR__ . '/../models/process.php';
 		$this->teste = new process();
 	}
-
-
-	public function teste ()
-	{
-        
-		echo "<pre>";
-
-		print_r('acessei esta pagina');
-		$postgresData = $this->teste->list_processo();
-		
-
-		$mongoData = $this->utils->listarDadosDosProcessos();
-		
-
-    
-
-    // --- JUNÇÃO ---
-      $dadosCombinados = self::joinMongoPostgres($postgresData, $mongoData, 'processo_id', 'id_processo');
- print_r($dadosCombinados);
-		
-     return $dadosCombinados;
 	
-	}
-
-
 	public function get_dados_id($dados)
 	{
 		//vou procurar os dados 
 		foreach ($dados as $key => $values) {
 
 			// print_r($this->utils->findById($values['processo_id']));
-			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id']);
+			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
 		}
 
 
 
 		$retorno = self::tratamento_dados($dados);
 
-		//    print_r($retorno);
 	}
 
-
-public	function joinMongoPostgres(array $pgData, array $mongoData, string $keyPg, string $keyMongo): array
-{
-    // Converter objetos stdClass do MongoDB para arrays associativos
-  $mongoMap = [];
-
-foreach ($mongoData as $doc) {
-    $doc = (array) $doc;
-
-    if (!isset($doc[$keyMongo])) {
-        continue;
-    }
-
-    $valorChave = $doc[$keyMongo];
-
-    // Se for ObjectId ou objeto, converte pra string
-    if ($valorChave instanceof MongoDB\BSON\ObjectId) {
-        $valorChave = (string) $valorChave;
-    }
-    // Se for array, tenta extrair algum campo interno (oid, id, etc)
-    elseif (is_array($valorChave)) {
-        $valorChave = $valorChave['oid'] ?? json_encode($valorChave);
-    }
-    // Se for outro tipo complexo, converte para JSON string
-    elseif (!is_scalar($valorChave)) {
-        $valorChave = json_encode($valorChave);
-    }
-
-    // Agora garantimos que é string/int seguro pra usar como índice
-    $mongoMap[(string)$valorChave][] = $doc;
-}
-    // Fazer o merge com base na chave
-    $merged = [];
-    foreach ($pgData as $pgRow) {
-        $pgKey = $pgRow[$keyPg] ?? null;
-        $mongoRow = $mongoMap[$pgKey] ?? [];
-
-        // Unir os arrays — dados do Mongo substituem chaves iguais do Postgres
-        $merged[] = array_merge($pgRow, $mongoRow);
-    }
-
-    return $merged;
-}
 	public function tratamento_dados($row_data)
 	{
 		$dados_filtrados = array_values(array_filter($row_data, function ($row) {
 			return !empty($row['resultado']);
 		}));
-		echo "<pre>";
-
-		print_r($dados_filtrados);
-		echo "</pre>";
-
+		print_r(count($dados_filtrados) . 'meu total');
+		$cacheCns = [];
+		$transacoes = [];
+		$GrespostaPlugin = [];
+		$GtransacaoSuceso = [];
+		$sucessTruegravaTransacao = [];
+		$inicio = microtime(true);
 
 		foreach ($dados_filtrados as $r) {
-
-		     $confCns = $this->MontaJsonConfigEHeadersDaConsultas->execute($r['codcns']);
-
-
+			$cod = $r['codcns'];
 			if (!empty($r['resultado'])) {
 
 				foreach ($r['resultado'] as $values) {
-					
+
 					list($camposAquisicao, $jsonRespostas) = [$values->campo_aquisicao, null];
 					// $this->utils->gr
-					$this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 5, 0, null, $jsonRespostas);
+					$transacoes[] = [
+						'processo_id' => $r['processo_id'],
+						'camposAquisicao' => $camposAquisicao,
+						'status' => 5,
+						'sucesso' => null,
+						'resposta' => null,
+						'json_resposta' => $jsonRespostas ?? null,
+					];
+					// $this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 5, 0, null, $jsonRespostas);
 
 
 					$plgsConfigurados = self::getPluginsConfigDB($r['configuracao_json']); // array com codigos dos plugins da configuracao 
-					
+
 					list($camposAquisicao, $jsonResposta) = [$values->campo_aquisicao,  $values->resposta_json];
 
 					$jsonObjProscore = self::getObjectJson($jsonResposta); // object da resposta premium json
 
 					$linhaSaidaHorizontal = ""; // linha arquivo principal
 
-
 					$success = false;
 					if ($jsonObjProscore) {
-						if ($jsonObjProscore->registro) {
-
-							$success = true;
+					   if ($jsonObjProscore->registro) {
+						
+						 $success = true;
 
 							// PARA CADA REGISTRO/PLUGIN do JSON PREMIUM
 							$registros = self::getRegistrosPlugins($jsonObjProscore, $plgsConfigurados);
-                       
-							 foreach ($registros as $plugin => $arrayValues) {
+
+							foreach ($registros as $plugin => $arrayValues) {
 
 								$configPlugin = self::getConfObjectByPluginDB($r['configuracao_json'], $plugin);
 
@@ -166,38 +104,40 @@ foreach ($mongoData as $doc) {
 								if (!$configPlugin) { // config nao encontrada para o plugin
 									continue;
 								}
-
-								if ($configPlugin->separar) { // SAIDA ARQUIVO A PARTE - GRAVA CADA LINHA
-
-
 								
+								if ($configPlugin->separar) { // SAIDA ARQUIVO A PARTE - GRAVA CADA LINHA
 									// echo "Entrou em MontaJsonConfigEHeadersDaConsulta<br>";
 									// debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-									
+									if (!isset($cacheCns[$cod])) {
+										$conf = $this->MontaJsonConfigEHeadersDaConsultas->execute($r['codcns']);
+										$cacheCns[$cod] = is_array($conf) ? $conf : [];
+									}
 
-									echo "<pre>";
-									echo "meu header do plugin";
-									print_r($confCns['header_' . (string)$plugin]);
+									$confCns = $cacheCns[$cod];
+									$fim = microtime(true);
 
 									$confCns = is_array($confCns) ? $confCns : [];
 									$header = isset($confCns['header_' . $plugin]) ? $confCns['header_' . $plugin] : '-';
 									$linhasSaidaVertical = self::montaLinhaRegistroVertical($arrayValues, $configPlugin); // array com linhas de saida
-									echo "<pre>";
+				
+									$tempo_decorrido = $fim - $inicio;
+
+									// 5. Exibe o resultado
+									echo "O script foi executado em " . $tempo_decorrido . " segundos.";
 
 									foreach ($linhasSaidaVertical as $linhaSaidaVertical) { // PARA CADA OCORRENCIA do PLUGIN
 
 										if ($linhaSaidaVertical != "") {
 
 											// GRAVA RESPOSTA PLUGIN TRANSACAO
-
-											echo "<pre>";
-											echo "o que tenho aqui";
-
-											print_r($plugin . $camposAquisicao . ";" . $linhaSaidaVertical .  $values->transacao_id .  $header);
-
-
-
-											$this->GravaRespostaPlugin->execute($plugin, $camposAquisicao . ";" . $linhaSaidaVertical, $values->transacao_id, $header);
+											$GrespostaPlugin[] = [
+												'plugin' => $plugin,
+												'resposta' => $camposAquisicao . ";" . $linhaSaidaVertical,
+												'transacaoId' => $values->transacao_id,
+												'header' => $header
+												];
+												
+												// $this->GravaRespostaPlugin->execute($plugin, $camposAquisicao . ";" . $linhaSaidaVertical, $values->transacao_id, $header);
 										}
 									}
 								} else { // concatena na linha do arquivo principal
@@ -216,13 +156,18 @@ foreach ($mongoData as $doc) {
 					if (!$success) { // saida de ERRO
 
 						// GRAVA RESPOSTA TRANSACAO SUCESSO
+		
+						$GtransacaoSuceso[] =[
+							'processo_id' => $r['processo_id'],
+							'camposAquisicao' => $camposAquisicao,
+							'status' => 3,
+							'sucesso'=> 0,
+							'resposta'=> null, 
+							'respostaJson' =>null
+						];
+ 
+						// $this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 3, 0, null, null);
 
-						echo "<pre>";
-						echo "o que tenho aqui";
-
-						print_r($r['processo_id'] . $camposAquisicao . ";" . 3);
-
-						$this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 3, 0, null, null);
 					} else {
 
 						// SAIDA PRINCIPAL
@@ -231,23 +176,72 @@ foreach ($mongoData as $doc) {
 						if ($linhaSaidaHorizontal != "") {
 
 							// GRAVA RESPOSTA TRANSACAO SUCESSO
-							echo "<pre>";
-							echo "o que tenho aqui";
-							echo "***";
+						   $sucessTruegravaTransacao[] = [
+                             'processo_id' => $r['processo_id'],
+							'camposAquisicao' => $camposAquisicao,
+							'status' => 3,
+							'sucesso'=> 1,
+							'resposta'=> $linhaSaidaHorizontal , 
+							'respostaJson' =>null
 
-							print_r($r['processo_id'] . "***" . $camposAquisicao . "***" . 3 . "***" .  1 . "***" .  $linhaSaidaHorizontal . "***" . $jsonResposta);
-							echo "</pre>";
+						  ]; 
 
-							$this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 3, 1, $linhaSaidaHorizontal, null);
+							// $this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 3, 1, $linhaSaidaHorizontal, $jsonResposta);
 						}
 					}
 
 					$linhaSaidaHorizontal = ""; // zera linha
 				}
 			} else {
-				echo "<br>***<br>";
+				// echo "<br>***<br>";
 			}
 		}
+
+
+
+		if(!empty($transacoes)){
+			// echo "<pre>";
+			// echo "**";
+			// echo "PRIMEIRO INSERT";
+			// print_r($transacoes);
+			// echo "</pre>";
+			
+			$this->GravaTransacao->insertBatch($transacoes);
+		}
+		
+		if(!empty($GrespostaPlugin)){
+			// echo "<pre>";
+			// echo "E PRA SER O SEGUNDO INSERT NA TABELA DE PLUGIN";
+			// echo "MINHAS GrespostaPlugin";
+			// print_r($GrespostaPlugin);
+
+			// echo "</pre>";
+			
+			$this->GravaRespostaPlugin->insert_all_Respost_pluglin($GrespostaPlugin);
+		}
+		if(!empty($GtransacaoSuceso)){
+			echo "<pre>";
+			echo "**";
+			echo "E PARA SER O TERCEIRO INSERTI";
+			echo "MINHAS GtransacaoSuceso";
+			print_r($GtransacaoSuceso);
+
+			echo "</pre>";
+			
+			$this->GravaTransacao->insertBatch($GtransacaoSuceso);
+		}
+
+		if(!empty($sucessTruegravaTransacao)){
+			// echo "<pre>";
+			// echo "**";
+			// echo "E PARA SER O QUARTO INSERTI";
+			// print_r($sucessTruegravaTransacao);
+
+			// echo "</pre>";
+			
+			$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
+		}
+	
 	}
 
 	function getConfObjectByPluginDB($configuracaoJson, $cod)
@@ -355,8 +349,15 @@ foreach ($mongoData as $doc) {
 
 			// inclui campos na linha de acordo com a configuracao
 			foreach ($configuracao->campos as $indice) {
-				$retPlg[$indice] = preg_replace("/\;/", " ", $retPlg[$indice]); // limpa ponto-e-virgula de valores
-				$linha .= $retPlg[$indice] . ";";
+
+				if (isset($retPlg[$indice])) {
+
+					$valor = preg_replace("/\;/", " ", $retPlg[$indice]); // limpa ponto-e-virgula de valores
+
+				} else {
+					$valor = '';
+				}
+				$linha .= $valor . ";";
 			}
 			$i++;
 
@@ -396,8 +397,14 @@ foreach ($mongoData as $doc) {
 
 			// inclui campos na linha de acordo com a configuracao
 			foreach ($configuracao->campos as $indice) {
-				$retPlg[$indice] = preg_replace("/\;/", " ", $retPlg[$indice]); // limpa ponto-e-virgula de valores
-				$linha .= $retPlg[$indice] . ";";
+						if (isset($retPlg[$indice])) {
+
+					$valor = preg_replace("/\;/", " ", $retPlg[$indice]); // limpa ponto-e-virgula de valores
+
+				} else {
+					$valor = '';
+				}
+				$linha .= $valor . ";";
 			}
 			$i++;
 
