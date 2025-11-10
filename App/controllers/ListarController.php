@@ -4,6 +4,7 @@
 class ListarController extends Controller {
 
     protected $utils;
+    protected $utils_mongo;
     protected $tratamento;
 
 
@@ -13,6 +14,7 @@ class ListarController extends Controller {
         // $this->tratamento = $this->Utilis('Arquivos');
         
          $this->utils = $this->Utilis('Arquivos');
+         $this->utils_mongo = $this->Utilis('Mongo');
         // $this->utils->teste();
 
         // Carrega de App/Arquivos ()
@@ -26,35 +28,27 @@ class ListarController extends Controller {
 
         $return = $this->model('process');
         $returns = $return->list_processo();
-
-
-        
-        $re = $this->utils->get_dados_id($returns);
-        // $re = $this->utils->teste();
-
-
-
-        return $this->view('listar' , ['usuarios' =>  $re]);
+         $re = $this->utils->get_dados_id($returns);
+      
+         return $this->view('listar' , ['usuarios' =>  $re]);
     } 
     
      public function listar_id($id = null){
-
-                echo $id;
-              $result_mongo = $this->model('instance');
-         
-             $result_mongo = $result_mongo->findById($id);
-
-              echo "<pre>";
-
-            //   print_r($result_mongo);
-
-              foreach($result_mongo as $key => $valores){
-
-                echo "<pre>";
-
-                print_r($key . $valores);
-              }
+      $result_mongo = $this->model('instance');
+      $result_mongo = $result_mongo->findById($id);
+      foreach($result_mongo as $key => $valores){
+ 
+      }
         //    return $this->view('listar', $result_mongo);
         
+    }
+
+    public function mongo()
+    {
+
+        $re = $this->utils_mongo->get_dada_all();
+        
+
+      return $this->view('List_dados_mongo');
     }
 }

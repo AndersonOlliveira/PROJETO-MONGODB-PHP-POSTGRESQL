@@ -52,7 +52,8 @@ class GravaRespostaPlugin extends Model {
    
    
         if (empty($registros)) {
-           return false;
+            
+            return false;
     
           }
 
@@ -61,20 +62,20 @@ class GravaRespostaPlugin extends Model {
     $this->db->beginTransaction();
 
     try {
-        $sql = "INSERT INTO progestor.respostas_plugin (
-					id_transacao, plugin, resposta, header_arquivo)
-					VALUES ";
+        // $sql = "INSERT INTO progestor.respostas_plugin (
+		// 			id_transacao, plugin, resposta, header_arquivo)
+		// 			VALUES ";
 
         $values = [];
         $params = [];
 
         foreach ($registros as $i => $r) {
         
-        if (!self::existe($r['plugin'], $r['resposta'], $r['transacaoId'])) { // grava se não existir no banco
             // Define valores padrão (como o execute)
+           //deixando tipo int pois banco tem colunas com estes tipos
 
-            $id_transacao = $r['transacaoId']  ?? null;
-            $plugin =  $r['plugin'] ?? null;
+            $id_transacao = (int)$r['transacaoId']  ?? null;
+            $plugin =  (int)$r['plugin'] ?? null;
             $resposta   = $r['resposta']  ?? null;
             $header_arquivo  = $r['header']   ?? null;
           
@@ -83,34 +84,44 @@ class GravaRespostaPlugin extends Model {
             array_push($params, $id_transacao, $plugin, $resposta, $header_arquivo);
        
      } 
-    }
+     //busca como o ttipo integer colunas do banco estão definidas assim
+      $sql = "
+            INSERT INTO progestor.respostas_plugin (id_transacao, plugin, resposta, header_arquivo)
+            SELECT v.id_transacao::integer, v.plugin::integer, v.resposta::text, v.header_arquivo::text
 
-    echo "estou passando do existe";
+            FROM (VALUES " . implode(", ", $values) . ") 
+                AS v(id_transacao, plugin, resposta, header_arquivo)
+            WHERE NOT EXISTS (
+                SELECT 1 FROM progestor.respostas_plugin r
+                WHERE r.id_transacao = v.id_transacao::integer AND r.plugin = v.plugin::integer
+            );
+        ";
 
-   
-        // Monta a query completa
-        // $sql .= implode(", ", $values) . " ON CONFLICT (id_transacao, plugin) DO NOTHING";
-        $sql .= implode(", ", $values);
-
-        // Executa em um único INSERT
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-
-        echo "<pre>";
-        echo "*********-----*** <br>";
-
-        echo $this->db->lastInsertId();
-
-        print_r('RESPOSTA DO INSERT');
-
-        ECHO "</pre>";
-
+        $INFO_ID  = 'MEU ID DO RESPOSTA PUBLIGIN  ' .     $this->db->lastInsertId();
+        $mensagem_erro['ID'] = $INFO_ID;
+		$caminho_log = "./meu_log_de_erros.log"; // O caminho do arquivo
+		error_log(print_r($mensagem_erro, true), 3, $caminho_log);
         $this->db->commit();
         return true;
+    //para o uso do ON CONFLICT (id_transacao) DO NOTHING e preciso ter ser versão de 9.5 para cima;
+        // Monta a query completa
+        //$sql .= implode(", ", $values);
+        // $sql .= " ON CONFLICT (id_transacao) DO NOTHING;";
+        
     
     } catch (Exception $e) {
         $this->db->rollBack();
+        $INFO_ID  = 'ERRO INSERT PLUGLIN ' . $e->getMessage();
+        $mensagem_erro['ERRO-PLUGIN'] = $INFO_ID;
+		$caminho_log = "./meu_log_de_erros.log"; // O caminho do arquivo
+         error_log(print_r($mensagem_erro, true), 3, $caminho_log);
+   
         throw $e;
+	 
+      
+          
     }
    }
 }

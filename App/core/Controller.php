@@ -36,13 +36,13 @@ class Controller {
        $file = __DIR__ . "../../Utilis/{$className}.php";
        
         if (!file_exists($file)) {
-            throw new \Exception("Arquivo {$file} não encontrado!");
+            throw new \Exception("Arquivo {$file} não encontrado! \n");
         }
 
         require_once $file;
 
         if (!class_exists($className)) {
-            throw new \Exception("Classe {$className} não encontrada dentro do arquivo!");
+            throw new \Exception("Classe {$className} não encontrada dentro do arquivo! \n");
         }
 
         return new $className();

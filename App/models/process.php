@@ -1,11 +1,12 @@
 <?php
 
-class process extends Model {
- 
-     public function list_processo()
-    {
-        
-       $sql = "SELECT p.processo_id, p.contrato,
+class process extends Model
+{
+
+	public function list_processo()
+	{
+
+		$sql = "SELECT p.processo_id, p.contrato,
 			p.rede,
 			p.codcns,
 			p.nome_arquivo,
@@ -28,11 +29,40 @@ class process extends Model {
 			t.sucesso = true AND
 			-- p.finalizado = false 
 			
-			p.processo_id = 360;";
+			p.processo_id = 365;";
 
-          $result = $this->db->query($sql);
+		$result = $this->db->query($sql);
 
-          return $result->fetchAll(PDO::FETCH_ASSOC);
-         
-    }
+		return $result->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+
+	public function get_query_all()
+	{
+		ini_set('memory_Limit','1024M');
+
+
+		$query = "SELECT *
+		FROM
+        pg_stat_activity;";
+
+			$result = $this->db->query($query);
+
+		if (!$result) {
+			echo "Ocorreu um erro na consulta.\n";
+			exit;
+		}else{
+
+			return $result->fetchAll(PDO::FETCH_ASSOC);
+		}
+	}
+
+	public function get_all_teste(){
+
+		return "estou aquiiii!!!!";
+		
+	}
+
+
+	
 }

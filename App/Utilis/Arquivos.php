@@ -40,9 +40,7 @@ class Arquivos
 			// print_r($this->utils->findById($values['processo_id']));
 			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
 		}
-
-
-
+		
 		$retorno = self::tratamento_dados($dados);
 
 	}
@@ -52,7 +50,7 @@ class Arquivos
 		$dados_filtrados = array_values(array_filter($row_data, function ($row) {
 			return !empty($row['resultado']);
 		}));
-		print_r(count($dados_filtrados) . 'meu total');
+		
 		$cacheCns = [];
 		$transacoes = [];
 		$GrespostaPlugin = [];
@@ -61,13 +59,15 @@ class Arquivos
 		$inicio = microtime(true);
 
 		foreach ($dados_filtrados as $r) {
+		    
 			$cod = $r['codcns'];
+
 			if (!empty($r['resultado'])) {
 
 				foreach ($r['resultado'] as $values) {
 
 					list($camposAquisicao, $jsonRespostas) = [$values->campo_aquisicao, null];
-					// $this->utils->gr
+					
 					$transacoes[] = [
 						'processo_id' => $r['processo_id'],
 						'camposAquisicao' => $camposAquisicao,
@@ -96,39 +96,36 @@ class Arquivos
 							// PARA CADA REGISTRO/PLUGIN do JSON PREMIUM
 							$registros = self::getRegistrosPlugins($jsonObjProscore, $plgsConfigurados);
 
+							
 							foreach ($registros as $plugin => $arrayValues) {
 
 								$configPlugin = self::getConfObjectByPluginDB($r['configuracao_json'], $plugin);
-
-
+                        
 								if (!$configPlugin) { // config nao encontrada para o plugin
 									continue;
 								}
 								
 								if ($configPlugin->separar) { // SAIDA ARQUIVO A PARTE - GRAVA CADA LINHA
-									// echo "Entrou em MontaJsonConfigEHeadersDaConsulta<br>";
-									// debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			
 									if (!isset($cacheCns[$cod])) {
-										$conf = $this->MontaJsonConfigEHeadersDaConsultas->execute($r['codcns']);
+										
+										$conf = $this->MontaJsonConfigEHeadersDaConsultas->execute($cod);
 										$cacheCns[$cod] = is_array($conf) ? $conf : [];
 									}
 
 									$confCns = $cacheCns[$cod];
-									$fim = microtime(true);
 
 									$confCns = is_array($confCns) ? $confCns : [];
 									$header = isset($confCns['header_' . $plugin]) ? $confCns['header_' . $plugin] : '-';
+
+									
 									$linhasSaidaVertical = self::montaLinhaRegistroVertical($arrayValues, $configPlugin); // array com linhas de saida
 				
-									$tempo_decorrido = $fim - $inicio;
-
-									// 5. Exibe o resultado
-									echo "O script foi executado em " . $tempo_decorrido . " segundos.";
-
 									foreach ($linhasSaidaVertical as $linhaSaidaVertical) { // PARA CADA OCORRENCIA do PLUGIN
 
 										if ($linhaSaidaVertical != "") {
 
+										
 											// GRAVA RESPOSTA PLUGIN TRANSACAO
 											$GrespostaPlugin[] = [
 												'plugin' => $plugin,
@@ -136,7 +133,8 @@ class Arquivos
 												'transacaoId' => $values->transacao_id,
 												'header' => $header
 												];
-												
+
+									
 												// $this->GravaRespostaPlugin->execute($plugin, $camposAquisicao . ";" . $linhaSaidaVertical, $values->transacao_id, $header);
 										}
 									}
@@ -200,44 +198,21 @@ class Arquivos
 
 
 		if(!empty($transacoes)){
-			// echo "<pre>";
-			// echo "**";
-			// echo "PRIMEIRO INSERT";
-			// print_r($transacoes);
-			// echo "</pre>";
+		
 			
 			$this->GravaTransacao->insertBatch($transacoes);
 		}
 		
 		if(!empty($GrespostaPlugin)){
-			// echo "<pre>";
-			// echo "E PRA SER O SEGUNDO INSERT NA TABELA DE PLUGIN";
-			// echo "MINHAS GrespostaPlugin";
-			// print_r($GrespostaPlugin);
-
-			// echo "</pre>";
-			
 			$this->GravaRespostaPlugin->insert_all_Respost_pluglin($GrespostaPlugin);
 		}
-		if(!empty($GtransacaoSuceso)){
-			echo "<pre>";
-			echo "**";
-			echo "E PARA SER O TERCEIRO INSERTI";
-			echo "MINHAS GtransacaoSuceso";
-			print_r($GtransacaoSuceso);
 
-			echo "</pre>";
+		if(!empty($GtransacaoSuceso)){
 			
 			$this->GravaTransacao->insertBatch($GtransacaoSuceso);
 		}
 
 		if(!empty($sucessTruegravaTransacao)){
-			// echo "<pre>";
-			// echo "**";
-			// echo "E PARA SER O QUARTO INSERTI";
-			// print_r($sucessTruegravaTransacao);
-
-			// echo "</pre>";
 			
 			$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
 		}
@@ -390,14 +365,21 @@ class Arquivos
 
 		$linha = "";
 
+		
+
 		$i = 0;
 		foreach ($arrValores as $retPlg) { // cada ocorrencia do registro/plugin
 
 			$retPlg = self::transformaArrayPlgEmSimples($retPlg);
 
+
+
+			
+
 			// inclui campos na linha de acordo com a configuracao
 			foreach ($configuracao->campos as $indice) {
-						if (isset($retPlg[$indice])) {
+						
+				if (isset($retPlg[$indice])) {
 
 					$valor = preg_replace("/\;/", " ", $retPlg[$indice]); // limpa ponto-e-virgula de valores
 
