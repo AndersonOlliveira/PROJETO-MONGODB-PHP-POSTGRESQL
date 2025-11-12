@@ -12,6 +12,9 @@ class Model {
        
         if(!$loaded){
            
+            // echo "Loading environment variables...\n";
+            // echo "meu direitetor para o env" . (__DIR__ . '/../.env') . "\n";
+            // Env::load(__DIR__ . '/../../.env');
             Env::load(__DIR__ . '../../../.env');
             $loaded = true;
 
@@ -31,7 +34,7 @@ class Model {
              // Conecta ao banco de dados
              $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            echo "Connected to PostgreSQL successfully!";
+            // echo "Connected to PostgreSQL successfully!";
             // $this->db = new PDO($dsn, $user, $pass);
             // $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
          } catch (PDOException $e) {

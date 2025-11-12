@@ -14,7 +14,7 @@ class MongoConect
     private $db_colletion_json;
 
     private function __construct()
-    { 
+    {
 
         //chamo o arquivo .env que contem as infos de conexoes
         Env::load(__DIR__ . '/../../.env');
@@ -23,19 +23,29 @@ class MongoConect
         $port = getenv('BD_MONGO_PORT') ?: 27017;
         $user = getenv('BD_MONGO_USER');
         $pass = getenv('BD_MONGO_PASS');
+        $BD_MONGO_BD_AUTH_SOURCE = getenv('BD_MONGO_BD_AUTH_SOURCE');
         $this->dbname = getenv('BD_MONGO_BD_NAME');
         $this->db_colletion = getenv('BD_MONGO_BD_COLLETION');
         $this->db_colletion_json = getenv('BD_MONGO_BD_COLLETION_JSON');
 
+
         $auth = $user ? "$user:$pass@" : "";
-        $uri = "mongodb://{$auth}{$host}:{$port}";
+        // $uri = "mongodb://{$auth}{$host}:{$port}";
+        $uri = "mongodb://{$auth}{$host}:{$port}/{$user}?authSource={$BD_MONGO_BD_AUTH_SOURCE}";
+
+        $options = [
+            "tls" => true,
+            "tlsAllowInvalidCertificates" => true, // se o certificado for autoassinado
+        ];
+        // MONGO_URI_AUTH = f"mongodb://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}:{MONGO_PORT}/{MONGO_USER}?authSource={BD_MONGO_BD_AUTH_SOURCE}"
+
 
         try {
 
-            $this->manager = new Manager($uri);
-
+            $this->manager = new Manager($uri,$options);
+            echo "estou conectado ao mongoDB";
         } catch (Exception $e) {
-          
+
             die("Erro ao conectar ao MongoDB: " . $e->getMessage());
         }
     }
@@ -71,11 +81,12 @@ class MongoConect
     public function getDBName()
     {
         return $this->dbname;
-    } 
-      public function getDBColetion()
+    }
+    public function getDBColetion()
     {
         return $this->db_colletion;
-    }  public function getDBColetion_json()
+    }
+    public function getDBColetion_json()
     {
         return $this->db_colletion_json;
     }

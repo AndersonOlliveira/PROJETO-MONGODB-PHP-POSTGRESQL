@@ -1,56 +1,24 @@
 <?php
-require_once __DIR__ . '/../processor/Processor.php';
+
 class App
 {
     protected $controller = 'HomeController';
     protected $method = 'index';
     protected $params = [];
 
-    private Processor $processor;
-
     public function __construct()
     {
-            // Carrega o arquivo de rotas
+        // Carrega o arquivo de rotas
         $routes = require 'App/routes.php';
 
         // Captura a URI atual
         if (php_sapi_name() === 'cli') {
-            global $argv;
-
-            echo "Executando via linha de comando...\n";
-            // print_r($argv);
-            $controllerName = ucfirst($argv[1] ?? 'listar') . 'Controller';
-            echo "Controlador: {$controllerName}\n";
-            $this->controller = $controllerName;
-            $this->method = 'listar'; // método padrão
-            $this->params = array_slice($argv, 2); 
-        
-
-            $controllerPath = "App/controllers/{$this->controller}.php";
-          
-
-            if (file_exists($controllerPath)) {
-                require_once $controllerPath;
-                $this->controller = new $this->controller;
-
-                if (method_exists($this->controller, $this->method)) {
-
-                    call_user_func_array([$this->controller, $this->method], $this->params);
-                } else {
-                    echo "Método {$this->method} não encontrado!";
-                }
-            } else {
-                echo "Controller {$this->controller} não encontrado!";
-            }
-
-            return; // evita continuar o resto do construtor
+            // Execução no terminal
+            $requestUri = '/';
         } else {
             $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
-
-
-        // $basePath =   'app-progestor-proscore.hostmundi.com/home/proscore/mvc/';
-        $basePath = '/projeto74/mvc/';
+        $basePath =   'app-progestor-proscore.hostmundi.com/home/proscore/mvc/';
         $requestUri = str_replace($basePath, '/', $requestUri);
         $requestUri = rtrim($requestUri, '/');
 
@@ -106,11 +74,17 @@ class App
             $this->controller = new $this->controller;
 
             if (method_exists($this->controller, $this->method)) {
-                
-                call_user_func_array([$this->controller, $this->method], $this->params);
+                $result =  call_user_func_array([$this->controller, $this->method], $this->params);
+
+
+                // if ($result !== null) {
+                //     echo "<pre>";
+                //     print_r($result);
+                //     echo "</pre>";
+                // }
 
             } else {
-                echo " \n Método {$this->method} não encontrado!";
+                echo " Método {$this->method} não encontrado!";
             }
         } else {
             echo "Controller {$this->controller} não encontrado!";
@@ -123,12 +97,5 @@ class App
             return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
         return ['home'];
-    }
-
-    public function processar($idProcesso, $qtLimit)
-    // public function processar($idProcesso, $qtLimit)
-    {
-        $this->processor = new Processor(10, 10, $idProcesso, $qtLimit);        // Chama o método principal do Processor
-        $this->processor->executar_ciclo();
     }
 }

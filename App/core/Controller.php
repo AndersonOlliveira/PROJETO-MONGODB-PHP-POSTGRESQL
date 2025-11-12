@@ -31,9 +31,9 @@ class Controller {
     }
 
      public function Utilis($className) {
-        // require_once "App/Utilis/$dados.php";
-        // return new $Utilis();
-       $file = __DIR__ . "../../Utilis/{$className}.php";
+         //para windows
+        //$file = __DIR__ . "../../Utilis/{$className}.php";
+       $file = __DIR__ . "/../Utilis/{$className}.php";
        
         if (!file_exists($file)) {
             throw new \Exception("Arquivo {$file} não encontrado! \n");

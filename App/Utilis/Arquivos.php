@@ -40,6 +40,8 @@ class Arquivos
 			// print_r($this->utils->findById($values['processo_id']));
 			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
 		}
+
+		// print_r($dados);
 		
 		$retorno = self::tratamento_dados($dados);
 
@@ -198,8 +200,6 @@ class Arquivos
 
 
 		if(!empty($transacoes)){
-		
-			
 			$this->GravaTransacao->insertBatch($transacoes);
 		}
 		
@@ -208,15 +208,12 @@ class Arquivos
 		}
 
 		if(!empty($GtransacaoSuceso)){
-			
-			$this->GravaTransacao->insertBatch($GtransacaoSuceso);
+		    $this->GravaTransacao->insertBatch($GtransacaoSuceso);
 		}
 
 		if(!empty($sucessTruegravaTransacao)){
-			
-			$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
+		   $this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
 		}
-	
 	}
 
 	function getConfObjectByPluginDB($configuracaoJson, $cod)

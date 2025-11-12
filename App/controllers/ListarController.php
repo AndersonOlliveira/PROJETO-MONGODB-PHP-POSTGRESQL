@@ -24,13 +24,22 @@ class ListarController extends Controller {
      }
     
     
-     public function listar(){
+     public function listar($idProcesso = null, $qtLimit = null){
 
+       
         $return = $this->model('process');
-        $returns = $return->list_processo();
+        $returns = $return->list_processo($idProcesso, $qtLimit);
+
+        if(empty($returns)){
+            echo "Nenhum dado encontrado!\n";
+            // return;
+        }
          $re = $this->utils->get_dados_id($returns);
+        // echo "Listando dados..\n";
+        // echo print_r($returns);
       
-         return $this->view('listar' , ['usuarios' =>  $re]);
+        //  return $this->view('listar' , ['usuarios' =>  $re]);
+         return $this->view('listar');
     } 
     
      public function listar_id($id = null){

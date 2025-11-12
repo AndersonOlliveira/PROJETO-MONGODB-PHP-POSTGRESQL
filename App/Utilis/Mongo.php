@@ -65,8 +65,6 @@ protected $utils_functions;
             echo "<pre>";
 
             print_r($tam_banco);
-
-
             
             echo "Estou dentro do Mongo Class";
     }

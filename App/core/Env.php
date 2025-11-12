@@ -9,10 +9,7 @@ class Env{
             throw new Exception("Arquivo .env não encontrador {$path}");
 
         }
-
-        echo "estou aqui";
-
-        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($lines as $line) {
             if (strpos(trim($line), '#') === 0) continue; // ignora comentários
