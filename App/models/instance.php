@@ -3,6 +3,8 @@
 //como náo tem o autoLoad precisa passar o nome do aquivo de conexao para poder usar dentro do porjeto
 require_once __DIR__ . '../../core/MongoConect.php';
 
+use MongoDB\Builder\Expression;
+
 class instance extends MongoConect
 {
 
@@ -82,9 +84,29 @@ class instance extends MongoConect
     }
     public function insert($data)
     {
+
         $bulk = new MongoDB\Driver\BulkWrite;
-        $bulk->insert($data);
-        return $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection}", $bulk);
+        foreach ($data as $dados) {
+
+            if (isset($daods['transacao_id']))
+                continue;
+
+            $filter = ['transacao_id' => $dados['transacao_id']];
+
+            $inser = ['$set' => $dados];
+
+            $bulk->update(
+                $filter,
+                $inser,
+                ['upsert' => true, 'multi' => false]
+            );
+
+            // $bulk->insert($dados);
+        }
+        if (count($data) > 0) {
+
+            return $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection_json}", $bulk);
+        }
     }
 
     public function update($id, $data)
@@ -103,7 +125,7 @@ class instance extends MongoConect
 
         $bulk = new MongoDB\Driver\BulkWrite;
         $bulk->delete(['_id' => new MongoDB\BSON\ObjectId($id)], ['limit' => 1]);
-        
+
         try {
             $result = $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection_json}", $bulk);
 
@@ -114,24 +136,22 @@ class instance extends MongoConect
             }
 
             return $result;
-        } 
-        catch (MongoDB\Driver\Exception\Exception $e) {
-          
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
             echo " Erro ao deletar documento: " . $e->getMessage() . "\n";
         }
-    } 
-    
+    }
+
     public function delete_all($dados)
     {
 
         $bulk = new MongoDB\Driver\BulkWrite;
 
-        foreach($dados as $id){
-         
+        foreach ($dados as $id) {
+
             $bulk->delete(['_id' => new MongoDB\BSON\ObjectId($id)]);
-     
-         }
-      
+        }
+
         try {
             //deleta em lote os ids
             $result = $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection_json}", $bulk);
@@ -143,9 +163,8 @@ class instance extends MongoConect
             }
 
             return $result;
-        } 
-        catch (MongoDB\Driver\Exception\Exception $e) {
-          
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
             echo " Erro ao deletar documento: " . $e->getMessage() . "\n";
         }
     }
@@ -180,7 +199,5 @@ class instance extends MongoConect
             echo "Erro ao obter estatísticas do banco de dados: " . $e->getMessage() . "\n";
             return null;
         }
-    }   
-
-    
+    }
 }

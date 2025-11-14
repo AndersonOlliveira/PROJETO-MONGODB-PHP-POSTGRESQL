@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class Processor
 {
@@ -15,22 +15,26 @@ class Processor
         $this->qtLimit = $qtLimit;
     }
 
-   
+
     public function executar_ciclo()
     {
         echo "[" . date('H:i:s') . "] Executando ciclo do Processor (ID: {$this->idProcesso})\n";
         echo "[" . date('H:i:s') . "] Executando ciclo total de linhas (ID: {$this->qtLimit})\n";
-        
+
         // Aqui você coloca o que realmente precisa processar
-            require_once 'App/controllers/ListarController.php';
-            $listarController = new ListarController();
-            $listarController->listar($this->idProcesso, $this->qtLimit);
+        require_once 'App/controllers/ListarController.php';
+        require_once 'App/controllers/ProcessController.php';
 
-        
-          sleep(2);
+        $listarController = new ListarController();
+        $listarController->listar($this->idProcesso, $this->qtLimit);
+
+        echo "[" . date('H:i:s') . "] Executa deletar Dados Mongo\n";
+        echo "-----\n";
+        echo "ESTOU SAINDO AQUI\n";
+        /// criado rota para deletar os json depois de 40 dias
+        //comentado por segurança
+        //  $listarController->mongo();
+
+        sleep(2);
     }
-
 }
-
-
-?>

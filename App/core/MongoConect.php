@@ -42,8 +42,8 @@ class MongoConect
 
         try {
 
-            $this->manager = new Manager($uri,$options);
-            echo "estou conectado ao mongoDB";
+            $this->manager = new Manager($uri, $options);
+            echo "estou conectado ao mongoDB\n";
         } catch (Exception $e) {
 
             die("Erro ao conectar ao MongoDB: " . $e->getMessage());

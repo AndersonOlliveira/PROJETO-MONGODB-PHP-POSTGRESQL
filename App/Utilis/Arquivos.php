@@ -11,6 +11,7 @@ class Arquivos
 	protected $GravaTransacao;
 	protected $GravaRespostaPlugin;
 	protected $teste;
+	protected $filtros;
 	public function __construct()
 	{
 
@@ -29,30 +30,69 @@ class Arquivos
 		$this->teste = new process();
 
 		require_once __DIR__ . '/../models/process.php';
-		$this->teste = new process();
+		$this->filtros = new process();
 	}
-	
+
 	public function get_dados_id($dados)
 	{
+		//pesquiso para primeiro para saber o resposta esta preenchido se tive faco o up para o mongo
+		$result_resposta = array_values(array_filter($dados, function ($row) {
+			return !empty($row['resposta_json']);
+		}));
+
 		//vou procurar os dados 
 		foreach ($dados as $key => $values) {
-
 			// print_r($this->utils->findById($values['processo_id']));
 			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
 		}
 
-		// print_r($dados);
-		
-		$retorno = self::tratamento_dados($dados);
+		$result_empty = array_values(array_filter($dados, function ($row) {
+			return !empty($row['resultado']);
+		}));
 
+		if (isset($result_empty) || isset($result_resposta)) {
+
+			self::up_resultado($result_empty, $result_resposta);
+		}
+
+		$retorno = self::tratamento_dados($dados);
+	}
+
+	public function up_resultado($dados = null, $resposa_json = null)
+	{
+
+		if (isset($dados)) {
+			foreach ($dados as $result) {
+
+				$this->filtros->filtros_data($result['transacao_id']);
+				echo "saiu aqui com os dados\n";
+
+				// print_r($result['transacao_id']);
+			}
+		}
+
+		if (isset($resposa_json)) {
+			$lista_up = [];
+			foreach ($resposa_json as $result) {
+				$lista_up[] = $this->filtros->filtros_data($result['transacao_id']);
+			}
+			$this->utils->insert($lista_up);
+		}
 	}
 
 	public function tratamento_dados($row_data)
 	{
 		$dados_filtrados = array_values(array_filter($row_data, function ($row) {
+
 			return !empty($row['resultado']);
 		}));
-		
+
+
+
+		echo "<pre>";
+		echo "dados_processos\n";
+		print_r($dados_filtrados);
+
 		$cacheCns = [];
 		$transacoes = [];
 		$GrespostaPlugin = [];
@@ -61,7 +101,7 @@ class Arquivos
 		$inicio = microtime(true);
 
 		foreach ($dados_filtrados as $r) {
-		    
+
 			$cod = $r['codcns'];
 
 			if (!empty($r['resultado'])) {
@@ -69,7 +109,7 @@ class Arquivos
 				foreach ($r['resultado'] as $values) {
 
 					list($camposAquisicao, $jsonRespostas) = [$values->campo_aquisicao, null];
-					
+
 					$transacoes[] = [
 						'processo_id' => $r['processo_id'],
 						'camposAquisicao' => $camposAquisicao,
@@ -91,26 +131,26 @@ class Arquivos
 
 					$success = false;
 					if ($jsonObjProscore) {
-					   if ($jsonObjProscore->registro) {
-						
-						 $success = true;
+						if ($jsonObjProscore->registro) {
+
+							$success = true;
 
 							// PARA CADA REGISTRO/PLUGIN do JSON PREMIUM
 							$registros = self::getRegistrosPlugins($jsonObjProscore, $plgsConfigurados);
 
-							
+
 							foreach ($registros as $plugin => $arrayValues) {
 
 								$configPlugin = self::getConfObjectByPluginDB($r['configuracao_json'], $plugin);
-                        
+
 								if (!$configPlugin) { // config nao encontrada para o plugin
 									continue;
 								}
-								
+
 								if ($configPlugin->separar) { // SAIDA ARQUIVO A PARTE - GRAVA CADA LINHA
-			
+
 									if (!isset($cacheCns[$cod])) {
-										
+
 										$conf = $this->MontaJsonConfigEHeadersDaConsultas->execute($cod);
 										$cacheCns[$cod] = is_array($conf) ? $conf : [];
 									}
@@ -120,24 +160,24 @@ class Arquivos
 									$confCns = is_array($confCns) ? $confCns : [];
 									$header = isset($confCns['header_' . $plugin]) ? $confCns['header_' . $plugin] : '-';
 
-									
+
 									$linhasSaidaVertical = self::montaLinhaRegistroVertical($arrayValues, $configPlugin); // array com linhas de saida
-				
+
 									foreach ($linhasSaidaVertical as $linhaSaidaVertical) { // PARA CADA OCORRENCIA do PLUGIN
 
 										if ($linhaSaidaVertical != "") {
 
-										
+
 											// GRAVA RESPOSTA PLUGIN TRANSACAO
 											$GrespostaPlugin[] = [
 												'plugin' => $plugin,
 												'resposta' => $camposAquisicao . ";" . $linhaSaidaVertical,
 												'transacaoId' => $values->transacao_id,
 												'header' => $header
-												];
+											];
 
-									
-												// $this->GravaRespostaPlugin->execute($plugin, $camposAquisicao . ";" . $linhaSaidaVertical, $values->transacao_id, $header);
+
+											// $this->GravaRespostaPlugin->execute($plugin, $camposAquisicao . ";" . $linhaSaidaVertical, $values->transacao_id, $header);
 										}
 									}
 								} else { // concatena na linha do arquivo principal
@@ -156,16 +196,16 @@ class Arquivos
 					if (!$success) { // saida de ERRO
 
 						// GRAVA RESPOSTA TRANSACAO SUCESSO
-		
-						$GtransacaoSuceso[] =[
+
+						$GtransacaoSuceso[] = [
 							'processo_id' => $r['processo_id'],
 							'camposAquisicao' => $camposAquisicao,
 							'status' => 3,
-							'sucesso'=> 0,
-							'resposta'=> null, 
-							'respostaJson' =>null
+							'sucesso' => 0,
+							'resposta' => null,
+							'respostaJson' => null
 						];
- 
+
 						// $this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 3, 0, null, null);
 
 					} else {
@@ -176,15 +216,15 @@ class Arquivos
 						if ($linhaSaidaHorizontal != "") {
 
 							// GRAVA RESPOSTA TRANSACAO SUCESSO
-						   $sucessTruegravaTransacao[] = [
-                             'processo_id' => $r['processo_id'],
-							'camposAquisicao' => $camposAquisicao,
-							'status' => 3,
-							'sucesso'=> 1,
-							'resposta'=> $linhaSaidaHorizontal , 
-							'respostaJson' =>null
+							$sucessTruegravaTransacao[] = [
+								'processo_id' => $r['processo_id'],
+								'camposAquisicao' => $camposAquisicao,
+								'status' => 3,
+								'sucesso' => 1,
+								'resposta' => $linhaSaidaHorizontal,
+								'respostaJson' => null
 
-						  ]; 
+							];
 
 							// $this->GravaTransacao->execute($r['processo_id'], $camposAquisicao, 3, 1, $linhaSaidaHorizontal, $jsonResposta);
 						}
@@ -199,20 +239,20 @@ class Arquivos
 
 
 
-		if(!empty($transacoes)){
+		if (!empty($transacoes)) {
 			$this->GravaTransacao->insertBatch($transacoes);
 		}
-		
-		if(!empty($GrespostaPlugin)){
+
+		if (!empty($GrespostaPlugin)) {
 			$this->GravaRespostaPlugin->insert_all_Respost_pluglin($GrespostaPlugin);
 		}
 
-		if(!empty($GtransacaoSuceso)){
-		    $this->GravaTransacao->insertBatch($GtransacaoSuceso);
+		if (!empty($GtransacaoSuceso)) {
+			$this->GravaTransacao->insertBatch($GtransacaoSuceso);
 		}
 
-		if(!empty($sucessTruegravaTransacao)){
-		   $this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
+		if (!empty($sucessTruegravaTransacao)) {
+			$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
 		}
 	}
 
@@ -362,7 +402,7 @@ class Arquivos
 
 		$linha = "";
 
-		
+
 
 		$i = 0;
 		foreach ($arrValores as $retPlg) { // cada ocorrencia do registro/plugin
@@ -371,11 +411,11 @@ class Arquivos
 
 
 
-			
+
 
 			// inclui campos na linha de acordo com a configuracao
 			foreach ($configuracao->campos as $indice) {
-						
+
 				if (isset($retPlg[$indice])) {
 
 					$valor = preg_replace("/\;/", " ", $retPlg[$indice]); // limpa ponto-e-virgula de valores

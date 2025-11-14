@@ -10,24 +10,20 @@ class App
 
     public function __construct()
     {
-            // Carrega o arquivo de rotas
+        // Carrega o arquivo de rotas
         $routes = require 'App/routes.php';
 
-        // Captura a URI atual
-        if (php_sapi_name() === 'cli') {
+        //php_sapi_name()
+        if (PHP_SAPI === 'cli') {
+
             global $argv;
 
             echo "Executando via linha de comando...\n";
-            // print_r($argv);
             $controllerName = ucfirst($argv[1] ?? 'listar') . 'Controller';
-            echo "Controlador: {$controllerName}\n";
             $this->controller = $controllerName;
             $this->method = 'listar'; // método padrão
-            $this->params = array_slice($argv, 2); 
-        
-
+            $this->params = array_slice($argv, 2);
             $controllerPath = "App/controllers/{$this->controller}.php";
-          
 
             if (file_exists($controllerPath)) {
                 require_once $controllerPath;
@@ -35,7 +31,7 @@ class App
 
                 if (method_exists($this->controller, $this->method)) {
 
-                    call_user_func_array([$this->controller, $this->method], $this->params);
+                    // call_user_func_array([$this->controller, $this->method], $this->params);
                 } else {
                     echo "Método {$this->method} não encontrado!";
                 }
@@ -44,14 +40,17 @@ class App
             }
 
             return; // evita continuar o resto do construtor
+
         } else {
+
             $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         }
 
-
         // $basePath =   'app-progestor-proscore.hostmundi.com/home/proscore/mvc/';
-        $basePath = '/projeto74/mvc/';
+        // C:\xampp_backup\htdocs\projeto74\mvc
+        $basePath = 'projeto74/mvc';
         $requestUri = str_replace($basePath, '/', $requestUri);
+
         $requestUri = rtrim($requestUri, '/');
 
         if ($requestUri == '') {
@@ -59,15 +58,19 @@ class App
         }
 
         if (isset($routes[$requestUri])) {
+
             [$controller, $method] = $routes[$requestUri];
         } else {
 
+
+
             $url = $this->parseUrl();
 
-            $controller = ucfirst($url[0] ?? 'home') . 'Controller';
+
+            $controller = ucfirst($url[0] ?? 'lista') . 'Controller';
 
             //se for enviando um número como parametro ele executa aqui
-            if (is_numeric($url[1])) {
+            if (is_numeric($url[1]) && !empty($url[1])) {
 
                 if (isset($url[1]) && is_numeric($url[1])) {
                     $method = ($url[0] ?? 'index') . '_id';
@@ -100,15 +103,19 @@ class App
 
         $controllerPath = "App/controllers/{$this->controller}.php";
 
+        // echo "<pre>";
+        // echo "Solicitacao da url navegador! ... apresentando minha controller \n";
+
+        // print_r($controllerPath);
+
 
         if (file_exists($controllerPath)) {
             require_once $controllerPath;
             $this->controller = new $this->controller;
 
             if (method_exists($this->controller, $this->method)) {
-                
-                call_user_func_array([$this->controller, $this->method], $this->params);
 
+                // call_user_func_array([$this->controller, $this->method], $this->params);
             } else {
                 echo " \n Método {$this->method} não encontrado!";
             }
@@ -122,7 +129,7 @@ class App
         if (isset($_GET['url'])) {
             return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
-        return ['home'];
+        return ['lista'];
     }
 
     public function processar($idProcesso, $qtLimit)

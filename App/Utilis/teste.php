@@ -1,9 +1,8 @@
 <?php
 
 
-Class teste extends Controller{
-
-
+class teste extends Controller
+{
 
 
     protected $teste;
@@ -16,7 +15,8 @@ Class teste extends Controller{
     }
 
 
-    public function lista_testessss(){
+    public function lista_testessss()
+    {
 
         // $retorno = $this->teste->get_teste();
 
@@ -24,7 +24,3 @@ Class teste extends Controller{
 
     }
 }
-
-
-
-?>

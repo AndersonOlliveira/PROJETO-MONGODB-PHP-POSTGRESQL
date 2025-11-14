@@ -35,11 +35,8 @@ class ListarController extends Controller {
             // return;
         }
          $re = $this->utils->get_dados_id($returns);
-        // echo "Listando dados..\n";
-        // echo print_r($returns);
-      
-        //  return $this->view('listar' , ['usuarios' =>  $re]);
-         return $this->view('listar');
+       
+          return $this->view('listar');
     } 
     
      public function listar_id($id = null){
