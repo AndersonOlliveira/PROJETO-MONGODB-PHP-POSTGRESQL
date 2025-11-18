@@ -66,8 +66,15 @@ class App
 
             $url = $this->parseUrl();
 
+            echo "<pre>";
 
-            $controller = ucfirst($url[0] ?? 'lista') . 'Controller';
+            print_r($url);
+
+            echo "</pre>";
+
+
+
+            $controller = ucfirst($url[0] ?? 'listar') . 'Controller';
 
             //se for enviando um número como parametro ele executa aqui
             if (is_numeric($url[1]) && !empty($url[1])) {
@@ -103,11 +110,17 @@ class App
 
         $controllerPath = "App/controllers/{$this->controller}.php";
 
-        // echo "<pre>";
-        // echo "Solicitacao da url navegador! ... apresentando minha controller \n";
+        echo "<pre>";
+        echo "Solicitacao da url navegador! ... apresentando minha controller \n";
 
-        // print_r($controllerPath);
+        echo "</pre>";
+        print_r($controllerPath);
 
+        echo "<pre>";
+        echo "meu metodo\n";
+        print_r($this->method);
+
+        echo "</pre>";
 
         if (file_exists($controllerPath)) {
             require_once $controllerPath;
@@ -115,7 +128,7 @@ class App
 
             if (method_exists($this->controller, $this->method)) {
 
-                // call_user_func_array([$this->controller, $this->method], $this->params);
+                call_user_func_array([$this->controller, $this->method], $this->params);
             } else {
                 echo " \n Método {$this->method} não encontrado!";
             }
@@ -129,7 +142,7 @@ class App
         if (isset($_GET['url'])) {
             return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
-        return ['lista'];
+        return ['listar'];
     }
 
     public function processar($idProcesso, $qtLimit)

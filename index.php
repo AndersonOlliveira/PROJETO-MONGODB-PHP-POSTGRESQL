@@ -18,7 +18,7 @@ function logInfo($mensagem)
 }
 
 $tempo_esperara = 40;
-$id = null;
+$id = 382;
 $quantidade = 10;
 logInfo("Iniciando a aplicação...");
 $app = new App();
@@ -44,5 +44,5 @@ if (php_sapi_name() == 'cli') {
     }
 } else {
 
-    $app->processar(null, $quantidade);
+    // $app->processar(null, $quantidade);
 }

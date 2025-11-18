@@ -60,6 +60,23 @@ class Mongo
         $tam_banco = $this->utils->get_size_database();
         $tam_banco  = $this->utils_functions->formatarTamanho($tam_banco);
 
+
+        // //criar api para busca do tamanho do banco 
+        // http_response_code(201);
+        // ob_clean();
+        // echo json_encode(array(
+        //     'status' => 2,
+        //     'sucesso' => true,
+        //     'data' => $tam_banco,
+        //     'mensagem' => 'Sucesso em obter tamanho do banco'
+        // ));
+
+
+
+
+
+
+
         $msg = "tamanho do banco: " . $tam_banco . " - Data de Criação: " . $date->format('d-m-Y') . " - Dias: " . $intervalo->days . "\n";
         error_log($msg, 3, __DIR__ . '/../../errosTxt/tamBanco.txt');
     }

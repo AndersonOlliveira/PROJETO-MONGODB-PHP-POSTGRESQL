@@ -18,6 +18,8 @@ class Processor
 
     public function executar_ciclo()
     {
+
+
         echo "[" . date('H:i:s') . "] Executando ciclo do Processor (ID: {$this->idProcesso})\n";
         echo "[" . date('H:i:s') . "] Executando ciclo total de linhas (ID: {$this->qtLimit})\n";
 
@@ -34,6 +36,8 @@ class Processor
         /// criado rota para deletar os json depois de 40 dias
         //comentado por segurança
         //  $listarController->mongo();
+
+        // $listarController->teste_teste();
 
         sleep(2);
     }
