@@ -8,6 +8,7 @@ class ListarController extends Controller
 
   protected $utils;
   protected $utilss;
+  protected $utilis_pgadmin;
   protected $utils_out;
   protected $utils_mongo;
   protected $tratamento;
@@ -24,7 +25,9 @@ class ListarController extends Controller
     $this->utils = $this->Utilis('Arquivos');
     $this->utils_out = $this->Utilis('GerarOutput');
     $this->utils_mongo = $this->Utilis('Mongo');
-    // $this->utils->teste();
+
+    require_once __DIR__ . '/../models/process.php';
+    $this->utilis_pgadmin = new process();
 
     // Carrega de App/Arquivos ()
     // $this->tratamento = $this->loadFrom('Arquivos', 'Arquivos');
@@ -42,6 +45,7 @@ class ListarController extends Controller
     $returns = $return->list_processo($idProcesso, $qtLimit);
 
     if (empty($returns)) {
+
       echo "Nenhum dado encontrado!\n";
       // return;
     }
@@ -68,24 +72,47 @@ class ListarController extends Controller
 
     return $this->view('List_dados_mongo');
   }
+
   public function mongo_size()
   {
     $tam_banco = $this->utilss->get_size_database();
+    $qta_row = $this->utilss->get_qta_row();
+
+    $size_pgAdmin = $this->utilis_pgadmin->size_pgAdmin();
+    $soma = 0;
+    $sum_rows = 0;
+    $result = [];
+    foreach ($size_pgAdmin as $dados_pg) {
+      $soma += $dados_pg['tamanho_total'];
+      $sum_rows += $dados_pg['estimated_rows'];
+      $dados_pg['tamanho_total'] = $this->utils_functions->formatarTamanho($dados_pg['tamanho_total']);
+      $result[] = $dados_pg;
+    }
+    $size_pgAdmin = $result;
+    $size_bank_pgAdmin =  $this->utils_functions->formatarTamanho($soma);
     $tam_banco  = $this->utils_functions->formatarTamanho($tam_banco);
+
+    $data  = [
+      'size_bank_mongo' => $tam_banco,
+      'qta_row_mongo' => $qta_row,
+      'dados_pg' => $size_pgAdmin,
+      'size_bank_pgAdmin' => $size_bank_pgAdmin,
+      'qta_rows_pgAdmin' => $sum_rows
+    ];
     //criar api para busca do tamanho do banco 
     http_response_code(201);
     ob_clean();
     $dados = json_encode(array(
       'status' => 2,
       'sucesso' => true,
-      'data' => $tam_banco,
+      'data' => $data,
       'mensagem' => 'Sucesso em obter tamanho do banco',
       JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     ));
 
     echo $dados;
 
-    return $dados;
+    // return $dados;
   }
 
 

@@ -3,9 +3,7 @@
 
 class teste extends Controller
 {
-
-
-    protected $teste;
+     protected $teste;
 
 
     public function __construct()

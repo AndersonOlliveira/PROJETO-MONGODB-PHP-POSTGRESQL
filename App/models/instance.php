@@ -200,4 +200,28 @@ class instance extends MongoConect
             return null;
         }
     }
+
+    public function get_qta_row()
+    {
+        try {
+
+
+            $command = new MongoDB\Driver\Command([
+                'count' => $this->collection_json
+            ]);
+
+            $result = $this->manager->executeCommand($this->dbname, $command);
+            $response = current($result->toArray());
+
+            if ($response->n > 0) {
+                return $response->n;
+            } else {
+                echo "Nenhum dado retornado para as estatísticas do banco de dados.\n";
+                return null;
+            }
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            echo "Erro ao obter estatísticas do banco de dados: " . $e->getMessage() . "\n";
+            return null;
+        }
+    }
 }

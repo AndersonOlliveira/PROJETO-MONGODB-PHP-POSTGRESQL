@@ -153,4 +153,25 @@ class process extends Model
 			return $e->getMessage();
 		}
 	}
+
+	public function size_pgAdmin()
+	{
+		$sql = "SELECT 
+        nspname || '.' || relname AS tabela,
+        pg_size_pretty(pg_relation_size(c.oid)) AS tamanho_dados,
+        pg_total_relation_size(c.oid) AS tamanho_total,
+        ROUND(c.reltuples) AS estimated_rows
+    FROM 
+        pg_class c
+    LEFT JOIN
+        pg_namespace n ON n.oid = c.relnamespace
+    WHERE
+        relkind = 'r'
+        AND nspname = 'progestor';
+    ";
+
+		$results = $this->db->prepare($sql);
+		$results->execute();
+		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
 }
