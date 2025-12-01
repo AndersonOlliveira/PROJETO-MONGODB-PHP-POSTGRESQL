@@ -44,12 +44,45 @@ class ListarController extends Controller
     $return = $this->model('process');
     $returns = $return->list_processo($idProcesso, $qtLimit);
 
-    if (empty($returns)) {
+    $returns_alert = $return->list_processo_qta_process($qtLimit);
 
+    if (empty($returns)) {
       echo "Nenhum dado encontrado!\n";
-      // return;
     }
-    $re = $this->utils->get_dados_id($returns);
+
+    if (empty($returns_alert)) {
+
+      echo "Nenhum dado encontrado\n";
+    }
+
+    $result_resposta = array_values(array_filter($returns_alert, function ($row) {
+      return !empty($row['info']);
+    }));
+
+    if (isset($result_resposta)) {
+
+      echo "<pre>";
+      $info_msg = 1;
+      $list_dados = [];
+      foreach ($result_resposta as $key => $values) {
+
+        if ($values['qta_processar'] > 0) {
+
+
+          // $list_dados[] = $return->list_processo_alert($values['processo_id'], $values['qta_processar']);
+          $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
+
+                } else {
+
+
+          $return->finish_process_die($values['processo_id']);
+        }
+      }    #tenho 
+
+      $re = $this->utils->get_dados_id($list_dados);
+      echo "estou saindao aqui";
+    }
+    // $re = $this->utils->get_dados_id($returns);
 
     return $this->view('listar');
   }

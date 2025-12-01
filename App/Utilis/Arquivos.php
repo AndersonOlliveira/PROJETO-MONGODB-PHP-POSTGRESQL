@@ -35,14 +35,17 @@ class Arquivos
 
 	public function get_dados_id($dados)
 	{
+
 		//pesquiso para primeiro para saber o resposta esta preenchido se tive faco o up para o mongo
 		$result_resposta = array_values(array_filter($dados, function ($row) {
 			return !empty($row['resposta_json']);
 		}));
 
+
+
 		//vou procurar os dados 
 		foreach ($dados as $key => $values) {
-			// print_r($this->utils->findById($values['processo_id']));
+
 			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
 		}
 
@@ -53,6 +56,9 @@ class Arquivos
 		if (isset($result_empty) || isset($result_resposta)) {
 
 			self::up_resultado($result_empty, $result_resposta);
+		} else {
+
+			echo 'Campor Json Resposta esta vazio';
 		}
 
 		$retorno = self::tratamento_dados($dados);
@@ -65,9 +71,7 @@ class Arquivos
 			foreach ($dados as $result) {
 
 				$this->filtros->filtros_data($result['transacao_id']);
-				echo "saiu aqui com os dados\n";
-
-				// print_r($result['transacao_id']);
+				
 			}
 		}
 
@@ -91,7 +95,12 @@ class Arquivos
 
 		echo "<pre>";
 		echo "dados_processos\n";
+		echo "dados_processos com a mensagem\n";
 		print_r($dados_filtrados);
+
+
+
+
 
 		$cacheCns = [];
 		$transacoes = [];

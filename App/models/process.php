@@ -31,7 +31,7 @@ class process extends Model
 		WHERE 
 			t.status = 2 AND 
 			t.sucesso = true AND 
-			p.finalizado = false AND 
+			---p.finalizado = false AND 
 		    p.pause = false";
 
 
@@ -55,6 +55,117 @@ class process extends Model
 		// $result = $this->db->query($sql);
 
 		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function list_processo_alert($idProcesso, $qtLimit)
+	{
+
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando list_processo com x linhas : {$qtLimit} \n");
+
+
+		$sql = "SELECT p.processo_id, p.contrato,
+			p.rede,
+			p.codcns,
+			p.nome_arquivo,
+			p.aceite_execucao,
+			p.mensagem_alerta,
+			p.data_cadastro,
+			p.configuracao_json,
+			p.campos_aquisicao,
+			p.loja,
+			p.finalizado,
+			p.data_finalizacao,
+			p.pause,
+			t.transacao_id,
+			t.id_processo,
+			t.resposta_json
+			FROM
+		   progestor.transacao t INNER JOIN 
+			progestor.processo p ON p.processo_id = t.id_processo 
+		WHERE 
+			t.status = 2 AND 
+		    p.mensagem_alerta = '1' and
+			t.sucesso = true AND 
+			p.finalizado = true AND 
+		    p.pause = false";
+
+
+
+		$params = [];
+		if ($idProcesso !== null) {
+			$sql .= " AND p.processo_id = ?";
+			$params[] = $idProcesso;
+		}
+
+
+		if ($qtLimit !== null) {
+			$qtLimit = (int)$qtLimit; // garante que é inteiro
+			$sql .= " ORDER BY random() LIMIT $qtLimit;";
+		} else {
+			$sql .= " ORDER BY random() LIMIT 10;";
+		}
+
+
+		$results = $this->db->prepare($sql);
+		$results->execute($params);
+		// $result = $this->db->query($sql);
+
+		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function list_processo_qta_process()
+	{
+
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando processo com status mensagem 1 \n");
+
+
+		$sql = "SELECT COALESCE(SUM(CASE WHEN status in (2,5) THEN 1 ELSE 0 END), 0) AS qta_processar,
+		p.processo_id,
+		p.mensagem_alerta as info
+		FROM progestor.transacao as t
+		left join progestor.processo as p on (p.processo_id = t.id_processo)
+		where p.mensagem_alerta ='1'
+		group by p.mensagem_alerta, p.processo_id;";
+
+
+		$results = $this->db->prepare($sql);
+		$results->execute();
+		// $result = $this->db->query($sql);
+
+		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+
+
+	public function finish_process_die($id_process)
+	{
+		$erros = [];
+
+		try {
+			//recebe 6 
+			$sql = "UPDATE progestor.processo SET finalizado = ?, data_finalizacao = ?, mensagem_alerta = ? WHERE processo_id = ? ";
+			// $sql = "UPDATE progestor.processo SET valor_total = ?, finalizado = ?, data_finalizacao = ? WHERE processo_id = ? ";
+
+			// $dados =  [$value, true, date("Y-m-d H:i:s"), $id_process];
+			$dados =  [true, date("Y-m-d H:i:s"), 0, $id_process];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (\Exception $e) {
+
+			echo $e->getMessage();
+
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
 	}
 
 

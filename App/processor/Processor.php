@@ -33,6 +33,8 @@ class Processor
         echo "[" . date('H:i:s') . "] Executa deletar Dados Mongo\n";
         echo "-----\n";
         echo "ESTOU SAINDO AQUI\n";
+
+        
         /// criado rota para deletar os json depois de 40 dias
         //comentado por segurança
         //  $listarController->mongo();
