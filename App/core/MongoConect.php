@@ -12,6 +12,7 @@ class MongoConect
     private $dbname;
     private $db_colletion;
     private $db_colletion_json;
+    private $db_colletion_info;
 
     private function __construct()
     {
@@ -27,6 +28,7 @@ class MongoConect
         $this->dbname = getenv('BD_MONGO_BD_NAME');
         $this->db_colletion = getenv('BD_MONGO_BD_COLLETION');
         $this->db_colletion_json = getenv('BD_MONGO_BD_COLLETION_JSON');
+        $this->db_colletion_info = getenv('BD_MONGO_BD_COLLETION_INFO');
 
 
         $auth = $user ? "$user:$pass@" : "";
@@ -89,5 +91,9 @@ class MongoConect
     public function getDBColetion_json()
     {
         return $this->db_colletion_json;
+    }
+    public function getDBColetion_info()
+    {
+        return $this->db_colletion_info;
     }
 }

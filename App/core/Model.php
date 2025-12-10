@@ -40,4 +40,8 @@ class Model
             die("Erro ao conectar ao banco de dados: " . $e->getMessage());
         }
     }
+    public function getConnection()
+    {
+        return $this->db;
+    }
 }

@@ -12,6 +12,7 @@ class Arquivos
 	protected $GravaRespostaPlugin;
 	protected $teste;
 	protected $filtros;
+	protected $instance;
 	public function __construct()
 	{
 
@@ -31,6 +32,49 @@ class Arquivos
 
 		require_once __DIR__ . '/../models/process.php';
 		$this->filtros = new process();
+
+		require_once __DIR__ . '/../models/instance.php';
+		$this->instance = new instance();
+	}
+
+
+	public function updados_modulos($dados)
+	{
+
+
+		$valor = 0;		## somo os valores e gero um valos
+		foreach ($dados as $values) {
+			#verifico se e um array 
+			if (!is_array($values) || !isset($values['dados'])) {
+				continue;
+			}
+			foreach ($values['dados'] as $dados_modulo) {
+				$valor += $dados_modulo['valor_total'];
+			}
+		}
+
+		$valor = number_format($valor, 2, '.', '');
+		$dados['valor_geral'] = $valor;
+		$dados['data_atualizacao'] = date('Y-m-d H:i:s');
+
+		#achado o valor, realizo o up  dentro da tabela
+
+		// $this->instance->up_valor_modulos($dados['processo_id'], $dados['valor_original'], $dados['valor_geral']);
+		#insiro pra o mongo
+		$info_mongo = $this->instance->up_valor_modulos($dados);
+
+		echo "<pre>";
+
+		print_R($info_mongo);
+
+		if ($info_mongo) {
+			echo "estou chamando para atualizar no postgres\n";
+			print_R($dados);
+
+			echo "estou chamando para atualizar no postgres\n";
+			#vou atualizar o postgres
+			$this->filtros->up_valor_modules($dados);
+		}
 	}
 
 	public function get_dados_id($dados)
@@ -71,7 +115,6 @@ class Arquivos
 			foreach ($dados as $result) {
 
 				$this->filtros->filtros_data($result['transacao_id']);
-				
 			}
 		}
 

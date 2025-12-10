@@ -16,8 +16,7 @@ class CapturaDadosTransacoesJob extends Model
 		WHERE
 			p.processo_id = ? 
 			AND t.status = 3  -- COLOCADO ESTA CONDICAO PARA TRATAR OS DADOS
-		ORDER BY 
-			t.transacao_id";
+           ;";
 
         $dados = array();
         $dados[] = $idJob;

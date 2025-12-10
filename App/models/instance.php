@@ -12,6 +12,7 @@ class instance extends MongoConect
     private $dbname;
     private $collection;
     private $collection_json;
+    private $collection_info;
 
     public function __construct()
     {
@@ -20,6 +21,7 @@ class instance extends MongoConect
         $this->dbname = $conn->getDBName();
         $this->collection = $conn->getDBColetion();
         $this->collection_json = $conn->getDBColetion_json();
+        $this->collection_info = $conn->getDBColetion_info();
     }
 
     public function all()
@@ -88,7 +90,7 @@ class instance extends MongoConect
         $bulk = new MongoDB\Driver\BulkWrite;
         foreach ($data as $dados) {
 
-            if (isset($daods['transacao_id']))
+            if (isset($dados['transacao_id']))
                 continue;
 
             $filter = ['transacao_id' => $dados['transacao_id']];
@@ -223,5 +225,100 @@ class instance extends MongoConect
             echo "Erro ao obter estatísticas do banco de dados: " . $e->getMessage() . "\n";
             return null;
         }
+    }
+
+
+    public function up_valor_modulos($data)
+    {
+
+        echo "<pre>";
+        print_R($data);
+
+        $dados_final = [
+            'processo_id'       => (int) $data['processo_id'],
+            'valor_original'    => (float) $data['valor_original'],
+            'valor_geral'       => (float) $data['valor_geral'],
+            'data_atualizacao' => $data['data_atualizacao'],
+            'dados'             => $data[0]['dados']
+        ];
+
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+
+        if (isset($dados_final['processo_id'])) {
+            $filter = ['processo_id' => $dados_final['processo_id']];
+
+
+            $query = new MongoDB\Driver\Query($filter);
+            $cursor = $this->manager->executeQuery(
+                "{$this->dbname}.{$this->collection_info}",
+                $query
+            );
+
+
+            $resultado = $cursor->toArray();
+            $jaExiste = false;
+
+            if (count($resultado) > 0) {
+                $jaExiste = true;
+            }
+
+            if ($jaExiste) {
+                $info_return =  [
+                    'status'  => false,
+                    'message' => 'Registro já existe, não foi inserido'
+                ];
+            }
+
+            if (!$jaExiste) {
+                $bulk->insert($dados_final);
+
+                $result = $this->manager->executeBulkWrite(
+                    "{$this->dbname}.{$this->collection_info}",
+                    $bulk
+                );
+
+                echo "Inseridos:  " . $result->getUpsertedCount() . "\n";
+                echo "Atualizados: " . $result->getModifiedCount() . "\n";
+
+                $info_return =  [
+                    'status'  => true,
+                    'message' => 'Registro inserido com sucesso'
+                ];
+            }
+
+            return $info_return;
+
+            // $update = ['$set' => $data];
+
+            // $bulk->update(
+            //     $filter,
+            //     $update,
+            //     ['upsert' => true, 'multi' => false]
+            // );
+
+
+            // if (!empty(($data))) {
+
+            //     $result = $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection_info}", $bulk);
+            // }
+
+            // echo "Inseridos:  " . $result->getUpsertedCount() . "\n";
+            // echo "Atualizados: " . $result->getModifiedCount() . "\n";
+        }
+
+
+        // $filter = ['processo_id' => $dados['processo_id']];
+
+        // $inser = ['$set' => $data];
+
+        // $bulk->update(
+        //     $filter,
+        //     $inser,
+        //     ['upsert' => true, 'multi' => false]
+        // );
+
+        // $bulk->insert($data);
     }
 }

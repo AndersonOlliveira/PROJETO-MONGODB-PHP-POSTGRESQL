@@ -40,11 +40,23 @@ class ListarController extends Controller
   public function listar($idProcesso = null, $qtLimit = null)
   {
 
-
+    $result_idProcess = [];
     $return = $this->model('process');
     $returns = $return->list_processo($idProcesso, $qtLimit);
 
+    # PEGO O QUE FOI FINALIZADO JÁ 
+    $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
+
+
     $returns_alert = $return->list_processo_qta_process($qtLimit);
+
+    $result_idProcess = array_values(
+      array_column(
+        array_filter($returns, fn($row) => !empty($row['processo_id'])),
+        'processo_id'
+      )
+    );
+
 
     if (empty($returns)) {
       echo "Nenhum dado encontrado!\n";
@@ -55,24 +67,70 @@ class ListarController extends Controller
       echo "Nenhum dado encontrado\n";
     }
 
+
+    if (empty($returns_modulos)) {
+
+      echo "Nenhum dado encontrado\n";
+    }
+
+    echo "<pre>";
+    echo "meu dados modulos\n";
+
+    print_r($return_finish);
+
+    $consult_modulos = [];
+
+
+    if (!empty($return_finish)) {
+
+      foreach ($return_finish as $key => $values_modulos) {
+
+
+        $dados = $return->push_value_modulo(
+          $values_modulos['rede'],
+          $values_modulos['codcns'],
+          $values_modulos['data_cadastro'],
+          $values_modulos['data_finalizacao'],
+          null
+        );
+
+
+
+        if (!empty($dados)) {
+
+          $consult_modulos[] = [
+            'dados' => $dados,
+          ];
+
+          $consult_modulos['processo_id'] = $values_modulos['processo_id'];
+          $consult_modulos['valor_original'] = $values_modulos['valor_total'];
+        }
+      }
+    }
+
+
+
+    if (isset($consult_modulos) && !empty($consult_modulos)) {
+      $this->utils->updados_modulos($consult_modulos);
+    }
+
+
+
+
+
+
     $result_resposta = array_values(array_filter($returns_alert, function ($row) {
       return !empty($row['info']);
     }));
 
     if (isset($result_resposta)) {
-
-      echo "<pre>";
-      $info_msg = 1;
       $list_dados = [];
       foreach ($result_resposta as $key => $values) {
 
         if ($values['qta_processar'] > 0) {
 
-
-          // $list_dados[] = $return->list_processo_alert($values['processo_id'], $values['qta_processar']);
           $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
-
-                } else {
+        } else {
 
 
           $return->finish_process_die($values['processo_id']);
@@ -82,7 +140,8 @@ class ListarController extends Controller
       $re = $this->utils->get_dados_id($list_dados);
       echo "estou saindao aqui";
     }
-    // $re = $this->utils->get_dados_id($returns);
+
+    $re = $this->utils->get_dados_id($returns);
 
     return $this->view('listar');
   }

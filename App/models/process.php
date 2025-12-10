@@ -113,6 +113,83 @@ class process extends Model
 		return $results->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+
+	public function list_processo_modulo($idProcesso, $qtLimit)
+	{
+
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando Pesquisa modulo com x linhas : {$qtLimit} \n");
+
+
+		$sql = "SELECT 
+		    p.processo_id,
+			p.contrato,
+			p.rede,
+			p.codcns,
+			p.data_cadastro,
+			p.data_finalizacao,
+			p.valor_total
+			FROM
+			progestor.processo p 
+		WHERE 
+		    p.status_output = 2 and 
+		    p.finalizado = true AND
+		    p.pause = false";
+
+
+
+		$params = [];
+		if ($idProcesso !== null) {
+			$sql .= " AND p.processo_id = ?";
+			$params[] = $idProcesso;
+		}
+
+
+		if ($qtLimit !== null) {
+			$qtLimit = (int)$qtLimit; // garante que é inteiro
+			$sql .= " ORDER BY random() LIMIT $qtLimit;";
+		} else {
+			$sql .= " ORDER BY random() LIMIT 10;";
+		}
+
+
+		$results = $this->db->prepare($sql);
+		$results->execute($params);
+		// $result = $this->db->query($sql);
+
+		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+
+	public function push_value_modulo($rede, $codConsulta, $dataInicio, $dataFim, $qtLimit)
+	{
+
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando Pesquisa modulo com x linhas : {$qtLimit} \n");
+
+		// (4061, 266982, '2025-12-03 00:00:00','2025-12-03 23:59:59');";
+		$sql = "
+		SELECT * 
+		FROM
+		fnc_extrato_modulos (
+		:rede,
+        :codConsulta,
+        :data_inicio,
+        :data_fim);";
+
+
+		$stmt = $this->db->prepare($sql);
+
+		$stmt->bindValue(':rede', $rede, PDO::PARAM_INT);
+		$stmt->bindValue(':codConsulta', $codConsulta, PDO::PARAM_INT);
+		$stmt->bindValue(':data_inicio', $dataInicio);
+		$stmt->bindValue(':data_fim', $dataFim);
+
+		$stmt->execute();
+
+		$resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $resultado;
+	}
+
 	public function list_processo_qta_process()
 	{
 
@@ -133,6 +210,32 @@ class process extends Model
 		// $result = $this->db->query($sql);
 
 		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+
+	public  function list_data_modulo($idConsultation)
+	{
+
+		$sql = "";
+		$sql = "SELECT rdecnsmod FROM rdecns WHERE rdecnsid = ? LIMIT 1";
+
+		try {
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([$idConsultation]);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if (!$row) {
+
+				return false;
+			}
+
+			//forco o retorno ser um boleano
+			return filter_var($row['rdecnsmod'], FILTER_VALIDATE_BOOLEAN);
+		} catch (\Exception $e) {
+
+			return false;
+		}
 	}
 
 
@@ -253,6 +356,28 @@ class process extends Model
 
 		try {
 			$dadosTransacao = [0, 0, $ids];
+			$results = $this->db->prepare($sql);
+			$results->execute($dadosTransacao);
+
+			echo "ok para atualizar\n";
+
+			return true;
+		} catch (\Exception $e) {
+
+			return $e->getMessage();
+		}
+	}
+
+	public function up_valor_modules($dados)
+	{
+
+		echo "<pre>";
+		echo "MEUS DADOS PARA SER ATUALIZAD NO POSTEGREE\n";
+
+		$sql = "UPDATE progestor.processo SET valor_total = ? where processo_id = ?;";
+
+		try {
+			$dadosTransacao = [$dados['valor_geral'], $dados['processo_id']];
 			$results = $this->db->prepare($sql);
 			$results->execute($dadosTransacao);
 
