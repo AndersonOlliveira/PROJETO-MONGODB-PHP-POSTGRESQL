@@ -17,4 +17,6 @@ return [
     '/headers' => ['ProcessController', 'c_headers'],
     '/ler_arquivo' => ['ProcessController', 'ler_arquivo'],
     '/gera_arquivo' => ['ProcessController', 'gerar_arquivo'],
+    '/deleteMongo' => ['ProcessController', 'MongoDelete'],
+    '/LerJson' => ['ProcessController', 'JsonArquivo'],
 ];

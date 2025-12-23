@@ -11,6 +11,7 @@ class ProcessController extends Controller
     protected $utilis_processs_teste_arquivos_json;
     protected $utilis_processs_teste;
     protected $utilis_processs_new;
+    protected $utilis_process_valida;
     protected $BuscaValorLotePorConsulta;
     protected $CapturaRedeLojaDoContrato;
 
@@ -20,9 +21,11 @@ class ProcessController extends Controller
         $this->utilis_processs = $this->Utilis('teste');
         $this->utilis_processs_teste = $this->Utilis('Arquivo_testes');
         $this->utilis_processs_new = $this->Utilis('new_arquivo');
+        $this->utilis_process_valida = $this->Utilis('ArquivoValida');
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('CONSULTAS');
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('teste-base');
-        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTAS-testes');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTAS-testes');
+        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('documentos_para_teste');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('ta');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_lista_crm');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('crm');
@@ -99,8 +102,8 @@ class ProcessController extends Controller
         date_default_timezone_set('America/Sao_Paulo');
         $dateNow = '';
         echo "estou na minha pagina arquivo\n";
+        $arquivoValida = $this->utilis_process_valida;
         $pathFile = $this->utilis_processs_teste_arquivos_;
-        // $pathFile = $this->utilis_processs_teste_arquivos_;
 
         if (file_exists($pathFile)) {
             echo "o arquivo existe";
@@ -131,14 +134,19 @@ class ProcessController extends Controller
 
         $consultas = explode(",", $consultas);
 
+
+
+        $validateArquivo = $arquivoValida->ValidaFormat($pathFile);
+
         echo "<pre>";
-        print_R($consultas);
+        print_R($validateArquivo);
+
 
         $dateNow = date("Y-m-d H:i:s");
         // echo "[$dateNow] --- NOVO PROCESSO: $pathFile, $consultas, $contrato, $filename \n";
 
         // require_once 'Arquivo_testes.php';
-        $result = $this->utilis_processs_teste->process($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
+        // $result = $this->utilis_processs_teste->process($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
         // $validate = $this->utilis_processs_new->validate($pathFile, $consultas[0], $headers);
 
         //  $result 
@@ -205,10 +213,27 @@ class ProcessController extends Controller
 
         echo "<pre>";
         echo "ESTOU AQUI";
-        $id = 109;
+        $id = 122;
 
         // print_R()
 
         $validate = $this->utilis_processs_new->gerar_ar($id);
+    }
+
+    public function MongoDelete()
+    {
+        echo "<pre>";
+
+        echo "Estou acessando para deletar dados da controller\n";
+
+        $retornoMongo = $this->utilis_processs_new->MongoDell();
+    }
+
+
+    public function JsonArquivo()
+    {
+
+        echo "Estou chamando o json aqui\n";
+        $retornoMongo = $this->utilis_processs_new->json_processs();
     }
 }

@@ -30,8 +30,8 @@ class GerarOutput
         require_once __DIR__ . '/../models/RespostaPluginsTrasancao.php';
         $this->CapturaRespostasPluginsTransacao = new RespostaPluginsTrasancao();
 
-        require_once __DIR__ . '/Config.php';
-        $this->filtros = new Config();
+        require_once __DIR__ . '/Configs.php';
+        $this->filtros = new Configs();
     }
 
 

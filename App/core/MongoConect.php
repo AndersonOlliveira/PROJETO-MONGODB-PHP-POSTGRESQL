@@ -13,6 +13,8 @@ class MongoConect
     private $db_colletion;
     private $db_colletion_json;
     private $db_colletion_info;
+    private $db_colletion_jobs;
+    private $manager_local;
 
     private function __construct()
     {
@@ -29,9 +31,13 @@ class MongoConect
         $this->db_colletion = getenv('BD_MONGO_BD_COLLETION');
         $this->db_colletion_json = getenv('BD_MONGO_BD_COLLETION_JSON');
         $this->db_colletion_info = getenv('BD_MONGO_BD_COLLETION_INFO');
+        $this->db_colletion_jobs = getenv('BD_MONGO_BD_COLLETION_JOBS');
 
 
         $auth = $user ? "$user:$pass@" : "";
+
+        $this->manager_local = "$host:$port";
+
         // $uri = "mongodb://{$auth}{$host}:{$port}";
         $uri = "mongodb://{$auth}{$host}:{$port}/{$user}?authSource={$BD_MONGO_BD_AUTH_SOURCE}";
 
@@ -43,7 +49,6 @@ class MongoConect
 
 
         try {
-
             $this->manager = new Manager($uri, $options);
             echo "estou conectado ao mongoDB\n";
         } catch (Exception $e) {
@@ -95,5 +100,16 @@ class MongoConect
     public function getDBColetion_info()
     {
         return $this->db_colletion_info;
+    }
+
+    public function getManager_local()
+    {
+        return $this->manager_local;
+    }
+
+
+    public function getDBColetion_jobs()
+    {
+        return $this->db_colletion_jobs;
     }
 }

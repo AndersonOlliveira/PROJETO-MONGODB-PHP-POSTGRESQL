@@ -24,6 +24,7 @@ class new_arquivo extends Controller
     protected $limpaString;
     protected $Config;
     protected $enconde;
+    protected $mongo;
     public function __construct()
     {
 
@@ -58,14 +59,17 @@ class new_arquivo extends Controller
         require_once __DIR__ . '/../Utilis/MontaJsonConfigEHeadersDaConsulta.php';
         $this->MontaJsonConfigEHeadersDaConsulta = new MontaJsonConfigEHeadersDaConsulta();
 
-        require_once __DIR__ . '/../Utilis/Config.php';
-        $this->Config = new Config();
+        require_once __DIR__ . '/../Utilis/Configs.php';
+        $this->Config = new Configs();
 
         require_once __DIR__ . '/../Utilis/ValidaCampos.php';
         $this->enconde = new ValidaCampos();
 
         require_once __DIR__ . '/../Utilis/LimpaString.php';
         $this->limpaString = new LimpaString();
+
+        require_once __DIR__ . '/../models/instance.php';
+        $this->mongo = new instance();
 
         // require_once 'ValidaCpf.php';
         // $this->ValidaCpf = new ValidaCpf();
@@ -551,6 +555,17 @@ class new_arquivo extends Controller
 
                 $conteudoArquivoPrincipal .= self::garantirUtf8($job['header_arquivo']) . "\n";
 
+                #ajuste para limpar as strings do header do arquivo
+                $conteudoArquivoPrincipal = preg_replace('/[\d]+/', '', $conteudoArquivoPrincipal);
+
+
+                // echo "<pre>";
+
+                // print_r($conteudoArquivoPrincipal);
+
+
+                // die();
+
                 $fpPrincipal = fopen($nomeArquivoPrincipal, 'a');
                 //pra gerar um utf8
                 file_put_contents($nomeArquivoPrincipal, "\xEF\xBB\xBF");
@@ -583,14 +598,6 @@ class new_arquivo extends Controller
 
                     $respPlugins = $this->CapturaRespostasPluginsTransacao->execute($registro['transacao_id']);
 
-
-                    echo "<pre>";
-                    echo "minha resposta do plugins\n";
-
-                    // print_r($respPlugins);
-
-
-
                     if ($respPlugins) {
 
                         foreach ($respPlugins as $resp) {
@@ -599,13 +606,19 @@ class new_arquivo extends Controller
 
                             if (!file_exists($nomeArquivoPlugin)) {
                                 // $header_plugin = self::garantirUtf8($resp['header_arquivo']) . "\n";
-                                $header_plugin =  self::garantirUtf8($resp['header_arquivo']);
+                                $headerCols = array_map('trim', explode(';', trim($resp['header_arquivo'], ';')));
 
-                                echo "<pre>";
-                                echo "MEU HEADER DO PULGIN\n";
-                                print_r($header_plugin);
-                                file_put_contents($nomeArquivoPlugin, "CPF/CNPJ;" . $header_plugin . "\n", FILE_APPEND); // grava header
-                                // file_put_contents(self::garantirUtf8($nomeArquivoPlugin),  implode(';', $colunasEsperadas) . ";" . self::garantirUtf8($resp['header_arquivo'])  . "\n", FILE_APPEND); // grava header
+                                $cabecalhoFinal = array_merge($colunasEsperadas, $headerCols);
+                                $linhaCabecalho = implode(';', $cabecalhoFinal) . "\n";
+                                $linhaCabecalho = mb_convert_encoding($linhaCabecalho, 'UTF-8', 'Windows-1252');
+
+
+                                if (!file_exists($nomeArquivoPlugin)) {
+                                    file_put_contents($nomeArquivoPlugin, "\xEF\xBB\xBF"); // grava BOM
+                                }
+
+                                // Grava no arquivo
+                                file_put_contents(self::garantirUtf8($nomeArquivoPlugin), $linhaCabecalho, FILE_APPEND);
                                 $conteudoArquivoPlg[$resp['plugin']] = "";
                                 $plugins[] = $resp['plugin'];
                             }
@@ -622,14 +635,15 @@ class new_arquivo extends Controller
 
                     $tCount++;
                 }
-                // file_put_contents($nomeArquivoPlugin, "\xEF\xBB\xBF");
+
+
                 file_put_contents($nomeArquivoPrincipal, $conteudoArquivoPrincipal, FILE_APPEND);
 
                 if (count($plugins) > 0) {
                     foreach ($plugins as $plg) {
 
                         $nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $plg . "__" . $job['nome_arquivo'];
-                        file_put_contents($nomeArquivoPlugin, $conteudoArquivoPlg[$plg], FILE_APPEND);
+                        file_put_contents(self::garantirUtf8($nomeArquivoPlugin), $conteudoArquivoPlg[$plg], FILE_APPEND);
                     }
                 }
 
@@ -664,5 +678,48 @@ class new_arquivo extends Controller
         print_r($result_texot);
 
         return $result_texot;
+    }
+
+    public function MongoDell()
+    {
+
+        echo "<pre>";
+        echo "Estou acessando para deletar dados da colelection";
+
+        $this->mongo->data_alla();
+    }
+
+    public function json_processs()
+    {
+
+        $pasta_json = $this->Config->env('path_arquivos');
+
+        $retorno_path_arquivo = $this->Config->env('path_arquivos_info');
+        $arquivo = $retorno_path_arquivo  . DIRECTORY_SEPARATOR .  'meu_arquivo.json';
+
+        if (!file_exists($arquivo)) {
+            throw new Exception("Arquivo JSON não encontrado: {$arquivo}");
+        }
+
+
+        $documento = file_get_contents($arquivo);
+
+        $dados_json = json_decode($documento, true);
+
+        // $arquivo_json = $pasta_json . DIRECTORY_SEPARATOR . 'meu_arquivo.json';
+
+
+        // $string_json = file_get_contents($arquivo_json);
+        // $dados_objeto = json_decode($string_json, true);
+
+        // print_r($dados_objeto);
+
+        // $string_json = file_get_contents($retorno_json);
+
+        // // 2. Decodificar a string JSON em um objeto PHP
+        // $dados_objeto = json_decode($string_json);
+
+        // // echo "<pre>";
+        // print_r($dados_objeto);
     }
 }

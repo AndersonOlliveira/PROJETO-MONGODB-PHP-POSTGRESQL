@@ -52,13 +52,11 @@ class Controller
         return new $className();
     }
 
-    public function Utilis_arquivo($className)
+    public function Utilis_arquivo($nameArchive)
     {
-        // echo "<pre>";
 
-        // print_R($className);
         //$file = __DIR__ . "../../Utilis/{$className}.php";
-        $file = __DIR__ . "/../Utilis/{$className}.csv";
+        $file = __DIR__ . "/../Arquivos/{$nameArchive}.csv";
 
         if (!file_exists($file)) {
             throw new \Exception("Arquivo {$file} não encontrado! \n");
@@ -66,13 +64,10 @@ class Controller
 
         return $file;
     }
-    public function Utilis_arquivo_json($className)
+    public function Utilis_arquivo_json($nameArchiveJson)
     {
-        // echo "<pre>";
 
-        // print_R($className);
-        //$file = __DIR__ . "../../Utilis/{$className}.php";
-        $file = __DIR__ . "/../Utilis/{$className}.json";
+        $file = __DIR__ . "/../Arquivos/{$nameArchiveJson}.json";
 
         if (!file_exists($file)) {
             throw new \Exception("Arquivo {$file} não encontrado! \n");
@@ -100,18 +95,9 @@ class Controller
 
     protected function MongoConect($modelName)
     {
-
-        echo "<pre>";
-        echo $modelName;
-        // 1. Constrói o caminho e o nome completo da classe
-        // Ex: 'instance' se torna '\App\models\instance'
         $modelClass = 'App\models\\' . $modelName . '.php';
 
-        echo "<pre>";
-        echo $modelClass;
 
-
-        // 2. Verifica se a classe existe e a retorna (Instancia o Singleton)
         if (class_exists($modelClass)) {
             // Se o seu model 'instance' tem um construtor, basta instanciar:
             return new $modelClass();

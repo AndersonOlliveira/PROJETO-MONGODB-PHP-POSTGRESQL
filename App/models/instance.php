@@ -13,6 +13,9 @@ class instance extends MongoConect
     private $collection;
     private $collection_json;
     private $collection_info;
+    private $db_colletion_jobs;
+    private $manager_local;
+
 
     public function __construct()
     {
@@ -20,8 +23,10 @@ class instance extends MongoConect
         $this->manager = $conn->getManager();
         $this->dbname = $conn->getDBName();
         $this->collection = $conn->getDBColetion();
+        $this->manager_local = $conn->getManager_local();
         $this->collection_json = $conn->getDBColetion_json();
         $this->collection_info = $conn->getDBColetion_info();
+        $this->db_colletion_jobs = $conn->getDBColetion_jobs();
     }
 
     public function all()
@@ -173,14 +178,32 @@ class instance extends MongoConect
 
 
 
-    public function data_all()
+    public function data_alla()
     {
 
-        $option = ['limit' => 8];
 
-        $query = new MongoDB\Driver\Query([], $option);
-        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
-        return $cursor->toArray();
+        $bulk = new MongoDB\Driver\BulkWrite();
+
+
+        try {
+
+            $manager = new MongoDB\Driver\Manager("mongodb://{$this->manager_local}");
+
+            $bulk->delete([]);
+
+            // $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
+            // $result = $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection_json}", $bulk, $writeConcern);
+            $result = $manager->executeBulkWrite("{$this->dbname}.{$this->collection_json}", $bulk);
+
+
+            if ($result->getDeletedCount() > 0) {
+                echo "Documento(s) deletado(s) com sucesso!\n";
+            } else {
+                echo "Nenhum documento encontrado para deletar.\n";
+            }
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            echo "Erro ao executar operação: " . $e->getMessage() . "\n";
+        }
     }
 
 

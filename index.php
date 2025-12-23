@@ -18,8 +18,8 @@ function logInfo($mensagem)
 }
 
 $tempo_esperara = 40;
-$id = 117;
-$quantidade = 1000;
+$id = 121;
+$quantidade = 1;
 logInfo("Iniciando a aplicação...");
 $app = new App();
 
