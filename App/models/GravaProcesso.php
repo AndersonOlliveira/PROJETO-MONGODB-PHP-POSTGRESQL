@@ -29,6 +29,7 @@ class GravaProcesso extends Model
 		$dados[] = $header;
 		$dados[] = $valortotal;
 		$dados[] = $fingers;
+		// $dados[] = $pause;
 
 		try {
 

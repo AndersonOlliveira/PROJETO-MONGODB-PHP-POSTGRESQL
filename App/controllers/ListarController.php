@@ -73,10 +73,6 @@ class ListarController extends Controller
       echo "Nenhum dado encontrado\n";
     }
 
-    echo "<pre>";
-    echo "meu dados modulos\n";
-
-    print_r($return_finish);
 
     $consult_modulos = [];
 
@@ -94,8 +90,6 @@ class ListarController extends Controller
           null
         );
 
-
-
         if (!empty($dados)) {
 
           $consult_modulos[] = [
@@ -108,16 +102,9 @@ class ListarController extends Controller
       }
     }
 
-
-
     if (isset($consult_modulos) && !empty($consult_modulos)) {
       $this->utils->updados_modulos($consult_modulos);
     }
-
-
-
-
-
 
     $result_resposta = array_values(array_filter($returns_alert, function ($row) {
       return !empty($row['info']);
@@ -135,10 +122,9 @@ class ListarController extends Controller
 
           $return->finish_process_die($values['processo_id']);
         }
-      }    #tenho 
-
+      }
       $re = $this->utils->get_dados_id($list_dados);
-      echo "estou saindao aqui";
+      echo "estou saindo aqui";
     }
 
     $re = $this->utils->get_dados_id($returns);

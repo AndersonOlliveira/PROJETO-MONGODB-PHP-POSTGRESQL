@@ -25,6 +25,7 @@ class new_arquivo extends Controller
     protected $Config;
     protected $enconde;
     protected $mongo;
+    protected $arquivo_teste;
     public function __construct()
     {
 
@@ -70,6 +71,9 @@ class new_arquivo extends Controller
 
         require_once __DIR__ . '/../models/instance.php';
         $this->mongo = new instance();
+
+        require_once __DIR__ . '/../Utilis/Arquivo_testes.php';
+        $this->arquivo_teste = new Arquivo_testes();
 
         // require_once 'ValidaCpf.php';
         // $this->ValidaCpf = new ValidaCpf();
@@ -136,49 +140,47 @@ class new_arquivo extends Controller
 
 
 
-    public function validate($pathFile, $consulta, $headers)
+    public function validate($pathFile, $consulta, $headers_consultas)
     {
 
-        echo "estoui chamdando\n";
+        echo "Estou na tela para chamar o validateS !!\n";
+        //  $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_header_new($consultas, $headers);
 
-        $verificarCampos = $this->CapturaCamposConsultas->Consultation_header_new($consulta);
+        $headersConsulta = $this->CapturaCamposConsultas->Consultation_header_new($consulta, $headers_consultas);
+        $coluna_obrigatorio = $headersConsulta['campos'];
+        // $coluna_obrigatorio = $colunasEsperadas['campos'];
+        $headers = trim(implode(';', $headersConsulta['cpovars']));
+
+        echo "<pre>";
+        echo "MINHA COLUNA SEPARADAS\n";
+
+        print_R($headers);
 
         $limiteRegArquivo = 30000;
 
         $qtRegistros = 0;
         $documentoInvalido = [];
+        $documentoInvalidos = [];
 
         $registrosValidos = [];
         $registros = [];
+        $newregistros = [];
         $linhasComErro = [];
         $contadorLinha = 0;
 
         $fh = fopen($pathFile, "r");
         $erros = [];
 
-
-
-        $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_header_new(262936);
-        // $colunasEsperadas = $verificarCampos->Consultation_header_new($consulta[0]);
-        $coluna_obrigatorio = $colunasEsperadas['campos'];
-
-        echo "<pre>";
-        print_r($coluna_obrigatorio);
-
-
+        $lim = 0;
         if ($fh) {
             while (($linha = fgets($fh)) !== false) {
 
-
-
-
-
+                $linhaValida = true;
                 $linha = preg_replace('/^\xEF\xBB\xBF/', '', $linha);
-                $linhaLimpa = trim($linha);
-                if ($linhaLimpa === '') {
+                // $linhaLimpa = trim($linha);
+                if (trim($linha) === '') {
                     continue;
                 }
-                #ignora a linhas vazias e contabiliza e ler as preenchidas
 
 
                 $colunas = str_getcsv($linha, ';');
@@ -191,15 +193,10 @@ class new_arquivo extends Controller
                     }
                 }
 
-                $keys = str_getcsv($headers, ';');
                 while (count($colunas) < count($keys)) {
                     $colunas[] = "";
                 }
 
-
-
-
-                $linhaValida = true;
                 $associado = array_combine($keys, $colunas);
 
                 if (empty($associado)) {
@@ -207,76 +204,75 @@ class new_arquivo extends Controller
                 }
 
                 echo "<pre>";
-                echo "meus assosiados\n";
-                print_r($associado);
+                echo "meus dados do associado";
+
+                print_R($associado);
 
                 $qtRegistros++;
 
-
-
                 $contadorLinha++;
                 foreach ($coluna_obrigatorio as $chave_obrigatoria) {
-
-
 
                     $chave_obrigatoria = trim($chave_obrigatoria);
                     // 2. Verificar se a chave existe (Usando isset() para ser mais seguro)
                     if (isset($associado[$chave_obrigatoria]) && empty($associado[$chave_obrigatoria])) {
                         //A chave existe, mas o valor é ""
+                        // echo "Campo obrigatório faltante: $chave_obrigatoria na linha $contadorLinha\n";
+                        // $coluna  = preg_replace("/\r|\n/", "", $associado['tcpfcnpj']);
+                        // $numero = preg_replace("/\D/", "", $coluna);
                         if (!isset($documentoInvalido[$chave_obrigatoria])) {
-
                             $documentoInvalido[$contadorLinha] = [
                                 'linha'   =>  implode(';', $colunas),
-                                'erro_tipo'  => 'Campo_Obrigatorio_faltante',
+                                'numero_linha' => $contadorLinha,
+                                // 'documento' => $numero,
+                                'campo_faltantes' => implode(',', $coluna_obrigatorio),
+                                'erro_tipo'  => 'Campos_Obrigatorio_faltante',
                                 'quantidade' => 1
                             ];
 
                             $linhaValida = false;
                         } else {
-
-
                             $documentoInvalido[$contadorLinha]['quantidade']++;
-
                             $documentoInvalido[$contadorLinha][] = $contadorLinha;
                         }
                     }
                 }
 
-                // if (isset($associado['tcpfcnpj']) && !empty($associado['tcpfcnpj'])) {
+                if (isset($documentoInvalido[$contadorLinha])) {
+                    continue;
+                }
 
-                //     $coluna  = preg_replace("/\r|\n/", "", $associado['tcpfcnpj']);
-                //     $numero = preg_replace("/\D/", "", $coluna);
+                if (isset($associado['tcpfcnpj']) && !empty($associado['tcpfcnpj'])) {
 
-                //     // 3. CPF
-                //     if (strlen($numero) === 11) {
-                //         if (!$this->validarDocumento($numero, 'cpf', $registrosValidos, $documentoInvalido)) {
-                //             $linhaValida = false;
-                //         }
-                //     } elseif (strlen($numero) === 14) {
-                //         if (!$this->validarDocumento($numero, 'cnpj', $registrosValidos, $documentoInvalido)) {
-                //             $linhaValida = false;
-                //         }
-                //     }
-                //     // 5. Tamanho inválido
-                //     else {
-                //         if (!isset($documentoInvalido[$numero])) {
-                //             $documentoInvalido[$numero] = [
-                //                 'documento'  => $numero,
-                //                 'valid'      => 0,
-                //                 'reason'     => 'Número fora do padrão de CPF OU CNPJ',
-                //                 'quantidade' => 1
-                //             ];
-                //         } else {
-                //             $documentoInvalido[$numero]['quantidade']++;
-                //         }
-                //         $linhaValida = false;
-                //         // break;
-                //     }
-                // }
+                    $coluna  = preg_replace("/\r|\n/", "", $associado['tcpfcnpj']);
+                    $numero = preg_replace("/\D/", "", $coluna);
 
-                $coluna  = preg_replace("/\r|\n/", "", $colunas);
-                $numero = preg_replace("/\D/", "", $coluna);
-
+                    // 3. CPF
+                    if (strlen($numero) === 11) {
+                        if (!self::validarDocumento($numero, 'cpf', $registrosValidos, $documentoInvalido)) {
+                            $linhaValida = false;
+                        }
+                    } elseif (strlen($numero) === 14) {
+                        if (!self::validarDocumento($numero, 'cnpj', $registrosValidos, $documentoInvalido)) {
+                            $linhaValida = false;
+                        }
+                    }
+                    // 5. Tamanho inválido
+                    else {
+                        if (!isset($documentoInvalido[$numero])) {
+                            $documentoInvalido[$numero] = [
+                                'documento'  => $numero,
+                                'valid'      => 0,
+                                'reason'     => 'Número fora do padrão de CPF OU CNPJ',
+                                'quantidade' => 1
+                            ];
+                        } else {
+                            $documentoInvalido[$numero]['quantidade']++;
+                        }
+                        $linhaValida = false;
+                        // break;
+                    }
+                }
 
                 if (!$linhaValida) {
                     continue;
@@ -286,25 +282,47 @@ class new_arquivo extends Controller
                     $registrosValidos[] = trim($valor);
                 }
 
-                if ($linhaValida) {
-                    $registros[] = implode(';', $coluna);
+
+                foreach ($consulta as $idConsulta) {
+                    $idConsulta = (int) trim($idConsulta);
+
+                    if (!isset($headersConsulta['headersNew'][$idConsulta][$idConsulta])) {
+                        continue;
+                    }
+
+                    $headersConsultaa = $headersConsulta['headersNew'][$idConsulta][$idConsulta]['cpovars'];
+
+                    $colunas = $this->arquivo_teste->ajustarColunas($colunas, $headersConsultaa);
+
+                    $associado = array_combine($headersConsultaa, $colunas);
+
+                    if (!$associado) {
+                        continue;
+                    }
+
+                    if (!$this->arquivo_teste->validarLinhaNew($associado, $idConsulta, $documentoInvalidos, $contadorLinha, $coluna_obrigatorio, $registrosValidos, $headersConsulta)) {
+                        continue;
+                    }
+
+                    // Usar o idConsulta como índice e associar os dados
+                    if (!isset($newregistros[$idConsulta])) {
+                        $newregistros[$idConsulta] = [];
+                    }
+                    $registro = implode(';', array_values($associado));
+
+                    if (!in_array($registro, $newregistros[$idConsulta], true)) {
+                        $newregistros[$idConsulta][] = $registro;
+                    }
+                    // $newregistros[$idConsulta][] = implode(';', array_values($associado));
                 }
             }
             fclose($fh);
         }
 
-        echo "<pre>";
-        echo "meus documento invalidos";
+        // echo "<pre>";
+        // echo "meus novos registros";
 
-        print_R($documentoInvalido);
-
-
-
-        print_R("MINHA QUANTIDADE DE REGISTROS "  .  $qtRegistros);
-
-
-
-
+        // print_R($newregistros);
 
         $totalErros = 0;
         foreach ($documentoInvalido as $doc) {
@@ -312,8 +330,6 @@ class new_arquivo extends Controller
         }
 
 
-
-        print_r($registros);
 
         if ($qtRegistros == 0) {
             $erros[] =  [
@@ -340,6 +356,7 @@ class new_arquivo extends Controller
                 'erros' => $erros,
                 'quantidade' => $qtRegistros,
                 'totalErros' => $totalErros,
+                'info_consultas' => $newregistros,
                 'registros_validos' => $registrosValidos
             ];
         }
@@ -348,6 +365,7 @@ class new_arquivo extends Controller
             'erros' => empty($erros) ? [] : $erros,
             'quantidade' => $qtRegistros,
             'totalErros' => 0,
+            'info_consultas' => 0,
             'registros_validos' => $registrosValidos
         ];
     }
@@ -523,18 +541,6 @@ class new_arquivo extends Controller
 
         $transacoes = $this->CapturaDadosTransacoesJob->execute($idJob);
 
-
-        // echo "<pre>";
-        // print_r($transacoes);
-
-
-
-        echo "<pre>";
-
-        print_r($colunasEsperadas);
-        echo " </pre>";
-
-        // die();
         if ($transacoes) {
 
             $dir = $this->Config->env('path_arquivos_interno');
@@ -551,19 +557,12 @@ class new_arquivo extends Controller
 
 
                 // $conteudoArquivoPrincipal .= "CPF/CNPJ;" . utf8_encode($job['header_arquivo']) . "\n";
-                $conteudoArquivoPrincipal .= implode(';', $colunasEsperadas) . ";";
+                $conteudoArquivoPrincipal .= implode(';', $colunasEsperadas) . "\n";
 
                 $conteudoArquivoPrincipal .= self::garantirUtf8($job['header_arquivo']) . "\n";
 
                 #ajuste para limpar as strings do header do arquivo
                 $conteudoArquivoPrincipal = preg_replace('/[\d]+/', '', $conteudoArquivoPrincipal);
-
-
-                // echo "<pre>";
-
-                // print_r($conteudoArquivoPrincipal);
-
-
                 // die();
 
                 $fpPrincipal = fopen($nomeArquivoPrincipal, 'a');
@@ -576,14 +575,27 @@ class new_arquivo extends Controller
 
                 foreach ($transacoes as $registro) {
 
+
                     if (trim($registro['resposta']) != "" && $registro['resposta'] != null) {
+                        echo "<pre>";
+                        echo "MEU campo_aquisicao\n";
+                        print_R($registro['campo_aquisicao']);
+                        echo "MEU RESULTADO\n";
+
+                        print_R($registro['resposta']);
+                        echo "MEU resposta\n";
+                        print_R($registro['resposta']);
+
                         // $conteudoArquivoPrincipal .= utf8_encode($registro['resposta']) . "\n";
                         $conteudoArquivoPrincipal .= self::garantirUtf8($registro['resposta']) . "\n";
                     } else {
-                        $conteudoArquivoPrincipal .= self::garantirUtf8($registro['campo_aquisicao'])  . ";\n";
+                        $conteudoArquivoPrincipal .= self::garantirUtf8($registro['campo_aquisicao'])  . "\n";
                         // $conteudoArquivoPrincipal .= utf8_encode($registro['campo_aquisicao']) . ";\n";
 
                     }
+
+
+
 
                     if (($tCount % 2000) == 0 && $tCount > 0) {
 
@@ -610,8 +622,10 @@ class new_arquivo extends Controller
 
                                 $cabecalhoFinal = array_merge($colunasEsperadas, $headerCols);
                                 $linhaCabecalho = implode(';', $cabecalhoFinal) . "\n";
-                                $linhaCabecalho = mb_convert_encoding($linhaCabecalho, 'UTF-8', 'Windows-1252');
 
+
+
+                                $linhaCabecalho = mb_convert_encoding($linhaCabecalho, 'UTF-8', 'Windows-1252');
 
                                 if (!file_exists($nomeArquivoPlugin)) {
                                     file_put_contents($nomeArquivoPlugin, "\xEF\xBB\xBF"); // grava BOM
@@ -660,10 +674,10 @@ class new_arquivo extends Controller
     {
 
 
-        echo "<pre>";
-        echo "meu texto recebido  \n";
+        // echo "<pre>";
+        // echo "meu texto recebido  \n";
 
-        print_r($texto);
+        // print_r($texto);
 
 
 
@@ -672,10 +686,10 @@ class new_arquivo extends Controller
             : mb_convert_encoding($texto, 'UTF-8', 'ISO-8859-1');
 
 
-        echo "<pre>";
-        echo "meu texto convertido \n";
+        // echo "<pre>";
+        // echo "meu texto convertido \n";
 
-        print_r($result_texot);
+        // print_r($result_texot);
 
         return $result_texot;
     }

@@ -25,7 +25,10 @@ class ProcessController extends Controller
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('CONSULTAS');
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('teste-base');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTAS-testes');
-        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('documentos_para_teste');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CPF-VARIOS-CAMPOS- Copia');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('cabecalho-AJUSTADOSa');
+        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_lista_crm copy');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('POUCAS-LINHAS-VARIAS-CONSULTAS');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('ta');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_lista_crm');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('crm');
@@ -119,39 +122,49 @@ class ProcessController extends Controller
 
 
         // $consultas = 283091; #CONSULTA PARA QUE CONTEM BASE
-        // $consultas = 262936; #CONSULTA PARA CRM 
+        $consultas = [262936]; #CONSULTA PARA CRM 
         // $consultas = 283111; #CONSULTA PARA CPF 
         // $consultas = 262936;
-        $consultas = 283111;
+        // $consultas = [265919, 283092];
         $contrato = 417039;
         $filename = 'CONSULTAS.csv';
         $valortotal = 0;
         $tipo = 'cpnp';
-        $headers = 'tcpfcnpj';
-        // $headers = 'tlidersinistroufmed;tpsqnom;tlidersinistrocrmmed';
+        $dados_consulta = [];
+        // $headers = 'tcpfcnpj,tdatnsc,tcelnum,tnumtel,tdatnsc';
+        // $headers = 'tcpfcnpj,tcep,tcelnum,tnumtel,tdatnsc';
+        // $headers = 'tcpfcnpj,tdatnsc,tcep,tcelnum,tnumtel';
+        $headers = 'tlidersinistroufmed,tpsqnom,tlidersinistrocrmmed';
         // $headers = 'tdatabase;tcpfcnpj;tdatnsc';
         $finger = '{"ip":"177.25.93.211","city":"Santos","region":"São Paulo","country":"BR","loc":"-23.9608,-46.3336","timezone":"America/Sao_Paulo"}';
 
-        $consultas = explode(",", $consultas);
+
+
+        if (is_array($consultas)) {
+            $consultasStr = implode(',', $consultas);
+        } else {
+            $consultasStr = $consultas;
+        }
 
 
 
         $validateArquivo = $arquivoValida->ValidaFormat($pathFile);
 
-        echo "<pre>";
-        print_R($validateArquivo);
+        // echo "<pre>";
+        // print_R($consultasStr);
 
 
         $dateNow = date("Y-m-d H:i:s");
         // echo "[$dateNow] --- NOVO PROCESSO: $pathFile, $consultas, $contrato, $filename \n";
 
         // require_once 'Arquivo_testes.php';
-        // $result = $this->utilis_processs_teste->process($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
-        // $validate = $this->utilis_processs_new->validate($pathFile, $consultas[0], $headers);
+        $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
+        // $validate = $this->utilis_processs_new->validate($pathFile, $consultas, $headers);
 
-        //  $result 
+
 
         // echo "<pre>";
+        // echo "meus dados dos validate\n";
 
         // print_R($validate);
 
@@ -162,29 +175,45 @@ class ProcessController extends Controller
 
         //     $validate['quantidade'] = ($validate['quantidade'] - $validate['totalErros']);
         // }
-        // // FATURAMENTO
+        // // // FATURAMENTO
         // $valorTotal = 0;
+        // // $teste = [];
+        // $valoresPorConsulta = [];
+
 
         // foreach ($consultas as $consulta) {
 
+        //     echo "Consulta Atual : {$consulta}\n";
+        //     if (isset($validate['info_consultas'][$consulta]) && is_array($validate['info_consultas'][$consulta])) {
+        //         $valoresPorConsulta[$consulta] = count($validate['info_consultas'][$consulta]);
+        //     } else {
+        //         $valoresPorConsulta[$consulta] = 0;
+        //     }
+
         //     $redeLoja = $this->CapturaRedeLojaDoContrato->execute($contrato);
-        //     $valorLoteConsulta = $this->BuscaValorLotePorConsulta->calcula($consulta, $redeLoja['rede'], $validate['quantidade']);
-        //     $valorTotal = ($valorTotal + $valorLoteConsulta);
+        //     list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($consulta, $redeLoja['rede'],  $valoresPorConsulta[$consulta]);
+        //     echo "Quantide nova Atual : {$valorLoteConsulta}\n";
+        //     $valorTotal += $valorLoteConsulta;
         // }
-        // $dateNow = date("Y-m-d H:i:s");
+
+
+
 
         // $json = json_encode(array(
         //     'sucesso' => true,
         //     'valor' => "R$ " . number_format($valorTotal, 2, ',', '.'),
         //     'valorTotal' => $valorTotal,
+        //     'dados_consultas' => $valoresPorConsulta,
         //     'quantidade' => $validate['quantidade'],
         //     'quantidade_total' => $qta_original,
         //     'erros' => $validate['erros'],
+        //     // 'modulo' => $modulo,
         //     'mensagem' => '',
         //     JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         // ));
 
         // echo $json;
+
 
 
         // echo "[$dateNow] > --- RESULTADO: [$result] - $pathFile, $consultas, $contrato, $filename \n";
@@ -213,7 +242,7 @@ class ProcessController extends Controller
 
         echo "<pre>";
         echo "ESTOU AQUI";
-        $id = 122;
+        $id = 32;
 
         // print_R()
 

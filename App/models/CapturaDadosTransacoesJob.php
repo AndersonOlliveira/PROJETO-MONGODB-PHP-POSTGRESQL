@@ -16,6 +16,7 @@ class CapturaDadosTransacoesJob extends Model
 		WHERE
 			p.processo_id = ? 
 			AND t.status = 3  -- COLOCADO ESTA CONDICAO PARA TRATAR OS DADOS
+           --	AND t.resposta_json is null 
            ;";
 
         $dados = array();
