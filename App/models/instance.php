@@ -15,6 +15,9 @@ class instance extends MongoConect
     private $collection_info;
     private $db_colletion_jobs;
     private $manager_local;
+    private $db_colletion_json_dados;
+    private $db_colletion_json_dados_reprocess;
+    // private $manager_local;
 
 
     public function __construct()
@@ -27,6 +30,8 @@ class instance extends MongoConect
         $this->collection_json = $conn->getDBColetion_json();
         $this->collection_info = $conn->getDBColetion_info();
         $this->db_colletion_jobs = $conn->getDBColetion_jobs();
+        $this->db_colletion_json_dados = $conn->getDBColetion_jobs_dados_json();
+        $this->db_colletion_json_dados_reprocess = $conn->getDBColetion_jobs_dados_json_reprocess();
     }
 
     public function all()
@@ -45,8 +50,12 @@ class instance extends MongoConect
             $filter = ['id_processo' => new MongoDB\BSON\ObjectId($id)];
         } else {
 
-            $filter = ['id_processo' => $id, 'transacao_id' => $id_transacao];
+            $filter = [
+                'id_processo' => (int) $id,
+                'transacao_id' => (int) $id_transacao
+            ];
         }
+
 
 
         $option = ['projection' => [
@@ -65,11 +74,89 @@ class instance extends MongoConect
         ]];
 
         $query = new MongoDB\Driver\Query($filter, $option);
+        echo "<pre>";
+        echo "que dados vem results?\n";
+
+
+        print_r($query);
+        print_r($this->dbname);
+        print_r($this->collection_json);
+
         // $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
         $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
-        $results = iterator_to_array($cursor);;
+
+        $results = iterator_to_array($cursor);
+
+
+        echo "<pre>";
+        echo "que dados vem results?\n";
+
+
+        print_r($results);
+
+        // die();
+
         // $results = $cursor->toArray();        
         return $results ?? null;
+    }
+
+    public function findByMultiple($dados)
+    {
+
+        echo "estou chamando o findByMultiple\n";
+
+        print_R($dados);
+        //verifica se e um hash id do mongo
+        $filtros = [];
+
+        foreach ($dados as $values) {
+
+            if (preg_match('/^[a-f0-9]{24}$/i', $values['processo_id'])) {
+
+                $filtros[] = [
+                    'id_processo' => new MongoDB\BSON\ObjectId($values['processo_id'])
+                ];
+            } else {
+
+                $filtros[] = [
+                    'id_processo'  => $values['processo_id'],
+                    'transacao_id' => $values['transacao_id']
+                ];
+            }
+        }
+
+        if (empty($filtros)) {
+            return [];
+        }
+
+        $options = [
+            'projection' => [
+                'configuracao_json' => 1,
+                'data_cadastro' => 1,
+                'transacao_id' => 1,
+                'id_processo' => 1,
+                'campo_aquisicao' => 1,
+                'status' => 1,
+                'resposta_json' => 1,
+                'resposta' => 1,
+                'new_status' => 1,
+                'sucesso' => 1,
+                'id' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $options
+        );
+
+        $cursor = $this->manager->executeQuery(
+            "{$this->dbname}.{$this->collection_json}",
+            $query
+        );
+
+        return $cursor->toArray();
     }
 
     public function listarDadosDosProcessos()
@@ -93,14 +180,16 @@ class instance extends MongoConect
     {
 
         $bulk = new MongoDB\Driver\BulkWrite;
+        $operacoes = 0;
+
         foreach ($data as $dados) {
 
-            if (isset($dados['transacao_id']))
+            if (!isset($dados['transacao_id'])) {
                 continue;
+            }
 
             $filter = ['transacao_id' => $dados['transacao_id']];
-
-            $inser = ['$set' => $dados];
+            $inser  = ['$set' => $dados];
 
             $bulk->update(
                 $filter,
@@ -108,12 +197,18 @@ class instance extends MongoConect
                 ['upsert' => true, 'multi' => false]
             );
 
-            // $bulk->insert($dados);
+            $operacoes++;
         }
-        if (count($data) > 0) {
 
-            return $this->manager->executeBulkWrite("{$this->dbname}.{$this->collection_json}", $bulk);
+        // Só executa se tiver operações
+        if ($operacoes > 0) {
+            return $this->manager->executeBulkWrite(
+                "{$this->dbname}.{$this->collection_json}",
+                $bulk
+            );
         }
+
+        return false;
     }
 
     public function update($id, $data)
@@ -343,5 +438,68 @@ class instance extends MongoConect
         // );
 
         // $bulk->insert($data);
+    }
+
+    public function inset_json_dados($dadosJson, $nome_arquivo)
+    {
+
+
+        $db_conect = $nome_arquivo == 'infoReprocess.json' ? $this->db_colletion_json_dados_reprocess : $this->db_colletion_json_dados;
+        // echo "estou chamando dentro da instancia\n";
+
+        // print_r("Coleção: {$this->dbname}.{$this->db_colletion_json_dados}\n");
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+        $operacoes = 0;
+
+        $data  = json_decode($dadosJson, true);
+
+        foreach ($data as $dados) {
+
+            if (!isset($dados['id_process'])) {
+                continue;
+            }
+
+            $filter = ['id_process' => $dados['id_process']];
+            $inser  = ['$set' => $dados];
+
+            $bulk->update(
+                $filter,
+                $inser,
+                ['upsert' => true, 'multi' => false]
+            );
+
+            $operacoes++;
+        }
+
+        try {
+
+            if ($operacoes > 0) {
+
+                $result = $this->manager->executeBulkWrite(
+                    "{$this->dbname}.{$db_conect}",
+                    $bulk
+                );
+
+                return [
+                    'success' => true,
+                    'inserted' => $result->getInsertedCount(),
+                    'modified' => $result->getModifiedCount(),
+                    'upserted' => $result->getUpsertedCount(),
+                    'matched'  => $result->getMatchedCount(),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Nenhuma operação executada'
+            ];
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }

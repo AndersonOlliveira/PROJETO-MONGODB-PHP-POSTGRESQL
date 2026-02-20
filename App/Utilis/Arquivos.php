@@ -13,6 +13,11 @@ class Arquivos
 	protected $teste;
 	protected $filtros;
 	protected $instance;
+
+	protected $CapturaRedeLojaDoContrato;
+	protected $CapturaCamposConsultas;
+	protected $BuscaValorLotePorConsulta;
+
 	public function __construct()
 	{
 
@@ -35,11 +40,26 @@ class Arquivos
 
 		require_once __DIR__ . '/../models/instance.php';
 		$this->instance = new instance();
+
+		require_once __DIR__ . '/../models/CapturaRedeLojaDoContrato.php';
+		$this->CapturaRedeLojaDoContrato = new CapturaRedeLojaDoContrato();
+		require_once __DIR__ . '/../models/CapturaCamposConsultas.php';
+		$this->CapturaCamposConsultas = new CapturaCamposConsultas();
+		require_once __DIR__ . '/../models/BuscaValorLotePorConsulta.php';
+		$this->BuscaValorLotePorConsulta = new BuscaValorLotePorConsulta();
 	}
 
 
 	public function updados_modulos($dados)
 	{
+
+
+		echo '<pre>';
+
+
+		echo  "meus dados enviados\n";
+		print_r($dados);
+		die();
 
 
 		$valor = 0;		## somo os valores e gero um valos
@@ -86,13 +106,57 @@ class Arquivos
 		}));
 
 
-
 		//vou procurar os dados 
-		foreach ($dados as $key => $values) {
+		// foreach ($dados as $key => $values) {
 
-			$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
+		// 	$dados[$key]['resultado'] = $this->utils->findById($values['processo_id'], $values['transacao_id']);
+		// }
+
+
+		$start = hrtime(true);
+
+		$resultadosMongo = $this->utils->findByMultiple($dados);
+
+		echo "<pre>";
+		echo "meu resultado\n";
+		print_r($resultadosMongo);
+
+
+		echo "<pre>";
+		echo "ESTOU VINDO NA MINHA GET DADOS ID\n";
+
+		print_r($dados);
+
+		$indexado = [];
+
+		foreach ($resultadosMongo as $doc) {
+
+			if (isset($doc->transacao_id)) {
+				$chave = $doc->id_processo . '_' . $doc->transacao_id;
+			} else {
+				$chave = (string) $doc->id_processo;
+			}
+
+			$indexado[$chave] = $doc;
 		}
 
+		foreach ($dados as $key => $values) {
+
+			if (preg_match('/^[a-f0-9]{24}$/i', $values['processo_id'])) {
+				$chave = $values['processo_id'];
+			} else {
+				$chave = $values['processo_id'] . '_' . $values['transacao_id'];
+			}
+
+			$dados[$key]['resultado'] = $indexado[$chave] ?? null;
+		}
+
+		$end = hrtime(true);
+		$executionTime = ($end - $start) / 1e9; // Converte para segundos
+		echo "Tempo: " . $executionTime . " segundos";
+
+
+		// die();
 		$result_empty = array_values(array_filter($dados, function ($row) {
 			return !empty($row['resultado']);
 		}));
@@ -102,7 +166,7 @@ class Arquivos
 			self::up_resultado($result_empty, $result_resposta);
 		} else {
 
-			echo 'Campor Json Resposta esta vazio';
+			echo 'Campos Json Resposta esta vazio';
 		}
 
 		$retorno = self::tratamento_dados($dados);
@@ -128,6 +192,162 @@ class Arquivos
 	}
 
 	public function tratamento_dados($row_data)
+	{
+		echo "<pre>";
+
+		print_r($row_data);
+
+		echo "tenho o resultado do tratamento dos dados\n";
+
+		// die();
+
+
+
+		$dados_filtrados = array_values(array_filter($row_data, function ($row) {
+
+			return !empty($row['resultado']);
+		}));
+
+
+
+		echo "<pre>";
+		echo "dados_processos\n";
+		echo "dados_processos com a mensagem\n";
+		print_r($dados_filtrados);
+
+		$cacheCns = [];
+		$transacoes = [];
+		$GrespostaPlugin = [];
+		$GtransacaoSuceso = [];
+		$sucessTruegravaTransacao = [];
+		$inicio = microtime(true);
+
+		foreach ($dados_filtrados as $r) {
+
+			if (!empty($r['resultado'])) {
+
+				$values = $r['resultado']; //  pega o objeto inteiro
+
+				$camposAquisicao = $values->campo_aquisicao ?? null;
+				$jsonResposta    = $values->resposta_json ?? null;
+
+				$transacoes[] = [
+					'processo_id' => $r['processo_id'],
+					'camposAquisicao' => $camposAquisicao,
+					'status' => 5,
+					'sucesso' => null,
+					'resposta' => null,
+					'json_resposta' => $jsonResposta
+				];
+
+				$plgsConfigurados = self::getPluginsConfigDB($r['configuracao_json']);
+
+				$jsonObjProscore = self::getObjectJson($jsonResposta);
+
+				$linhaSaidaHorizontal = "";
+				$success = false;
+
+				if ($jsonObjProscore && !empty($jsonObjProscore->registro)) {
+
+					$success = true;
+
+					$registros = self::getRegistrosPlugins($jsonObjProscore, $plgsConfigurados);
+
+					foreach ($registros as $plugin => $arrayValues) {
+
+						$configPlugin = self::getConfObjectByPluginDB($r['configuracao_json'], $plugin);
+
+						if (!$configPlugin) {
+							continue;
+						}
+
+						if ($configPlugin->separar) {
+
+							foreach (self::montaLinhaRegistroVertical($arrayValues, $configPlugin) as $linhaSaidaVertical) {
+
+								if ($linhaSaidaVertical != "") {
+
+									$GrespostaPlugin[] = [
+										'plugin' => $plugin,
+										'resposta' => $camposAquisicao . ";" . $linhaSaidaVertical,
+										'transacaoId' => $values->transacao_id,
+										'header' => '-'
+									];
+								}
+							}
+						} else {
+
+							if ($linhaSaidaHorizontal == "") {
+								$linhaSaidaHorizontal .= $camposAquisicao;
+							}
+
+							$linhaSaidaHorizontal .= ";" . self::montaLinhaRegistroHorizontal($arrayValues, $configPlugin);
+						}
+					}
+				}
+
+				if (!$success) {
+
+					$GtransacaoSuceso[] = [
+						'processo_id' => $r['processo_id'],
+						'camposAquisicao' => $camposAquisicao,
+						'status' => 3,
+						'sucesso' => 0,
+						'resposta' => null,
+						'respostaJson' => null
+					];
+				} else {
+
+					if ($linhaSaidaHorizontal != "") {
+
+						$sucessTruegravaTransacao[] = [
+							'processo_id' => $r['processo_id'],
+							'camposAquisicao' => $camposAquisicao,
+							'status' => 3,
+							'sucesso' => 1,
+							'resposta' => $linhaSaidaHorizontal,
+							'respostaJson' => null
+						];
+					}
+				}
+			}
+		}
+
+		echo "<pre>";
+
+		echo "<br>transacoes<br>";
+		print_r($transacoes);
+		echo "<pre>";
+
+		echo "<br>transacoes<br>";
+		print_r($GrespostaPlugin);
+		echo "<pre>";
+
+		echo "<br>GtransacaoSuceso<br>";
+		print_r($GtransacaoSuceso);
+		echo "<br>sucessTruegravaTransacao<br>";
+		print_r($sucessTruegravaTransacao);
+
+
+
+
+		// if (!empty($transacoes)) {
+		// 	$this->GravaTransacao->insertBatch($transacoes);
+		// }
+
+		// if (!empty($GrespostaPlugin)) {
+		// 	$this->GravaRespostaPlugin->insert_all_Respost_pluglin($GrespostaPlugin);
+		// }
+
+		// if (!empty($GtransacaoSuceso)) {
+		// 	$this->GravaTransacao->insertBatch($GtransacaoSuceso);
+		// }
+
+		// if (!empty($sucessTruegravaTransacao)) {
+		// 	$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
+		// }
+	}
+	public function tratamento_dados_old($row_data)
 	{
 		$dados_filtrados = array_values(array_filter($row_data, function ($row) {
 
@@ -517,5 +737,98 @@ class Arquivos
 			$linha .= ";";
 		}
 		return $linha;
+	}
+
+
+	public function contar_atualizar_valores($dados)
+	{
+		$valorTotal = 0;
+
+		foreach ($dados as $key => $values) {
+
+			$redeLoja = $this->CapturaRedeLojaDoContrato->execute($values['contrato']);
+
+			list($valorLoteConsulta, $modulo) =
+				$this->BuscaValorLotePorConsulta->calcula(
+					$values['codcns'],
+					$redeLoja['rede'],
+					$values['qtd_registros']
+				);
+
+			$dados[$key]['new_valor'] = $valorLoteConsulta;
+
+			$valorBanco = (int) floatval($values['valor_total']);
+			$novoValor  = (int) $valorLoteConsulta;
+
+
+			echo "<pre>";
+
+			print_r($novoValor);
+
+			echo "meu valore\n";
+
+			print_r($values['processo_id']);
+
+			if ($novoValor > $valorBanco) {
+
+				$this->filtros->atualizarValorJobs($values['processo_id'], $values['contrato'], $novoValor);
+			}
+
+			$valorTotal += $valorLoteConsulta;
+		}
+
+		$dados['valor_total_geral'] = $valorTotal;
+	}
+
+
+	public function open_json_dados($pasta)
+	{
+		if (is_dir($pasta)) {
+
+			$dados = scandir($pasta);
+			$dados = array_diff($dados, ['.', '..']);
+
+
+			$dados_a_manipular = [];
+			foreach ($dados as $k =>  $arquivos) {
+
+				$filePath = $pasta . DIRECTORY_SEPARATOR . $arquivos;
+				if ($arquivos == 'meu_arquivo.json') {
+
+					$filePath_destino = $pasta . DIRECTORY_SEPARATOR . $arquivos;
+
+					echo "Tamanho: " . filesize($filePath_destino) . " bytes";
+					if (file_exists($filePath_destino)) {
+
+						echo "<pre>";
+						echo "tenho o resultado do caminho do arquivossss\n";
+
+						$conteudo = file_get_contents($filePath_destino);
+
+						$retorn = $this->instance->inset_json_dados($conteudo, $arquivos);
+
+						echo "tenho o retorno do insert json meu arquivo\n";
+						print_r($retorn);
+					}
+				} else if ($arquivos == 'infoReprocess.json') {
+
+					$filePath_destino = $pasta . DIRECTORY_SEPARATOR . $arquivos;
+
+					echo "Tamanho: " . filesize($filePath_destino) . " bytes";
+					if (file_exists($filePath_destino)) {
+
+						echo "<pre>";
+						echo "tenho o resultado do caminho do arquivossss\n";
+
+						$conteudo = file_get_contents($filePath_destino);
+
+
+						$retorn = $this->instance->inset_json_dados($conteudo, $arquivos);
+						echo "tenho o retorno do insert json infoReproess\n";
+						print_r($retorn);
+					}
+				}
+			}
+		}
 	}
 }

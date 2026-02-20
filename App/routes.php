@@ -19,4 +19,7 @@ return [
     '/gera_arquivo' => ['ProcessController', 'gerar_arquivo'],
     '/deleteMongo' => ['ProcessController', 'MongoDelete'],
     '/LerJson' => ['ProcessController', 'JsonArquivo'],
+    '/soap' => ['ProcessController', 'soapControll'],
+    '/Lista_json' => ['ProcessController', 'get_all_json'],
+    '/api/get_dados/{id}' => ['ApiController', 'lista_dados']
 ];

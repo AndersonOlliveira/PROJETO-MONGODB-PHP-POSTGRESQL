@@ -234,24 +234,24 @@ class Arquivo_testes extends Controller
             // print_r($payloads);
         }
 
-        // $idProcesso = $this->gravaProcess->execute(
-        //     $contrato,
-        //     $dadosCtr['rede'],
-        //     $dadosCtr['loja'],
-        //     $idConsulta,
-        //     $nomeArquivo,
-        //     true,
-        //     null,
-        //     $confCns['json_config'],
-        //     // "tcpfcnpj",
-        //     $cabe, // salva cabecalho para realizar o processo
-        //     $confCns['header_arquivo_principal'],
-        //     $valortotal,
-        //     $fingers,
-        //     // true,
-        // );
+        $idProcesso = $this->gravaProcess->execute(
+            $contrato,
+            $dadosCtr['rede'],
+            $dadosCtr['loja'],
+            $idConsulta,
+            $nomeArquivo,
+            true,
+            null,
+            $confCns['json_config'],
+            // "tcpfcnpj",
+            $cabe, // salva cabecalho para realizar o processo
+            $confCns['header_arquivo_principal'],
+            $valortotal,
+            $fingers,
+            true,
+        );
 
-        // $this->db->beginTransaction();
+        $this->db->beginTransaction();
 
         $totalInseridos = 0;
         try {
@@ -295,24 +295,24 @@ class Arquivo_testes extends Controller
 
 
                 // print_r()
-                //     $id = $this->GravaTransacao->execute(
-                //         $idProcesso,
-                //         $payloads,
-                //         0,
-                //         0
-                //     );
+                $id = $this->GravaTransacao->execute(
+                    $idProcesso,
+                    $payloads,
+                    0,
+                    0
+                );
 
-                //     if ($id) {
-                //         $totalInseridos++;
-                //     }
+                if ($id) {
+                    $totalInseridos++;
+                }
             }
 
 
-            // $this->db->commit();
+            $this->db->commit();
         } catch (Exception $e) {
 
 
-            // $this->db->rollBack();
+            $this->db->rollBack();
             throw $e;
         }
         // }

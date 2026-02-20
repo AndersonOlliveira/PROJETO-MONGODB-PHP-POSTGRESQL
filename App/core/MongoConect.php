@@ -15,6 +15,9 @@ class MongoConect
     private $db_colletion_info;
     private $db_colletion_jobs;
     private $manager_local;
+    private $db_colletion_json_dados;
+    private $db_colletion_json_dados_reprocess;
+
 
     private function __construct()
     {
@@ -32,6 +35,9 @@ class MongoConect
         $this->db_colletion_json = getenv('BD_MONGO_BD_COLLETION_JSON');
         $this->db_colletion_info = getenv('BD_MONGO_BD_COLLETION_INFO');
         $this->db_colletion_jobs = getenv('BD_MONGO_BD_COLLETION_JOBS');
+        $this->db_colletion_json_dados = getenv('BD_MONGO_BD_COLLETION_JSON_DADOS');
+        $this->db_colletion_json_dados_reprocess = getenv('BD_MONGO_BD_COLLETION_JSON_DADOS_REPROCESS');
+
 
 
         $auth = $user ? "$user:$pass@" : "";
@@ -111,5 +117,15 @@ class MongoConect
     public function getDBColetion_jobs()
     {
         return $this->db_colletion_jobs;
+    }
+
+    public function getDBColetion_jobs_dados_json()
+    {
+        return $this->db_colletion_json_dados;
+    }
+
+    public function getDBColetion_jobs_dados_json_reprocess()
+    {
+        return $this->db_colletion_json_dados_reprocess;
     }
 }

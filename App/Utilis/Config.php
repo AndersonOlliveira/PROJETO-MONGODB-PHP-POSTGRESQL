@@ -1,9 +1,9 @@
 <?php
 
-class Configs
+class Config
 {
 
-    public static function env($param)
+    public static function env_old($param)
     {
 
         // $filePath = __DIR__ . DIRECTORY_SEPARATOR . 'env.json';
@@ -35,5 +35,28 @@ class Configs
         // }
 
         // return $obj[$param];
+    }
+
+    public static function env($param)
+    {
+
+        $confContent = file_get_contents('/usr/chp/pub/prod/pag/progestor/env.json');
+        $obj = json_decode($confContent, true);
+
+        return $obj[$param];
+    }
+
+    public static function env_json($param)
+    {
+
+        $confContent = file_get_contents('https://site2.proscore.com.br/progestor/env.json');
+
+        echo "<pre>";
+        echo "meu json";
+
+        print_r($confContent);
+        $obj = json_decode($confContent, true);
+
+        return $obj[$param];
     }
 }

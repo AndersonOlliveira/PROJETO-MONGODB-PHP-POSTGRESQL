@@ -56,32 +56,58 @@ class App
         if ($requestUri == '') {
             $requestUri = '/';
         }
+        echo "<pre>";
+        echo "tenho a minha solicitação\n";
 
-        if (isset($routes[$requestUri])) {
+        print_R($requestUri);
 
-            [$controller, $method] = $routes[$requestUri];
+        if (isset($requestUri)) {
+
+            foreach ($routes as $route => $action) {
+
+                $pattern = preg_replace('/\{id\}/', '([a-zA-Z0-9]+)', $route);
+                $pattern = "#^" . $pattern . "$#";
+
+                if (preg_match($pattern, $requestUri, $matches)) {
+
+                    array_shift($matches); // remove match completo
+
+                    [$controller, $method] = $action;
+
+                    require_once "App/controllers/{$controller}.php";
+
+                    $controller = new $controller;
+                    call_user_func_array([$controller, $method], $matches);
+
+                    return;
+                }
+            }
+
+            // print_R($routes);
+            // if (isset($routes[$requestUri])) {
+
+            //     echo "estou caindo aqui?";
+
+
+            //     [$controller, $method] = $routes[$requestUri];
+
+            // foreach ($routes as $route => $action) {
+
+            //     $pattern = preg_replace('/\{id\}/', '([a-zA-Z0-9]+)', $route);
+            //     $pattern = "#^" . $pattern . "$#";
+
+            //     echo "<pre>";
+            //     echo "meu dados";
+            //     print_R($pattern);
+            // }
         } else {
-
-
-
             $url = $this->parseUrl();
-
-            echo "<pre>";
-
-            print_r($url);
-
-            echo "</pre>";
-
-
-
             $controller = ucfirst($url[0] ?? 'listar') . 'Controller';
 
             //se for enviando um número como parametro ele executa aqui
             if (is_numeric($url[1]) && !empty($url[1])) {
-
                 if (isset($url[1]) && is_numeric($url[1])) {
                     $method = ($url[0] ?? 'index') . '_id';
-
 
                     $this->params = [$url[1]];
                 } else {
@@ -103,7 +129,12 @@ class App
                     $this->params = [];
                 }
             }
-        }
+        }  //FINAL DA SOLICITACAO
+
+        echo "<pre>";
+
+        print_r("estou asidno\n");
+        print_r("controller localizada\n" . $controller);
 
         $this->controller = $controller;
         $this->method = $method;

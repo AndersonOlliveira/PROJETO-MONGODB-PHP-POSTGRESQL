@@ -9,6 +9,7 @@ class process extends Model
 		logInfo(date('Y-m-d H:i:s') . " - Iniciando list_processo com x linhas : {$qtLimit} \n");
 
 
+		$sql = "";
 		$sql = "SELECT p.processo_id, p.contrato,
 			p.rede,
 			p.codcns,
@@ -26,13 +27,14 @@ class process extends Model
 			t.id_processo,
 			t.resposta_json
 			FROM
-		   progestor.transacao t INNER JOIN 
+		    progestor.transacao t INNER JOIN 
 			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-			t.status = 2 AND 
-			t.sucesso = true AND 
-			---p.finalizado = false AND 
-		    p.pause = false";
+			t.status in (12) AND 
+			p.contrato = 417039 AND
+			p.finalizado = false AND
+		    p.pause = false AND
+		    p.error = false";
 
 
 
@@ -88,8 +90,6 @@ class process extends Model
 			t.sucesso = true AND 
 			p.finalizado = true AND 
 		    p.pause = false";
-
-
 
 		$params = [];
 		if ($idProcesso !== null) {
@@ -160,6 +160,57 @@ class process extends Model
 	}
 
 
+	public function count_new_quantidade_OLD($idProcesso, $qtLimit)
+	{
+
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando Pesquisa modulo com x linhas : {$qtLimit} \n");
+
+
+
+		$sql = "";
+		$sql = "SELECT 
+		    p.processo_id,
+			p.valor_total,
+			p.contrato,
+			p.codcns,
+			 COALESCE(SUM(CASE WHEN  t.status != 6 AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END), 0) AS qtd_registros
+			FROM
+			progestor.processo p 
+			inner join 
+			progestor.transacao as t on 
+		    (p.processo_id = t.id_processo)
+		WHERE 
+		    p.status_output = 2 and 
+			-- p.processo_id = 51 AND
+		    p.finalizado = true AND
+		    p.pause = false
+			group by p.processo_id ";
+
+
+
+		$params = [];
+		// if ($idProcesso !== null) {
+		// 	$sql .= " AND p.processo_id = ?";
+		// 	$params[] = $idProcesso;
+		// }
+
+
+		if ($qtLimit !== null) {
+			$qtLimit = (int)$qtLimit; // garante que é inteiro
+			$sql .= " ORDER BY random() LIMIT $qtLimit;";
+		} else {
+			$sql .= " ORDER BY random() LIMIT 10;";
+		}
+
+
+		$results = $this->db->prepare($sql);
+		$results->execute($params);
+		// $result = $this->db->query($sql);
+
+		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+
 	public function push_value_modulo($rede, $codConsulta, $dataInicio, $dataFim, $qtLimit)
 	{
 
@@ -169,7 +220,7 @@ class process extends Model
 		$sql = "
 		SELECT * 
 		FROM
-		fnc_extrato_modulos (
+		progestor.fnc_extrato_modulos (
 		:rede,
         :codConsulta,
         :data_inicio,
@@ -196,11 +247,11 @@ class process extends Model
 		logInfo(date('Y-m-d H:i:s') . " - Iniciando processo com status mensagem 1 \n");
 
 
-		$sql = "SELECT COALESCE(SUM(CASE WHEN status in (2,5) THEN 1 ELSE 0 END), 0) AS qta_processar,
+		$sql = "SELECT COALESCE(SUM(CASE WHEN t.status in (2,5) THEN 1 ELSE 0 END), 0) AS qta_processar,
 		p.processo_id,
 		p.mensagem_alerta as info
 		FROM progestor.transacao as t
-		left join progestor.processo as p on (p.processo_id = t.id_processo)
+		inner join progestor.processo as p on (p.processo_id = t.id_processo)
 		where p.mensagem_alerta ='1'
 		group by p.mensagem_alerta, p.processo_id;";
 
@@ -251,6 +302,35 @@ class process extends Model
 
 			// $dados =  [$value, true, date("Y-m-d H:i:s"), $id_process];
 			$dados =  [true, date("Y-m-d H:i:s"), 0, $id_process];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (\Exception $e) {
+
+			echo $e->getMessage();
+
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
+	}
+	public function atualizarValorJobs($id_process, $contrato, $valor)
+	{
+		$erros = [];
+
+		try {
+			//atualizo o valor correto.
+			$sql = "UPDATE progestor.processo SET valor_total = ? WHERE processo_id = ? and contrato = ? ";
+
+
+			$dados =  [$valor, $id_process, $contrato];
 			$result = $this->db->prepare($sql);
 			$result->execute($dados);
 		} catch (\Exception $e) {
@@ -409,5 +489,68 @@ class process extends Model
 		$results = $this->db->prepare($sql);
 		$results->execute();
 		return $results->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function count_new_quantidade()
+	{
+
+
+
+		$sql = "";
+		$sql = "SELECT 
+    p.processo_id,
+    p.valor_total,
+    p.contrato,
+    p.codcns,
+    COALESCE(
+        SUM(
+            CASE 
+                WHEN t.status != 6 
+                     AND t.campo_aquisicao IS NOT NULL 
+                THEN 1 
+                ELSE 0 
+            END
+        ), 0
+    ) AS qtd_registros
+FROM progestor.processo p
+INNER JOIN progestor.transacao t 
+    ON p.processo_id = t.id_processo
+WHERE 
+    p.status_output = 2 
+    AND p.finalizado = true 
+    AND p.pause = false
+GROUP BY 
+    p.processo_id,
+    p.valor_total,
+    p.contrato,
+    p.codcns
+HAVING 
+    p.valor_total < COALESCE(
+        SUM(
+            CASE 
+                WHEN t.status != 6 
+                     AND t.campo_aquisicao IS NOT NULL 
+                THEN 1 
+                ELSE 0 
+            END
+        ), 0
+    );
+";
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute();
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+
+			print_r($e->getMessage());
+		}
+	}
+
+     //funcao para pegar a quantidade de dia que estes processo esta paralisado
+  	public function get_count_day_process(){
+
+	  $sql = "";
+	  $sql = "";
+	
 	}
 }

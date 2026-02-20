@@ -17,8 +17,8 @@ function logInfo($mensagem)
     echo "[" . date('H:i:s') . "] $mensagem\n";
 }
 
-$tempo_esperara = 40;
-$id = 121;
+$tempo_esperara = 20;
+$id = null;
 $quantidade = 1;
 logInfo("Iniciando a aplicação...");
 $app = new App();

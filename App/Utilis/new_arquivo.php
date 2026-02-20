@@ -26,6 +26,7 @@ class new_arquivo extends Controller
     protected $enconde;
     protected $mongo;
     protected $arquivo_teste;
+    protected $soaps;
     public function __construct()
     {
 
@@ -74,6 +75,9 @@ class new_arquivo extends Controller
 
         require_once __DIR__ . '/../Utilis/Arquivo_testes.php';
         $this->arquivo_teste = new Arquivo_testes();
+
+        require_once __DIR__ . '/../Utilis/soaps.php';
+        $this->soaps = new soaps();
 
         // require_once 'ValidaCpf.php';
         // $this->ValidaCpf = new ValidaCpf();
@@ -536,10 +540,21 @@ class new_arquivo extends Controller
 
         $job = $this->CapturaJobsFinalizadosGerarSaida->execute($idJob);
 
-
         $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_description($job['campos_aquisicao']);
 
         $transacoes = $this->CapturaDadosTransacoesJob->execute($idJob);
+
+
+        //  echo "<pre>";
+        //  echo "minhas transacoes\n";
+
+        // print_R($transacoes);
+
+        // // echo "<pre>";
+
+        // // print_R($job);
+
+        // die();
 
         if ($transacoes) {
 
@@ -551,6 +566,7 @@ class new_arquivo extends Controller
             if (!file_exists("$dir/JOB_$idJob.zip")) {
 
                 $conteudoArquivoPrincipal = "";
+
                 mkdir("$dir/JOB_$idJob/", 0755, true);
 
                 $nomeArquivoPrincipal = "$dir/JOB_$idJob/SAIDA_PRINCIPAL__" . $job['nome_arquivo'];
@@ -735,5 +751,17 @@ class new_arquivo extends Controller
 
         // // echo "<pre>";
         // print_r($dados_objeto);
+    }
+
+
+    public function soaps()
+    {
+
+        echo "<pre>";
+
+        $pep = "N";
+        $resPep = $this->soaps->verificaConstaPEP('44004294827');
+
+        print_R('meus dadaos');
     }
 }

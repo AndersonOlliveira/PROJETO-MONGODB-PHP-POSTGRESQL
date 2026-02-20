@@ -13,6 +13,7 @@ class ListarController extends Controller
   protected $utils_mongo;
   protected $tratamento;
   protected $utils_functions;
+  protected $arquivos_json;
 
 
   public function __construct()
@@ -29,11 +30,11 @@ class ListarController extends Controller
     require_once __DIR__ . '/../models/process.php';
     $this->utilis_pgadmin = new process();
 
-    // Carrega de App/Arquivos ()
-    // $this->tratamento = $this->loadFrom('Arquivos', 'Arquivos');
-
     require_once __DIR__ . '/../Utilis/Funcoes.php';
     $this->utils_functions = new Funcoes();
+
+    require_once __DIR__ . '/../Utilis/Config.php';
+    $this->arquivos_json = new Config();
   }
 
 
@@ -43,8 +44,29 @@ class ListarController extends Controller
     $result_idProcess = [];
     $return = $this->model('process');
     $returns = $return->list_processo($idProcesso, $qtLimit);
+    $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
 
-    # PEGO O QUE FOI FINALIZADO JÁ 
+    $re = $this->utils->get_dados_id($returns);
+
+    $return_valores = $return->count_new_quantidade();
+
+    $pasta = $this->arquivos_json->env_json('path_arquivos_info');
+
+    if (isset($pasta)) {
+      //envio para a pasta de arquivos para processarl
+      $this->utils->open_json_dados($pasta);
+    }
+
+    echo "Minha pasta e: " . $pasta . "\n";
+
+    if (isset($return_valores)) {
+      $this->utils->contar_atualizar_valores($return_valores);
+    }
+
+    //vou percorrer para pegar o id e calcular o valorer correto;
+
+
+    // # PEGO O QUE FOI FINALIZADO JÁ 
     $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
 
 
@@ -123,11 +145,131 @@ class ListarController extends Controller
           $return->finish_process_die($values['processo_id']);
         }
       }
+
+      echo "<pre>";
+      echo "minha variavel lista dados";
+
+      print_r($list_dados);
       $re = $this->utils->get_dados_id($list_dados);
       echo "estou saindo aqui";
+      return $this->view('listar');
+    }
+  }
+  public function listar_old($idProcesso = null, $qtLimit = null)
+  {
+
+    $result_idProcess = [];
+    $return = $this->model('process');
+    $returns = $return->list_processo($idProcesso, $qtLimit);
+    $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
+
+    if (empty($returns)) {
+      echo "Nenhum dado encontrado!\n";
     }
 
+
+    $result_idProcess = array_values(
+      array_column(
+        array_filter($returns, fn($row) => !empty($row['processo_id'])),
+        'processo_id'
+      )
+    );
+    echo "<pre>";
+    echo "meus result_idProcess\n";
+
+    print_r($result_idProcess);
+
+
+
     $re = $this->utils->get_dados_id($returns);
+    // die();
+
+
+    // echo "LISTA\n";
+
+    // //vou percorrer para pegar o id e calcular o valorer correto;
+    // if (isset($return_valores)) {
+    //   $this->utils->contar_atualizar_valores($return_valores);
+    // }
+
+    // // die();
+
+    // // # PEGO O QUE FOI FINALIZADO JÁ 
+    // $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
+
+
+    // $returns_alert = $return->list_processo_qta_process($qtLimit);
+
+
+
+
+
+    // if (empty($returns_alert)) {
+
+    //   echo "Nenhum dado encontrado\n";
+    // }
+
+
+    // if (empty($returns_modulos)) {
+
+    //   echo "Nenhum dado encontrado\n";
+    // }
+
+
+    // $consult_modulos = [];
+
+
+    // if (!empty($return_finish)) {
+
+    //   foreach ($return_finish as $key => $values_modulos) {
+
+
+    //     $dados = $return->push_value_modulo(
+    //       $values_modulos['rede'],
+    //       $values_modulos['codcns'],
+    //       $values_modulos['data_cadastro'],
+    //       $values_modulos['data_finalizacao'],
+    //       null
+    //     );
+
+    //     if (!empty($dados)) {
+
+    //       $consult_modulos[] = [
+    //         'dados' => $dados,
+    //       ];
+
+    //       $consult_modulos['processo_id'] = $values_modulos['processo_id'];
+    //       $consult_modulos['valor_original'] = $values_modulos['valor_total'];
+    //     }
+    //   }
+    // }
+
+    // if (isset($consult_modulos) && !empty($consult_modulos)) {
+    //   $this->utils->updados_modulos($consult_modulos);
+    // }
+
+    // $result_resposta = array_values(array_filter($returns_alert, function ($row) {
+    //   return !empty($row['info']);
+    // }));
+
+    // if (isset($result_resposta)) {
+    //   $list_dados = [];
+    //   foreach ($result_resposta as $key => $values) {
+
+    //     if ($values['qta_processar'] > 0) {
+
+    //       $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
+    //     } else {
+
+
+    //       $return->finish_process_die($values['processo_id']);
+    //     }
+    //   }
+    //   $re = $this->utils->get_dados_id($list_dados);
+    //   echo "estou saindo aqui";
+    // }
+
+
 
     return $this->view('listar');
   }
@@ -201,5 +343,11 @@ class ListarController extends Controller
     echo "chameii\n";
 
     $this->utils_out->generateOutputFiles(382);
+  }
+
+
+  public function lista_dados()
+  {
+    echo "ESTOU CHAMANDO OS DADOS DA API\n";
   }
 }

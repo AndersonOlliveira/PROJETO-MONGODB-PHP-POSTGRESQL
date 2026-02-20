@@ -3,7 +3,7 @@
 class GravaProcesso extends Model
 {
 
-	public function execute($contrato, $rede, $loja, $codConsulta, $nomeArquivo, $aceite = true, $mensagem = "", $configuracaoJson, $camposAquisicao, $header, $valortotal, $fingers)
+	public function execute($contrato, $rede, $loja, $codConsulta, $nomeArquivo, $aceite = true, $mensagem = "", $configuracaoJson, $camposAquisicao, $header, $valortotal, $fingers,$pause)
 	{
 		// public static function execute($contrato, $rede, $loja, $codConsulta, $nomeArquivo, $aceite=true, $mensagem="", $configuracaoJson="", $camposAquisicao="tcpfcnpj", $header="",$valortotal) {
 
@@ -11,10 +11,10 @@ class GravaProcesso extends Model
 		$sql = "INSERT INTO progestor.processo(
 			            contrato, rede, codcns, nome_arquivo, aceite_execucao, 
 			            mensagem_alerta, configuracao_json, campos_aquisicao, 
-			            loja, header_arquivo,valor_total, finger)
+			            loja, header_arquivo,valor_total, finger, pause)
 			    VALUES (?, ?, ?, ?, ?, 
 			            ?, ?, ?, 
-			            ?, ?,?,?);";
+			            ?, ?,?,?,?);";
 
 		$dados = array();
 		$dados[] = $contrato;
@@ -29,7 +29,7 @@ class GravaProcesso extends Model
 		$dados[] = $header;
 		$dados[] = $valortotal;
 		$dados[] = $fingers;
-		// $dados[] = $pause;
+		$dados[] = $pause;
 
 		try {
 

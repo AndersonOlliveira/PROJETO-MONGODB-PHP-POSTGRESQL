@@ -14,6 +14,7 @@ class ProcessController extends Controller
     protected $utilis_process_valida;
     protected $BuscaValorLotePorConsulta;
     protected $CapturaRedeLojaDoContrato;
+    protected $arquivos_json;
 
     public function __construct()
     {
@@ -40,6 +41,10 @@ class ProcessController extends Controller
 
         require_once __DIR__ . '/../models/CapturaRedeLojaDoContrato.php';
         $this->CapturaRedeLojaDoContrato = new CapturaRedeLojaDoContrato();
+
+
+        require_once __DIR__ . '/../Utilis/Configs.php';
+        $this->arquivos_json = new Configs();
     }
 
     public function get_all_query()
@@ -127,7 +132,7 @@ class ProcessController extends Controller
         // $consultas = 262936;
         // $consultas = [265919, 283092];
         $contrato = 417039;
-        $filename = 'CONSULTAS.csv';
+        $filename = 'new_lista_crm copy';
         $valortotal = 0;
         $tipo = 'cpnp';
         $dados_consulta = [];
@@ -158,7 +163,7 @@ class ProcessController extends Controller
         // echo "[$dateNow] --- NOVO PROCESSO: $pathFile, $consultas, $contrato, $filename \n";
 
         // require_once 'Arquivo_testes.php';
-        $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
+        // $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
         // $validate = $this->utilis_processs_new->validate($pathFile, $consultas, $headers);
 
 
@@ -242,7 +247,7 @@ class ProcessController extends Controller
 
         echo "<pre>";
         echo "ESTOU AQUI";
-        $id = 32;
+        $id = 79;
 
         // print_R()
 
@@ -264,5 +269,79 @@ class ProcessController extends Controller
 
         echo "Estou chamando o json aqui\n";
         $retornoMongo = $this->utilis_processs_new->json_processs();
+    }
+
+
+    public function soapControll()
+    {
+
+        $this->utilis_processs_new->soaps();
+    }
+    public function get_all_json()
+    {
+
+        echo "<pre>";
+
+        print_R("ESTOU SAINDO AQUI nesta pasta\n");
+
+        // $pasta = $this->configMove->env('path_arquivos');
+        $pasta = $this->arquivos_json->env('path_arquivos_info');
+        // $pasta_delete = $this->configMove->env('path_arquivos_info_delete');
+
+        echo "<pre>";
+        echo "MEU RETORNO DA PASTA\n";
+        print_r($pasta);
+        echo "</pre>";
+
+
+        echo "tenho o resultado\n";
+
+        if (is_dir($pasta)) {
+            echo "é um diretorio\n";
+        } else {
+            echo "não é um diretorio\n";
+        }
+
+        // if (is_dir($pasta)) {
+
+        //     echo "<pre>";
+        //     echo "e um diretorio\n";
+        //     echo "</pre>";
+
+        //     $dados = scandir($pasta);
+        //     $dados = array_diff($dados, ['.', '..']);
+
+
+        //     foreach ($dados as $arquivos) {
+
+        //         echo "<pre>";
+        //         echo "e um diretorio\n";
+
+        //         print_R($arquivos);
+        //         echo "</pre>";
+
+        // if ($arquivos == 'meu_arquivo.json') {
+
+        //     $filePath = $pasta . DIRECTORY_SEPARATOR . $arquivos;
+
+        //     echo "<pre>";
+        //     echo "tenho o resultado do caminho do arquivo\n";
+        //     print_r($filePath);
+        //     echo "</pre>";
+
+        //     if (file_exists($filePath)) {
+
+        //         echo "<pre>";
+        //         echo "tenho o resultado do caminho do arquivossss\n";
+
+        //         $conteudo = file_get_contents($filePath);
+        //         $conteudo = json_decode($conteudo, true);
+
+        //         echo "<pre>";
+        //         print_r($conteudo);
+        //     }
+        // }
+        //     }
+        // }
     }
 }
