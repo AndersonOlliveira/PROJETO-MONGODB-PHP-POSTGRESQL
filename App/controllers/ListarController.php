@@ -43,117 +43,131 @@ class ListarController extends Controller
 
     $result_idProcess = [];
     $return = $this->model('process');
-    $returns = $return->list_processo($idProcesso, $qtLimit);
+    $returns = $return->list_processo($idProcesso, $qtLimit, false);
     $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
 
-    $re = $this->utils->get_dados_id($returns);
+    //este processa todos os jobs
+    // $re = $this->utils->get_dados_id($returns);
 
-    $return_valores = $return->count_new_quantidade();
+    // $return_valores = $return->count_new_quantidade();
 
     $pasta = $this->arquivos_json->env_json('path_arquivos_info');
 
-    if (isset($pasta)) {
-      //envio para a pasta de arquivos para processarl
-      $this->utils->open_json_dados($pasta);
+
+    //aqui vem os dados paralisados
+    $jobs_parados = $this->utilss->get_data_paralizar();
+
+    if (isset($jobs_parados)) {
+      $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
     }
 
-    echo "Minha pasta e: " . $pasta . "\n";
+    echo "<pre>";
 
-    if (isset($return_valores)) {
-      $this->utils->contar_atualizar_valores($return_valores);
-    }
-
-    //vou percorrer para pegar o id e calcular o valorer correto;
+    print_r($retorno_processo);
 
 
-    // # PEGO O QUE FOI FINALIZADO JÁ 
-    $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
 
 
-    $returns_alert = $return->list_processo_qta_process($qtLimit);
+    // if (isset($pasta)) {
+    //   //envio para a pasta de arquivos para processarl
+    //   $this->utils->open_json_dados($pasta);
+    // }
 
-    $result_idProcess = array_values(
-      array_column(
-        array_filter($returns, fn($row) => !empty($row['processo_id'])),
-        'processo_id'
-      )
-    );
+    // echo "Minha pasta e: " . $pasta . "\n";
 
+    // if (isset($return_valores)) {
+    //   $this->utils->contar_atualizar_valores($return_valores);
+    // }
 
-    if (empty($returns)) {
-      echo "Nenhum dado encontrado!\n";
-    }
-
-    if (empty($returns_alert)) {
-
-      echo "Nenhum dado encontrado\n";
-    }
+    // //vou percorrer para pegar o id e calcular o valorer correto;
 
 
-    if (empty($returns_modulos)) {
-
-      echo "Nenhum dado encontrado\n";
-    }
+    // // # PEGO O QUE FOI FINALIZADO JÁ 
+    // $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
 
 
-    $consult_modulos = [];
+    // $returns_alert = $return->list_processo_qta_process($qtLimit);
+
+    // $result_idProcess = array_values(
+    //   array_column(
+    //     array_filter($returns, fn($row) => !empty($row['processo_id'])),
+    //     'processo_id'
+    //   )
+    // );
 
 
-    if (!empty($return_finish)) {
+    // if (empty($returns)) {
+    //   echo "Nenhum dado encontrado!\n";
+    // }
 
-      foreach ($return_finish as $key => $values_modulos) {
+    // if (empty($returns_alert)) {
 
-
-        $dados = $return->push_value_modulo(
-          $values_modulos['rede'],
-          $values_modulos['codcns'],
-          $values_modulos['data_cadastro'],
-          $values_modulos['data_finalizacao'],
-          null
-        );
-
-        if (!empty($dados)) {
-
-          $consult_modulos[] = [
-            'dados' => $dados,
-          ];
-
-          $consult_modulos['processo_id'] = $values_modulos['processo_id'];
-          $consult_modulos['valor_original'] = $values_modulos['valor_total'];
-        }
-      }
-    }
-
-    if (isset($consult_modulos) && !empty($consult_modulos)) {
-      $this->utils->updados_modulos($consult_modulos);
-    }
-
-    $result_resposta = array_values(array_filter($returns_alert, function ($row) {
-      return !empty($row['info']);
-    }));
-
-    if (isset($result_resposta)) {
-      $list_dados = [];
-      foreach ($result_resposta as $key => $values) {
-
-        if ($values['qta_processar'] > 0) {
-
-          $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
-        } else {
+    //   echo "Nenhum dado encontrado\n";
+    // }
 
 
-          $return->finish_process_die($values['processo_id']);
-        }
-      }
+    // if (empty($returns_modulos)) {
 
-      echo "<pre>";
-      echo "minha variavel lista dados";
+    //   echo "Nenhum dado encontrado\n";
+    // }
 
-      print_r($list_dados);
-      $re = $this->utils->get_dados_id($list_dados);
-      echo "estou saindo aqui";
-      return $this->view('listar');
-    }
+
+    // $consult_modulos = [];
+
+
+    // if (!empty($return_finish)) {
+
+    //   foreach ($return_finish as $key => $values_modulos) {
+
+
+    //     $dados = $return->push_value_modulo(
+    //       $values_modulos['rede'],
+    //       $values_modulos['codcns'],
+    //       $values_modulos['data_cadastro'],
+    //       $values_modulos['data_finalizacao'],
+    //       null
+    //     );
+
+    //     if (!empty($dados)) {
+
+    //       $consult_modulos[] = [
+    //         'dados' => $dados,
+    //       ];
+
+    //       $consult_modulos['processo_id'] = $values_modulos['processo_id'];
+    //       $consult_modulos['valor_original'] = $values_modulos['valor_total'];
+    //     }
+    //   }
+    // }
+
+    // if (isset($consult_modulos) && !empty($consult_modulos)) {
+    //   $this->utils->updados_modulos($consult_modulos);
+    // }
+
+    // $result_resposta = array_values(array_filter($returns_alert, function ($row) {
+    //   return !empty($row['info']);
+    // }));
+
+    // if (isset($result_resposta)) {
+    //   $list_dados = [];
+    //   foreach ($result_resposta as $key => $values) {
+
+    //     if ($values['qta_processar'] > 0) {
+
+    //       $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
+    //     } else {
+    //       $return->finish_process_die($values['processo_id']);
+    //     }
+    //   }
+
+    //   echo "<pre>";
+    //   echo "minha variavel lista dados";
+
+    //   print_r($list_dados);
+    //   $re = $this->utils->get_dados_id($list_dados);
+    //   echo "estou saindo aqui";
+    //   return $this->view('listar');
+    // }
   }
   public function listar_old($idProcesso = null, $qtLimit = null)
   {

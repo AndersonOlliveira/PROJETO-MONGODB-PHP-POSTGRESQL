@@ -16,8 +16,11 @@ class instance extends MongoConect
     private $db_colletion_jobs;
     private $manager_local;
     private $db_colletion_json_dados;
+    private $db_colletion_json_dados_paralizars;
     private $db_colletion_json_dados_reprocess;
-    // private $manager_local;
+
+
+
 
 
     public function __construct()
@@ -32,6 +35,7 @@ class instance extends MongoConect
         $this->db_colletion_jobs = $conn->getDBColetion_jobs();
         $this->db_colletion_json_dados = $conn->getDBColetion_jobs_dados_json();
         $this->db_colletion_json_dados_reprocess = $conn->getDBColetion_jobs_dados_json_reprocess();
+        $this->db_colletion_json_dados_paralizars = $conn->getDBColetion_jobs_dados_paralizar();
     }
 
     public function all()
@@ -501,5 +505,86 @@ class instance extends MongoConect
                 'error' => $e->getMessage()
             ];
         }
+    }
+
+    //para inserir o paralizar pegando o finger e data e e id do processo 
+
+    public function insert_all_paralizar($dadosJson)
+    {
+
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+        $operacoes = 0;
+
+        $data  = json_decode($dadosJson, true);
+
+        if (!is_array($data)) {
+            return [
+                'success' => false,
+                'message' => 'JSON inválido ou não é um array'
+            ];
+        }
+
+
+        $filter = ['id_processo' => $data['id_processo']];
+        $inser  = ['$set' => $data];
+
+        $bulk->update(
+            $filter,
+            $inser,
+            ['upsert' => true, 'multi' => false]
+        );
+
+        $operacoes++;
+
+        try {
+
+            if ($operacoes > 0) {
+
+                $result = $this->manager->executeBulkWrite(
+                    "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
+                    $bulk
+                );
+
+                return [
+                    'success' => true,
+                    'inserted' => $result->getInsertedCount(),
+                    'modified' => $result->getModifiedCount(),
+                    'upserted' => $result->getUpsertedCount(),
+                    'matched'  => $result->getMatchedCount(),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Nenhuma operação executada'
+            ];
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+
+    //BUSCO A DATA PARA NO MONGO PARA SANER 
+
+    public function get_data_paralizar()
+    {
+        $option = [
+            'projection' => [
+                'id_processo' => 1,
+                'contrato' => 1,
+                'paralisado' => 1,
+                'data' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query([], $option);
+        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizars}", $query);
+        return iterator_to_array($cursor);
     }
 }

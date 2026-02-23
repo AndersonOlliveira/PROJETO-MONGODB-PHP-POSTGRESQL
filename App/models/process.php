@@ -3,7 +3,7 @@
 class process extends Model
 {
 
-	public function list_processo($idProcesso, $qtLimit)
+	public function list_processo($idProcesso, $qtLimit, $info = false)
 	{
 		logInfo(date('Y-m-d H:i:s') . " - Iniciando list_processo com idProcessos:  {$idProcesso}  \n");
 		logInfo(date('Y-m-d H:i:s') . " - Iniciando list_processo com x linhas : {$qtLimit} \n");
@@ -32,10 +32,17 @@ class process extends Model
 		WHERE 
 			t.status in (12) AND 
 			p.contrato = 417039 AND
-			p.finalizado = false AND
-		    p.pause = false AND
-		    p.error = false";
+			 p.finalizado = false AND
+			 p.error = false";
 
+
+		// echo "meu info enviado\n";
+
+		// var_dump($info);
+		// echo "vem vazio?\n";
+		// print_r(empty($info));
+
+		// var_dump($idProcesso);
 
 
 		$params = [];
@@ -44,12 +51,37 @@ class process extends Model
 			$params[] = $idProcesso;
 		}
 
+
+		$sql .= " AND p.pause = ?";
+		$params[] = $info ? 1 : 0;;
+
+		// if ($info !== null) {
+
+		// 	echo "<pre>";
+		// 	echo "E DIFERENTE DE NULL\n";
+		// 	var_dump($info);
+		// 	$sql .= " AND p.pause = ?";
+		// 	$params[] = (bool) true;
+		// } else {
+		// 	echo "<pre>";
+		// 	echo "E NULL\n";
+		// 	var_dump($info);
+		// 	$sql .= " AND p.pause = ?";
+		// 	$params[] =  (bool)false;
+		// }
+
 		if ($qtLimit !== null) {
 			$qtLimit = (int)$qtLimit; // garante que é inteiro
 			$sql .= " ORDER BY random() LIMIT $qtLimit;";
 		} else {
 			$sql .= " ORDER BY random() LIMIT 10;";
 		}
+
+
+		// echo "<pre>";
+		// echo "MEUS PARAM MONTADO\n";
+
+		// print_r($sql);
 
 
 		$results = $this->db->prepare($sql);
@@ -82,10 +114,10 @@ class process extends Model
 			t.id_processo,
 			t.resposta_json
 			FROM
-		   progestor.transacao t INNER JOIN 
+		    progestor.transacao t INNER JOIN 
 			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-			t.status = 2 AND 
+			t.status in (2,12) AND 
 		    p.mensagem_alerta = '1' and
 			t.sucesso = true AND 
 			p.finalizado = true AND 
@@ -546,11 +578,188 @@ HAVING
 		}
 	}
 
-     //funcao para pegar a quantidade de dia que estes processo esta paralisado
-  	public function get_count_day_process(){
+	//funcao para pegar a quantidade de dia que estes processo esta paralisado
+	public function get_count_day_process()
+	{
 
-	  $sql = "";
-	  $sql = "";
-	
+		$sql = "";
+		$sql = "";
+	}
+
+	public function get_limit_day_contrato($contrato)
+	{
+
+		$sql = "";
+		$sql = "SELECT limite_dias
+			FROM
+			progestor.config_limit_dias
+			WHERE
+			ctr_cliente = ?
+			AND limite_dias > 0
+			ORDER BY
+			data_configuracao
+			DESC limit 1;";
+
+		$Newregistros = [];
+		$dados = [$contrato];
+
+		try {
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (PDOException $e) {
+			print_R("Erro na consulta: " . $e->getMessage());
+			return $e->getMessage();
+		}
+
+
+		$row = $result->fetch(PDO::FETCH_ASSOC);
+
+		if (!$row) {
+			return false; //
+		}
+
+		return (int) $row['limite_dias'];
+	}
+
+
+	public function breack_process_paralizar($id_process, $id_status)
+	{
+
+		$erros = [];
+
+
+		try {
+			//recebe 6 
+			$sql = "UPDATE progestor.transacao SET status = ? WHERE id_processo = ? and status not in (12,3);";
+			// $sql = "SELET progestor.transacao SET status = ? WHERE id_processo = ? ";
+
+			$dados = array();
+			$dados[] = $id_status;
+			$dados[] = $id_process;
+
+			$result = $this->db->prepare($sql);
+
+			$result->execute($dados);
+		} catch (\Exception $e) {
+
+			$this->db->rollback();
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+			'qta_afetadas' => $result->rowCount()
+
+		];
+	}
+
+
+	public function lista_data_paralisados($idProcesso)
+	{
+		$sql =  "";
+		$sql =  "SELECT transacao_id,id_processo
+	           FROM PROGESTOR.TRANSACAO 
+			   where id_processo = ?
+			   AND campo_aquisicao is not null 
+			   AND status NOT IN (3,12,17);";
+
+		try {
+
+			$Newregistros = [];
+			$dados = [$idProcesso];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (PDOException $e) {
+			print_R("Erro na consulta: " . $e->getMessage());
+			return null;
+		}
+
+		if ($result->rowCount() == 0) {
+			return null;
+		}
+
+		while ($row = $result->fetchall(PDO::FETCH_ASSOC)) {
+			$Newregistros = [
+				'ids' => $row,
+				'linhas_afetadas' => $result->rowCount()
+			];
+		}
+
+		// echo "<pre>";
+		// echo "meus registros\n";
+
+		// print_r($Newregistros);
+		// die();
+
+
+		return $Newregistros;
+	}
+
+	//pega a quantidade para realizar o update
+	public function count_process_finalizado_paralizado($idProcesso)
+	{
+		$sql =  "";
+		$sql =  "SELECT count(*) as total,
+		  p.contrato,
+		  p.processo_id,p.rede, codcns as consultas,p.mensagem_alerta
+	      FROM
+		    progestor.transacao t INNER JOIN 
+			  progestor.processo p ON p.processo_id = t.id_processo 
+			   where id_processo = ?
+			   AND campo_aquisicao is not null 
+			   AND status IN (3,12)
+			--    AND p.menssagem_alerta is null
+			   group by  p.contrato, p.processo_id,p.mensagem_alerta;";
+
+		try {
+
+			$Newregistros = [];
+			$dados = [$idProcesso];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (PDOException $e) {
+			print_R("Erro na consulta: " . $e->getMessage());
+			return null;
+		}
+
+		if ($result->rowCount() == 0) {
+			return null;
+		}
+
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$Newregistros = $row;
+		}
+
+		return $Newregistros;
+	}
+
+	public function alter_valores_process_paralizar($id_process, $value)
+	{
+		$erros = [];
+
+		try {
+
+			$sql = "UPDATE progestor.processo SET valor_total = ?, mensagem_alerta = ? WHERE processo_id = ? ";
+			$dados =  [$value, 1, $id_process];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (\Exception $e) {
+
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
 	}
 }

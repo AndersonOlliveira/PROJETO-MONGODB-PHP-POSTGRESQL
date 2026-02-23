@@ -10,6 +10,7 @@ class Arquivos
 	protected $MontaJsonConfigEHeadersDaConsultas;
 	protected $GravaTransacao;
 	protected $GravaRespostaPlugin;
+	protected $GravaUpdateParalizar;
 	protected $teste;
 	protected $filtros;
 	protected $instance;
@@ -31,6 +32,9 @@ class Arquivos
 
 		require_once __DIR__ . '/../models/GravaRespostaPlugin.php';
 		$this->GravaRespostaPlugin = new GravaRespostaPlugin();
+
+		require_once __DIR__ . '/../models/GravaUpdateParalizar.php';
+		$this->GravaUpdateParalizar = new GravaUpdateParalizar();
 
 		require_once __DIR__ . '/../models/process.php';
 		$this->teste = new process();
@@ -331,21 +335,21 @@ class Arquivos
 
 
 
-		// if (!empty($transacoes)) {
-		// 	$this->GravaTransacao->insertBatch($transacoes);
-		// }
+		if (!empty($transacoes)) {
+			$this->GravaTransacao->insertBatch($transacoes);
+		}
 
-		// if (!empty($GrespostaPlugin)) {
-		// 	$this->GravaRespostaPlugin->insert_all_Respost_pluglin($GrespostaPlugin);
-		// }
+		if (!empty($GrespostaPlugin)) {
+			$this->GravaRespostaPlugin->insert_all_Respost_pluglin($GrespostaPlugin);
+		}
 
-		// if (!empty($GtransacaoSuceso)) {
-		// 	$this->GravaTransacao->insertBatch($GtransacaoSuceso);
-		// }
+		if (!empty($GtransacaoSuceso)) {
+			$this->GravaTransacao->insertBatch($GtransacaoSuceso);
+		}
 
-		// if (!empty($sucessTruegravaTransacao)) {
-		// 	$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
-		// }
+		if (!empty($sucessTruegravaTransacao)) {
+			$this->GravaTransacao->insertBatch($sucessTruegravaTransacao);
+		}
 	}
 	public function tratamento_dados_old($row_data)
 	{
@@ -830,5 +834,123 @@ class Arquivos
 				}
 			}
 		}
+	}
+
+	public function process_paralisar($dadosP, $qtLimit)
+	{
+		$dados_localizado = [];
+
+
+		// print_r($dadosP);
+
+		foreach ($dadosP as $key => $values) {
+
+			if ($values->paralisado) {
+				$prazoMaximos = $this->filtros->get_limit_day_contrato($values->contrato);
+				$prazoMaximo = 	2;
+
+				$data_paralisacao = new DateTime($values->data);
+
+				// Loop para adicionar a quantidade X de dias úteis para considierar dias ulteis
+				// for ($i = 0; $i < $prazoMaximo; $i++) {
+				// 	$data_paralisacao->modify('+1 weekday');
+				// }
+
+				echo "<pre>";
+				echo "meu prazo maximo\n ";
+				echo "meu prazo maximo" . $prazoMaximos;
+
+				print_r($prazoMaximos);
+
+				if ($prazoMaximos === false) {
+					continue;
+				}
+
+				$data_paralisacao->modify('+' . $prazoMaximos .  'days');
+
+
+				echo "Início: " . $values->data . "\n";
+				echo "Prazo final (" . $prazoMaximos . " dias úteis): " . $data_paralisacao->format('d/m/Y H:i:s') . "\n";
+
+				$msg = '';
+
+				// Comparação com a data atual para encerrar o trabalho
+				$hoje = new DateTime();
+				if ($hoje > $data_paralisacao) {
+					echo "STATUS: ENCERRAR TRABALHO (Prazo excedido)";
+
+
+					$dadosP[$key]->finalizar = true;
+
+					$dados_localizado[] = $dadosP[$key];
+				}
+			}
+		}
+
+		$retorno_dados_paralizados = [];
+		$quantidade_dados_paralizados_sucessos = [];
+		foreach ($dados_localizado as $chave => $valores) {
+
+			// vou enviar o retorno para processar o que esta paralisador e finalizar o jobs.
+
+			// echo "<pre>";
+			// echo "id localizado\n";
+
+			// print($valores->id_processo);
+			$retorno_dados_paralizados = $this->filtros->list_processo($valores->id_processo, $qtLimit, true);
+
+
+			$lista_dados_paralizados = $this->filtros->lista_data_paralisados($valores->id_processo);
+			echo "<pre>";
+
+			print_r($lista_dados_paralizados);
+
+			if (isset($retorno_dados_paralizados) && !empty($retorno_dados_paralizados)) {
+
+				$re = self::get_dados_id($retorno_dados_paralizados);
+
+				$quantidade_dados_paralizados_sucessos[] = $this->filtros->count_process_finalizado_paralizado($valores->id_processo);
+
+				echo "<pre>";
+				echo "lista de dados paralizados\n";
+				print_r($quantidade_dados_paralizados_sucessos);
+			}
+		}
+
+		if (!empty($lista_dados_paralizados) && isset($lista_dados_paralizados)) {
+
+			$retorno_update = $this->GravaUpdateParalizar->insertBatch($lista_dados_paralizados);
+		}
+
+		if (isset($quantidade_dados_paralizados_sucessos)) {
+			$valorTotal = 0;
+
+			foreach ($quantidade_dados_paralizados_sucessos as $valores_busca => $val) {
+				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($val['contrato']);
+				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total']);
+				$valorTotal = +$valorLoteConsulta;
+				if ($val['mensagem_alerta'] != 1) {
+					$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
+				}
+			}
+		}
+
+
+		if (isset($retorno_update)) {
+
+			$dados_atualizar = [
+				'id_processo' => (string)$val['processo_id'],
+				'processo_finalizado' => 'Jobs finalizado pelo sistema, pois passou do prazo de ' . $prazoMaximos,
+				'data_finalizacao' =>  $hoje,
+				'valor_job' => 'valor atualizado do job  para ' . $valorTotal
+			];
+			$this->utils->insert_all_paralizar(json_encode($dados_atualizar));
+		}
+		// }
+
+		//vou atualizar o valor correto com o que tiver de 3 ou 12 que teve sucesso na consulta
+
+
+
 	}
 }

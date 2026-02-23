@@ -15,7 +15,7 @@ class Model
         if (!$loaded) {
             //precisar ser esta conexao no app http://app-progestor-proscore.hostmundi.com/
             // Env::load(__DIR__ . '/../../.env');
-            Env::load(__DIR__ . '../../../.env');
+            Env::load(__DIR__ . '/../../.env');
             $loaded = true;
         }
 

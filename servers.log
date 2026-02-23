@@ -1,0 +1,128 @@
+nohup: ignoring input
+[Mon Feb 23 11:57:50 2026] PHP 8.0.30 Development Server (http://0.0.0.0:9081) started
+[Mon Feb 23 11:58:53 2026] 172.16.30.5:58454 Accepted
+[Mon Feb 23 11:58:53 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 11:58:53 2026] 172.16.30.5:58454 [200]: GET /api/get_dados/321
+[Mon Feb 23 11:58:53 2026] 172.16.30.5:58454 Closing
+[Mon Feb 23 11:58:53 2026] 172.16.30.5:56683 Accepted
+[Mon Feb 23 12:00:52 2026] 172.16.30.5:56683 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Feb 23 12:00:52 2026] 172.16.30.5:56683 Closing
+[Mon Feb 23 13:53:36 2026] 172.16.30.5:52400 Accepted
+[Mon Feb 23 13:53:36 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 13:53:36 2026] 172.16.30.5:52400 [200]: GET /api/get_dados/321
+[Mon Feb 23 13:53:36 2026] 172.16.30.5:52400 Closing
+[Mon Feb 23 13:53:36 2026] 172.16.30.5:49364 Accepted
+[Mon Feb 23 13:56:36 2026] 172.16.30.5:49364 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Feb 23 13:56:36 2026] 172.16.30.5:49364 Closing
+[Mon Feb 23 18:44:28 2026] 10.115.10.4:38813 Accepted
+[Mon Feb 23 18:44:28 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:44:28 2026] 10.115.10.4:38813 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:44:28 2026] 10.115.10.4:38813 Closing
+[Mon Feb 23 18:46:13 2026] 10.115.10.3:44983 Accepted
+[Mon Feb 23 18:46:13 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:46:13 2026] 10.115.10.3:44983 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:46:13 2026] 10.115.10.3:44983 Closing
+[Mon Feb 23 18:47:58 2026] 10.115.10.4:39638 Accepted
+[Mon Feb 23 18:47:58 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:47:58 2026] 10.115.10.4:39638 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:47:58 2026] 10.115.10.4:39638 Closing
+[Mon Feb 23 18:48:20 2026] 10.115.10.4:39708 Accepted
+[Mon Feb 23 18:48:20 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:48:20 2026] 10.115.10.4:39708 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:48:20 2026] 10.115.10.4:39708 Closing
+[Mon Feb 23 18:48:36 2026] 10.115.10.3:46626 Accepted
+[Mon Feb 23 18:48:36 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:48:36 2026] 10.115.10.3:46626 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:48:36 2026] 10.115.10.3:46626 Closing
+[Mon Feb 23 18:48:46 2026] 10.115.10.4:39796 Accepted
+[Mon Feb 23 18:48:46 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:48:46 2026] 10.115.10.4:39796 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:48:46 2026] 10.115.10.4:39796 Closing
+[Mon Feb 23 18:49:00 2026] 172.16.30.5:49844 Accepted
+[Mon Feb 23 18:49:09 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:49:09 2026] 172.16.30.5:49844 [200]: GET /api/get_dados/321/
+[Mon Feb 23 18:49:09 2026] 172.16.30.5:49844 Closing
+[Mon Feb 23 18:49:09 2026] 172.16.30.5:60748 Accepted
+[Mon Feb 23 18:49:14 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:49:14 2026] 172.16.30.5:60748 [200]: GET /api/get_dados/
+[Mon Feb 23 18:49:14 2026] 172.16.30.5:60748 Closing
+[Mon Feb 23 18:49:15 2026] 172.16.30.5:57281 Accepted
+[Mon Feb 23 18:49:17 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:49:17 2026] 172.16.30.5:57281 [200]: GET /api/get_dadoss/
+[Mon Feb 23 18:49:17 2026] 172.16.30.5:57281 Closing
+[Mon Feb 23 18:49:17 2026] 172.16.30.5:53764 Accepted
+[Mon Feb 23 18:49:41 2026] 10.115.10.3:47322 Accepted
+[Mon Feb 23 18:49:41 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:49:41 2026] 10.115.10.3:47322 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:49:41 2026] 10.115.10.3:47322 Closing
+[Mon Feb 23 18:49:50 2026] 10.115.10.4:40037 Accepted
+[Mon Feb 23 18:49:50 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:49:50 2026] 10.115.10.4:40037 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:49:50 2026] 10.115.10.4:40037 Closing
+[Mon Feb 23 18:51:18 2026] 10.115.10.4:40429 Accepted
+[Mon Feb 23 18:51:18 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:51:18 2026] 10.115.10.4:40429 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:51:18 2026] 10.115.10.4:40429 Closing
+[Mon Feb 23 18:52:35 2026] 10.115.10.3:49512 Accepted
+[Mon Feb 23 18:52:35 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:52:35 2026] 10.115.10.3:49512 [200]: POST /api/get_dadoss
+[Mon Feb 23 18:52:35 2026] 10.115.10.3:49512 Closing
+[Mon Feb 23 18:52:46 2026] 172.16.30.5:53764 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Feb 23 18:52:46 2026] 172.16.30.5:53764 Closing
+[Mon Feb 23 18:52:48 2026] 172.16.30.5:55158 Accepted
+[Mon Feb 23 18:52:48 2026] 172.16.30.5:55708 Accepted
+[Mon Feb 23 18:52:48 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:52:48 2026] 172.16.30.5:55708 [200]: GET /api/get_dadoss/
+[Mon Feb 23 18:52:48 2026] 172.16.30.5:55708 Closing
+[Mon Feb 23 18:54:22 2026] 172.16.30.5:55158 Closed without sending a request; it was probably just an unused speculative preconnection
+[Mon Feb 23 18:54:22 2026] 172.16.30.5:55158 Closing
+[Mon Feb 23 18:54:23 2026] 172.16.30.5:54792 Accepted
+[Mon Feb 23 18:54:23 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:54:23 2026] 172.16.30.5:54792 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:54:23 2026] 172.16.30.5:54792 Closing
+[Mon Feb 23 18:54:23 2026] 172.16.30.5:52795 Accepted
+[Mon Feb 23 18:54:50 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:54:50 2026] 172.16.30.5:52795 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:54:50 2026] 172.16.30.5:52795 Closing
+[Mon Feb 23 18:54:50 2026] 172.16.30.5:58041 Accepted
+[Mon Feb 23 18:54:51 2026] 172.16.30.5:58041 [404]: GET /favicon.ico - No such file or directory
+[Mon Feb 23 18:54:51 2026] 172.16.30.5:58041 Closing
+[Mon Feb 23 18:54:54 2026] 172.16.30.5:64345 Accepted
+[Mon Feb 23 18:54:54 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:54:54 2026] 172.16.30.5:64345 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:54:54 2026] 172.16.30.5:64345 Closing
+[Mon Feb 23 18:54:54 2026] 172.16.30.5:62866 Accepted
+[Mon Feb 23 18:54:58 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:54:58 2026] 172.16.30.5:62866 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:54:58 2026] 172.16.30.5:62866 Closing
+[Mon Feb 23 18:54:58 2026] 172.16.30.5:55486 Accepted
+[Mon Feb 23 18:54:58 2026] 172.16.30.5:55486 [404]: GET /favicon.ico - No such file or directory
+[Mon Feb 23 18:54:58 2026] 172.16.30.5:55486 Closing
+[Mon Feb 23 18:55:14 2026] 172.16.30.5:52452 Accepted
+[Mon Feb 23 18:55:14 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:55:14 2026] 172.16.30.5:52452 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:55:14 2026] 172.16.30.5:52452 Closing
+[Mon Feb 23 18:55:14 2026] 172.16.30.5:62152 Accepted
+[Mon Feb 23 18:55:14 2026] 172.16.30.5:62152 [404]: GET /favicon.ico - No such file or directory
+[Mon Feb 23 18:55:14 2026] 172.16.30.5:62152 Closing
+[Mon Feb 23 18:55:52 2026] 172.16.30.5:51820 Accepted
+[Mon Feb 23 18:55:52 2026] 172.16.30.5:64480 Accepted
+[Mon Feb 23 18:55:52 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:55:52 2026] 172.16.30.5:64480 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:55:52 2026] 172.16.30.5:64480 Closing
+[Mon Feb 23 18:55:52 2026] 172.16.30.5:51820 [404]: GET /favicon.ico - No such file or directory
+[Mon Feb 23 18:55:52 2026] 172.16.30.5:51820 Closing
+[Mon Feb 23 18:56:26 2026] 172.16.30.5:57976 Accepted
+[Mon Feb 23 18:56:26 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:56:26 2026] 172.16.30.5:57976 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:56:26 2026] 172.16.30.5:57976 Closing
+[Mon Feb 23 18:56:26 2026] 172.16.30.5:49432 Accepted
+[Mon Feb 23 18:56:26 2026] 172.16.30.5:49432 [404]: GET /favicon.ico - No such file or directory
+[Mon Feb 23 18:56:26 2026] 172.16.30.5:49432 Closing
+[Mon Feb 23 18:56:39 2026] 172.16.30.5:55317 Accepted
+[Mon Feb 23 18:56:39 2026] PHP Warning:  Undefined array key 1 in /home/proscore/new_mvc/App/core/App.php on line 80
+[Mon Feb 23 18:56:39 2026] 172.16.30.5:55317 [200]: GET /api/get_upDados/
+[Mon Feb 23 18:56:39 2026] 172.16.30.5:55317 Closing
+[Mon Feb 23 18:56:39 2026] 172.16.30.5:57924 Accepted
+[Mon Feb 23 18:56:39 2026] 172.16.30.5:57924 [404]: GET /favicon.ico - No such file or directory
+[Mon Feb 23 18:56:39 2026] 172.16.30.5:57924 Closing

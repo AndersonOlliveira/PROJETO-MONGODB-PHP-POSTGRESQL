@@ -48,7 +48,7 @@ class App
 
         // $basePath =   'app-progestor-proscore.hostmundi.com/home/proscore/mvc/';
         // C:\xampp_backup\htdocs\projeto74\mvc
-        $basePath = 'projeto74/mvc';
+        // $basePath = 'projeto74/mvc';
         $requestUri = str_replace($basePath, '/', $requestUri);
 
         $requestUri = rtrim($requestUri, '/');
@@ -57,7 +57,7 @@ class App
             $requestUri = '/';
         }
         echo "<pre>";
-        echo "tenho a minha solicitação\n";
+        echo "tenho a minha solicitação esta e minha url\n";
 
         print_R($requestUri);
 
@@ -77,6 +77,10 @@ class App
                     require_once "App/controllers/{$controller}.php";
 
                     $controller = new $controller;
+
+                    echo "<pre>";
+
+                    print_R($controller);
                     call_user_func_array([$controller, $method], $matches);
 
                     return;
@@ -133,7 +137,7 @@ class App
 
         echo "<pre>";
 
-        print_r("estou asidno\n");
+        print_r("estou saindod aqui!\n");
         print_r("controller localizada\n" . $controller);
 
         $this->controller = $controller;

@@ -21,5 +21,7 @@ return [
     '/LerJson' => ['ProcessController', 'JsonArquivo'],
     '/soap' => ['ProcessController', 'soapControll'],
     '/Lista_json' => ['ProcessController', 'get_all_json'],
-    '/api/get_dados/{id}' => ['ApiController', 'lista_dados']
+    '/api/get_dados/{id}' => ['ApiController', 'lista_dados'],
+    '/api/get_dadoss' => ['ApiController', 'inserir_info_paralizado'],
+    '/api/get_upDados' => ['ApiController', 'inserir_info_paralizados']
 ];
