@@ -579,6 +579,7 @@ class instance extends MongoConect
                 'contrato' => 1,
                 'paralisado' => 1,
                 'data' => 1,
+                'data_finalizacao' => 1,
                 '_id' => 0
             ]
         ];

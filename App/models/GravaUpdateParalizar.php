@@ -13,6 +13,12 @@ class GravaUpdateParalizar extends Model
             return false;
         }
 
+        // echo "<pre>";
+
+        // print_R('vim parar nesta tela');
+
+        // var_dump($dados);
+
 
         $this->db->beginTransaction();
 
@@ -27,15 +33,20 @@ class GravaUpdateParalizar extends Model
             $stmt = $this->db->prepare($sql);
 
             foreach ($dados['ids'] as $r) {
-                // Executa um por um dentro da transação
+
                 $stmt->execute([17, $r['id_processo'], $r['transacao_id']]);
-            }
-            if (($i % 200) == 0 && $i > 0) { // update transaction a cada 200 registros
-                $this->db->commit();
-                $this->db->beginTransaction();
+
+                $i++;
+
+                // A cada 200 registros, faz commit e abre nova transação
+                if ($i % 200 == 0) {
+                    $this->db->commit();
+                    $this->db->beginTransaction();
+                }
             }
 
-            $i++;
+            // Commit final (caso não seja múltiplo de 200)
+            $this->db->commit();
         } catch (Exception $e) {
             $this->db->rollBack();
 

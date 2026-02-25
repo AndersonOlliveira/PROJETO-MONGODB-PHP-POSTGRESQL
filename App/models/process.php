@@ -30,7 +30,7 @@ class process extends Model
 		    progestor.transacao t INNER JOIN 
 			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-			t.status in (12) AND 
+			t.status in (12,3) AND 
 			p.contrato = 417039 AND
 			 p.finalizado = false AND
 			 p.error = false";
@@ -205,7 +205,7 @@ class process extends Model
 			p.valor_total,
 			p.contrato,
 			p.codcns,
-			 COALESCE(SUM(CASE WHEN  t.status != 6 AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END), 0) AS qtd_registros
+			 COALESCE(SUM(CASE WHEN  t.status != 6 or t.status != 17 AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END), 0) AS qtd_registros
 			FROM
 			progestor.processo p 
 			inner join 
@@ -537,7 +537,7 @@ class process extends Model
     COALESCE(
         SUM(
             CASE 
-                WHEN t.status != 6 
+                WHEN t.status != 6 AND t.status != 17
                      AND t.campo_aquisicao IS NOT NULL 
                 THEN 1 
                 ELSE 0 
@@ -549,7 +549,7 @@ INNER JOIN progestor.transacao t
     ON p.processo_id = t.id_processo
 WHERE 
     p.status_output = 2 
-    AND p.finalizado = true 
+	AND p.finalizado = true 
     AND p.pause = false
 GROUP BY 
     p.processo_id,
@@ -560,7 +560,7 @@ HAVING
     p.valor_total < COALESCE(
         SUM(
             CASE 
-                WHEN t.status != 6 
+                WHEN t.status != 6 and t.status != 17
                      AND t.campo_aquisicao IS NOT NULL 
                 THEN 1 
                 ELSE 0 
@@ -568,6 +568,7 @@ HAVING
         ), 0
     );
 ";
+
 		try {
 			$results = $this->db->prepare($sql);
 			$results->execute();
@@ -705,7 +706,9 @@ HAVING
 		$sql =  "";
 		$sql =  "SELECT count(*) as total,
 		  p.contrato,
-		  p.processo_id,p.rede, codcns as consultas,p.mensagem_alerta
+		  p.processo_id,p.rede, codcns as consultas,p.mensagem_alerta,
+		  SUM(CASE WHEN t.status = 3
+                     AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END) AS finalizados
 	      FROM
 		    progestor.transacao t INNER JOIN 
 			  progestor.processo p ON p.processo_id = t.id_processo 
@@ -743,12 +746,22 @@ HAVING
 
 		try {
 
-			$sql = "UPDATE progestor.processo SET valor_total = ?, mensagem_alerta = ? WHERE processo_id = ? ";
-			$dados =  [$value, 1, $id_process];
+			$sql = "UPDATE progestor.processo SET valor_total = ?, mensagem_alerta = ?, pause = ? WHERE processo_id = ? ";
+			$dados =  [$value, '1', 0, $id_process];
 			$result = $this->db->prepare($sql);
 			$result->execute($dados);
+
+			echo '<pre>';
+			echo "MEU SQL MONTATO PARA UPDATE\n";
+
+			var_dump($sql);
+
+			print_r('ESTOU SAINDO AQUI\n');
 		} catch (\Exception $e) {
 
+			echo "<pre>";
+			echo "erro vindo aqui\n";
+			print_r($e->getMessage());
 
 			$erros[] = [
 				'msg' =>  $e->getMessage()

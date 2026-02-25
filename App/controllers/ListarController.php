@@ -44,12 +44,12 @@ class ListarController extends Controller
     $result_idProcess = [];
     $return = $this->model('process');
     $returns = $return->list_processo($idProcesso, $qtLimit, false);
-    $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
+    // $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
 
     //este processa todos os jobs
     // $re = $this->utils->get_dados_id($returns);
 
-    // $return_valores = $return->count_new_quantidade();
+    $return_valores = $return->count_new_quantidade();
 
     $pasta = $this->arquivos_json->env_json('path_arquivos_info');
 
@@ -57,16 +57,12 @@ class ListarController extends Controller
     //aqui vem os dados paralisados
     $jobs_parados = $this->utilss->get_data_paralizar();
 
+
+    // die();
+
     if (isset($jobs_parados)) {
       $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
     }
-
-    echo "<pre>";
-
-    print_r($retorno_processo);
-
-
-
 
     // if (isset($pasta)) {
     //   //envio para a pasta de arquivos para processarl
@@ -75,9 +71,9 @@ class ListarController extends Controller
 
     // echo "Minha pasta e: " . $pasta . "\n";
 
-    // if (isset($return_valores)) {
-    //   $this->utils->contar_atualizar_valores($return_valores);
-    // }
+    if (isset($return_valores)) {
+      $this->utils->contar_atualizar_valores($return_valores);
+    }
 
     // //vou percorrer para pegar o id e calcular o valorer correto;
 

@@ -765,21 +765,16 @@ class Arquivos
 			$novoValor  = (int) $valorLoteConsulta;
 
 
-			echo "<pre>";
-
-			print_r($novoValor);
-
-			echo "meu valore\n";
-
-			print_r($values['processo_id']);
-
 			if ($novoValor > $valorBanco) {
+
+				var_dump($novoValor > $valorBanco . ' MEU ID PARA SER ALTERADO ' . $values['processo_id']);
 
 				$this->filtros->atualizarValorJobs($values['processo_id'], $values['contrato'], $novoValor);
 			}
-
-			$valorTotal += $valorLoteConsulta;
 		}
+
+		$valorTotal += $valorLoteConsulta;
+
 
 		$dados['valor_total_geral'] = $valorTotal;
 	}
@@ -839,114 +834,191 @@ class Arquivos
 	public function process_paralisar($dadosP, $qtLimit)
 	{
 		$dados_localizado = [];
+		$pegarDadosfinalizar = [];
 
 
-		// print_r($dadosP);
 
 		foreach ($dadosP as $key => $values) {
 
-			if ($values->paralisado) {
-				$prazoMaximos = $this->filtros->get_limit_day_contrato($values->contrato);
-				$prazoMaximo = 	2;
+			if (isset($values->paralisado) && !isset($values->data_finalizacao)) {
 
-				$data_paralisacao = new DateTime($values->data);
+				if ($values->id_processo == 105) {
+					$prazoMaximos = $this->filtros->get_limit_day_contrato($values->contrato);
+					$prazoMaximo = 	2;
 
-				// Loop para adicionar a quantidade X de dias úteis para considierar dias ulteis
-				// for ($i = 0; $i < $prazoMaximo; $i++) {
-				// 	$data_paralisacao->modify('+1 weekday');
+					$data_paralisacao = new DateTime($values->data);
+
+					// Loop para adicionar a quantidade X de dias úteis para considierar dias ulteis
+					// for ($i = 0; $i < $prazoMaximo; $i++) {
+					// 	$data_paralisacao->modify('+1 weekday');
+					// }
+
+					// echo "<pre>";
+					// echo "meu prazo maximo\n ";
+					// echo "meu prazo maximo" . $prazoMaximos;
+
+					// print_r($prazoMaximos);
+
+					if ($prazoMaximos === false) {
+						continue;
+					}
+
+					$data_paralisacao->modify('+' . $prazoMaximos .  'days');
+
+
+					echo "Início: " . $values->data . "\n";
+					echo "Prazo final (" . $prazoMaximos . " dias úteis): " . $data_paralisacao->format('d/m/Y H:i:s') . "\n";
+
+					$msg = '';
+
+					// Comparação com a data atual para encerrar o trabalho
+					$hoje = new DateTime();
+					if ($hoje > $data_paralisacao) {
+						echo "STATUS: ENCERRAR TRABALHO (Prazo excedido)\n";
+
+
+						$dadosP[$key]->finalizar = true;
+
+						$dados_localizado[] = $dadosP[$key];
+					}
+				}
+			} //final do if inicial
+
+			//FINALIZAR OS DADOS 
+			$pegarDadosfinalizar[] = $this->filtros->count_process_finalizado_paralizado($values->id_processo);
+		}
+
+		// echo "<pre>";
+		// echo "lista de dados paralizados\n";
+		// print_r($pegarDadosfinalizar);
+
+
+		$valorTotal_auxilar = 0;
+		//aqu vou trocar os status
+		foreach ($pegarDadosfinalizar as $dados => $value) {
+
+			//mensagem esta vindo com o valor de 0 sendo assim náo esta passando aqui! e  esta sendo salvo no banco o valor de 0
+			if ($value['total'] == $value['finalizados'] && ($value['mensagem_alerta'] === null || $value['mensagem_alerta'] === '')) {
+				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($value['contrato']);
+
+				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($value['consultas'], $redeLoja['rede'], $value['total']);
+				$valorTotal_auxilar = +$valorLoteConsulta;
+
+				// $result_alter_ = $this->filtros->alter_valores_process_paralizar($value['processo_id'], $valorTotal_auxilar);
+
+
+				// if (isset($result_alter_)) {
+				// 	echo "<pre>";
+				// 	echo "Primeiro retorno do Atualizar se tiver dados ou erro\n";
+				// 	print_r($result_alter_);
 				// }
-
-				echo "<pre>";
-				echo "meu prazo maximo\n ";
-				echo "meu prazo maximo" . $prazoMaximos;
-
-				print_r($prazoMaximos);
-
-				if ($prazoMaximos === false) {
-					continue;
-				}
-
-				$data_paralisacao->modify('+' . $prazoMaximos .  'days');
-
-
-				echo "Início: " . $values->data . "\n";
-				echo "Prazo final (" . $prazoMaximos . " dias úteis): " . $data_paralisacao->format('d/m/Y H:i:s') . "\n";
-
-				$msg = '';
-
-				// Comparação com a data atual para encerrar o trabalho
-				$hoje = new DateTime();
-				if ($hoje > $data_paralisacao) {
-					echo "STATUS: ENCERRAR TRABALHO (Prazo excedido)";
-
-
-					$dadosP[$key]->finalizar = true;
-
-					$dados_localizado[] = $dadosP[$key];
-				}
 			}
 		}
 
 		$retorno_dados_paralizados = [];
 		$quantidade_dados_paralizados_sucessos = [];
+
+
+		// echo "<pre>";
+		// echo "Segundo retorno do dados_localizado se tiver dados ou erro\n";
+		// print_r($dados_localizado);
+
+		// die();
+
+
 		foreach ($dados_localizado as $chave => $valores) {
-
-			// vou enviar o retorno para processar o que esta paralisador e finalizar o jobs.
-
+			// $qtLimit = 1;
 			// echo "<pre>";
-			// echo "id localizado\n";
+			// echo "Terceiro passo retorno do dados_localizado se tiver dados ou erro\n";
 
-			// print($valores->id_processo);
 			$retorno_dados_paralizados = $this->filtros->list_processo($valores->id_processo, $qtLimit, true);
+			// echo "<pre>";
+			// echo "Quarto passo retorno do dados_localizado se tiver dados ou erro\n";
 
+			// var_dump($retorno_dados_paralizados);
 
 			$lista_dados_paralizados = $this->filtros->lista_data_paralisados($valores->id_processo);
-			echo "<pre>";
+			//pego os processo que esta com o status 0 para trocar para 17
 
-			print_r($lista_dados_paralizados);
+			// echo "<pre>";
+			// echo "Quinto passo retorno do lista_dados_paralizados se tiver dados ou erro\n";
+
+			// var_dump($lista_dados_paralizados);
+
 
 			if (isset($retorno_dados_paralizados) && !empty($retorno_dados_paralizados)) {
 
-				$re = self::get_dados_id($retorno_dados_paralizados);
+				//	$re = self::get_dados_id($retorno_dados_paralizados);
 
 				$quantidade_dados_paralizados_sucessos[] = $this->filtros->count_process_finalizado_paralizado($valores->id_processo);
 
 				echo "<pre>";
-				echo "lista de dados paralizados\n";
-				print_r($quantidade_dados_paralizados_sucessos);
+				echo "Sexto passo retorno do quantidade_dados_paralizados_sucessos se tiver dados ou erro\n";
+
+				var_dump($quantidade_dados_paralizados_sucessos);
 			}
 		}
+
+
 
 		if (!empty($lista_dados_paralizados) && isset($lista_dados_paralizados)) {
 
 			$retorno_update = $this->GravaUpdateParalizar->insertBatch($lista_dados_paralizados);
 		}
 
-		if (isset($quantidade_dados_paralizados_sucessos)) {
+		if (isset($quantidade_dados_paralizados_sucessos) && !empty($quantidade_dados_paralizados_sucessos)) {
 			$valorTotal = 0;
 
+			echo "<pre>";
+
+			print_r('SAINDO DENTRO DO FOREACH');
+
+			var_dump($quantidade_dados_paralizados_sucessos);
+
+
+
 			foreach ($quantidade_dados_paralizados_sucessos as $valores_busca => $val) {
+
+				echo "<pre>";
+				echo "o que esta saindo aquui no vaal!!!\n";
+
+				print_r($val);
 				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($val['contrato']);
 				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total']);
 				$valorTotal = +$valorLoteConsulta;
 				if ($val['mensagem_alerta'] != 1) {
 					$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
+				} else if ($val['mensagem_alerta'] == "" || $val['mensagem_alerta'] == null) {
+					$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
 				}
+
+
+				// if (isset($result_alter)) {
+
+				$dados_atualizar = [
+					'id_processo' => (string)$val['processo_id'],
+					'processo_finalizado' => 'Jobs finalizado pelo sistema, pois passou do prazo de ' . $prazoMaximos,
+					'data_finalizacao' =>  $hoje,
+					'valor_job' => 'valor atualizado do job  para ' . $valorTotal
+				];
+
+
+				$retorno_up_mongo =  $this->utils->insert_all_paralizar(json_encode($dados_atualizar));
+
+				if ($retorno_up_mongo) {
+					echo "<pre>";
+					echo "SUCESSO !\n";
+
+					print_R($retorno_up_mongo);
+				} else {
+					echo "<pre>";
+					echo "INSUCESSOSUCESSO !\n";
+					print_R($retorno_up_mongo);
+				}
+				// }
+				// }
 			}
 		}
-
-
-		if (isset($retorno_update)) {
-
-			$dados_atualizar = [
-				'id_processo' => (string)$val['processo_id'],
-				'processo_finalizado' => 'Jobs finalizado pelo sistema, pois passou do prazo de ' . $prazoMaximos,
-				'data_finalizacao' =>  $hoje,
-				'valor_job' => 'valor atualizado do job  para ' . $valorTotal
-			];
-			$this->utils->insert_all_paralizar(json_encode($dados_atualizar));
-		}
-		// }
 
 		//vou atualizar o valor correto com o que tiver de 3 ou 12 que teve sucesso na consulta
 
