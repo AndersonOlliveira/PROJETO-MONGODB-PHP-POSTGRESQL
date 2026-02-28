@@ -21,14 +21,18 @@ class ProcessController extends Controller
         $this->utilis_process = $this->Utilis('Process_Utilis');
         $this->utilis_processs = $this->Utilis('teste');
         $this->utilis_processs_teste = $this->Utilis('Arquivo_testes');
+        // $this->utilis_processs_teste = $this->Utilis('Arquivo_testes_copys');
         $this->utilis_processs_new = $this->Utilis('new_arquivo');
         $this->utilis_process_valida = $this->Utilis('ArquivoValida');
-        // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('CONSULTAS');
+        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('arquivos_n');
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('teste-base');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTAS-testes');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CPF-VARIOS-CAMPOS- Copia');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('cabecalho-AJUSTADOSa');
-        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_lista_crm copy');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('NEW-TESTES-3000');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('Ppoucos-registros');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('TESTE-265919');
+        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_dados_teste');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('POUCAS-LINHAS-VARIAS-CONSULTAS');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('ta');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_lista_crm');
@@ -117,17 +121,26 @@ class ProcessController extends Controller
             echo "o arquivo existe";
         }
 
+        // $contador = 0;
         // print_r($pathFile);
         // if (($handle = fopen($pathFile, "r")) !== false) {
         //     while (($linha = fgets($handle)) !== false) {
-        //         echo $linha . "<br>";
+        //         // echo $linha . "<br>";
+        //         if (trim($linha) == '') {
+        //         continue;
         //     }
+        //          $contador++;
+        //         }
         //     fclose($handle);
         // }
 
+        // echo "minha quantidade de linhas enviadas" . $contador . " \n";
+
+
 
         // $consultas = 283091; #CONSULTA PARA QUE CONTEM BASE
-        $consultas = [262936]; #CONSULTA PARA CRM 
+        $consultas = [265919]; #CONSULTA PARA CRM 
+        // $consultas = [263257]; #"<FONT COLOR=BLUE><B>02</B></FONT>. PROCADASTRO PLUS - PF    " da andrea
         // $consultas = 283111; #CONSULTA PARA CPF 
         // $consultas = 262936;
         // $consultas = [265919, 283092];
@@ -136,10 +149,15 @@ class ProcessController extends Controller
         $valortotal = 0;
         $tipo = 'cpnp';
         $dados_consulta = [];
+
+
         // $headers = 'tcpfcnpj,tdatnsc,tcelnum,tnumtel,tdatnsc';
         // $headers = 'tcpfcnpj,tcep,tcelnum,tnumtel,tdatnsc';
         // $headers = 'tcpfcnpj,tdatnsc,tcep,tcelnum,tnumtel';
-        $headers = 'tlidersinistroufmed,tpsqnom,tlidersinistrocrmmed';
+        // $headers = 'tcpfcnpj;tcep;tcelnum;tnumtel;tdatnsc';
+        // $headers = 'tcpfcnpj;tnumtel;tcelnum'; # "<FONT COLOR=BLUE><B>02</B></FONT>. PROCADASTRO PLUS - PF    " da andrea
+        $headers = 'tcpfcnpj';
+        // $headers = 'tlidersinistroufmed,tpsqnom,tlidersinistrocrmmed';
         // $headers = 'tdatabase;tcpfcnpj;tdatnsc';
         $finger = '{"ip":"177.25.93.211","city":"Santos","region":"São Paulo","country":"BR","loc":"-23.9608,-46.3336","timezone":"America/Sao_Paulo"}';
 
@@ -155,6 +173,11 @@ class ProcessController extends Controller
 
         $validateArquivo = $arquivoValida->ValidaFormat($pathFile);
 
+
+        // echo "<pre>";
+
+        // print_R($validateArquivo);
+
         // echo "<pre>";
         // print_R($consultasStr);
 
@@ -163,15 +186,8 @@ class ProcessController extends Controller
         // echo "[$dateNow] --- NOVO PROCESSO: $pathFile, $consultas, $contrato, $filename \n";
 
         // require_once 'Arquivo_testes.php';
-        // $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
+        $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
         // $validate = $this->utilis_processs_new->validate($pathFile, $consultas, $headers);
-
-
-
-        // echo "<pre>";
-        // echo "meus dados dos validate\n";
-
-        // print_R($validate);
 
 
         // $qta_original = $validate['quantidade'];
@@ -184,8 +200,11 @@ class ProcessController extends Controller
         // $valorTotal = 0;
         // // $teste = [];
         // $valoresPorConsulta = [];
+        // $tiposCalculo = [];
+        // $temModulo = false;
+        // $temFaixa  = false;
 
-
+        // $redeLoja = $this->CapturaRedeLojaDoContrato->execute($contrato);
         // foreach ($consultas as $consulta) {
 
         //     echo "Consulta Atual : {$consulta}\n";
@@ -195,16 +214,36 @@ class ProcessController extends Controller
         //         $valoresPorConsulta[$consulta] = 0;
         //     }
 
-        //     $redeLoja = $this->CapturaRedeLojaDoContrato->execute($contrato);
-        //     list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($consulta, $redeLoja['rede'],  $valoresPorConsulta[$consulta]);
-        //     echo "Quantide nova Atual : {$valorLoteConsulta}\n";
+
+
+        //     // list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($consulta, $redeLoja['rede'],  $valoresPorConsulta[$consulta]);
+        //     // echo "Quantide nova Atual : {$valorLoteConsulta}\n";
+        //     // $valorTotal += $valorLoteConsulta;
+
+
+        //     list($valorLoteConsulta, $retornoCalculo) =  $this->BuscaValorLotePorConsulta->calcula($consulta, $redeLoja['rede'],  $valoresPorConsulta[$consulta]);
+        //     // $valoresPorConsulta[$consulta] = $valorLoteConsulta;
+
+        //     if (is_array($retornoCalculo) && isset($retornoCalculo['rdefxacnsvlr'])) {
+        //         $temFaixa = true;
+        //         $tiposCalculo[$consulta] = 'faixa';
+        //     } elseif ($retornoCalculo === true) {
+        //         $temModulo = true;
+        //         $tiposCalculo[$consulta] = 'modulo';
+        //     }
         //     $valorTotal += $valorLoteConsulta;
+
+        //     $valoresPorConsulta[$consulta] = [
+        //         'valor_consulta' => "R$ " . number_format($valorLoteConsulta, 2, ',', '.'),
+        //         'quantidade' => $valoresPorConsulta[$consulta],
+        //         'tipo_calculo' => isset($tiposCalculo[$consulta])
+        //             ? $tiposCalculo[$consulta]
+        //             : null,
+        //         'valor_consulta_float' => $valorLoteConsulta,
+        //     ];
         // }
 
-
-
-
-        // $json = json_encode(array(
+        // $arrayData = [
         //     'sucesso' => true,
         //     'valor' => "R$ " . number_format($valorTotal, 2, ',', '.'),
         //     'valorTotal' => $valorTotal,
@@ -212,13 +251,22 @@ class ProcessController extends Controller
         //     'quantidade' => $validate['quantidade'],
         //     'quantidade_total' => $qta_original,
         //     'erros' => $validate['erros'],
-        //     // 'modulo' => $modulo,
         //     'mensagem' => '',
-        //     JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        // ));
+        //     'tipos_calculo' => array_values(array_unique($tiposCalculo))
+        // ];
+        // if ($temModulo) {
+        //     $arrayData['modulo'] = true;
+        // }
+
+        // if ($temFaixa) {
+        //     $arrayData['volumetria'] = true;
+        // }
+
+        // $json = json_encode($arrayData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         // echo $json;
 
+        // unlink($pathFile);
 
 
         // echo "[$dateNow] > --- RESULTADO: [$result] - $pathFile, $consultas, $contrato, $filename \n";

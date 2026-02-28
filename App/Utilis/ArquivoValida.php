@@ -3,6 +3,14 @@
 class ArquivoValida
 {
 
+    protected $CapturaLimitArquivo;
+    public function __construct()
+    {
+
+
+        require_once __DIR__ . '/../models/CapturaLimitArquivo.php';
+        $this->CapturaLimitArquivo = new CapturaLimitArquivo();
+    }
 
     public static function ValidaFormat($pathFile)
     {
@@ -45,31 +53,26 @@ class ArquivoValida
     public function ValidaQuantidade($pathFile)
     {
 
-        echo "<pre>";
-        echo "chamei aqui\n";
+        require_once 'Config.php';
+        require_once 'CapturaLimitArquivo.php';
 
+        // $newlimiteRegArquivo = $this->capturaLimitArquivo->limitArquivo(417039);
+
+        $limiteRegArquivo = $newlimiteRegArquivo['limite_uso'];
         $contador = 0;
-
-
-        echo "<pre>";
-
-        print_R($pathFile);
 
         $fh = fopen($pathFile, "r");
 
-        if ($fh) {
-            while (($linha = fgets($fh)) !== false) {
+        if (($handle = fopen($pathFile, "r")) !== false) {
+            while (($linha = fgets($handle)) !== false) {
+
+                if (trim($linha) == '') {
+                    continue;
+                }
                 $contador++;
-
-                echo "<pre>";
-
-                // print_R($linha);
             }
+            fclose($handle);
         }
-
-        echo "<pre>";
-        echo "MINHA QUANTIDADE\n";
-
-        print_R($contador);
+        return [$contador, $limiteRegArquivo];
     }
 }

@@ -147,7 +147,11 @@ class new_arquivo extends Controller
     public function validate($pathFile, $consulta, $headers_consultas)
     {
 
-        echo "Estou na tela para chamar o validateS !!\n";
+        // echo "Estou na tela para chamar o validateS !!\n";
+
+        // echo "<pre>";
+        // echo "meu id da consultasssssss\n";
+        // print_r($consulta);
         //  $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_header_new($consultas, $headers);
 
         $headersConsulta = $this->CapturaCamposConsultas->Consultation_header_new($consulta, $headers_consultas);
@@ -155,10 +159,10 @@ class new_arquivo extends Controller
         // $coluna_obrigatorio = $colunasEsperadas['campos'];
         $headers = trim(implode(';', $headersConsulta['cpovars']));
 
-        echo "<pre>";
-        echo "MINHA COLUNA SEPARADAS\n";
+        // echo "<pre>";
+        // echo "MINHA COLUNA SEPARADAS\n";
 
-        print_R($headers);
+        // print_R($headers);
 
         $limiteRegArquivo = 30000;
 
@@ -176,8 +180,16 @@ class new_arquivo extends Controller
         $erros = [];
 
         $lim = 0;
-        if ($fh) {
-            while (($linha = fgets($fh)) !== false) {
+        if (($handle = fopen($pathFile, "r")) !== false) {
+            while (($linha = fgets($handle)) !== false) {
+                // if ($fh) {
+                //     while (($linha = fgets($fh)) !== false) {
+
+                // echo "<pre>";
+                // echo "minhas linhas saindo aqui\n";
+
+
+                // print_R($linha);
 
                 $linhaValida = true;
                 $linha = preg_replace('/^\xEF\xBB\xBF/', '', $linha);
@@ -190,6 +202,8 @@ class new_arquivo extends Controller
                 $colunas = str_getcsv($linha, ';');
                 $keys = str_getcsv($headers, ';');
 
+
+
                 foreach ($colunas as $i => $valor) {
                     if (strtolower(trim($valor)) == 'vazio') {
                         // if (strtolower(trim($valor)) == 'null') {
@@ -201,16 +215,21 @@ class new_arquivo extends Controller
                     $colunas[] = "";
                 }
 
+                // echo "<pre>";
+                // echo "novas keys\n";
+
+                // print_R($keys);
+
                 $associado = array_combine($keys, $colunas);
 
                 if (empty($associado)) {
                     continue;
                 }
 
-                echo "<pre>";
-                echo "meus dados do associado";
+                // echo "<pre>";
+                // echo "meus dados do associado";
 
-                print_R($associado);
+                // print_R($associado);
 
                 $qtRegistros++;
 
@@ -320,18 +339,25 @@ class new_arquivo extends Controller
                     // $newregistros[$idConsulta][] = implode(';', array_values($associado));
                 }
             }
-            fclose($fh);
+            fclose($handle);
         }
 
-        // echo "<pre>";
-        // echo "meus novos registros";
+        echo "<pre>";
+        echo "meus novos registros\n";
 
-        // print_R($newregistros);
+        print_R($documentoInvalido);
+
+
 
         $totalErros = 0;
         foreach ($documentoInvalido as $doc) {
             $totalErros += $doc['quantidade'];
         }
+
+
+        echo "<pre>";
+
+        print_r($totalErros);
 
 
 
@@ -349,6 +375,7 @@ class new_arquivo extends Controller
                 'total_erros' => $totalErros
             ];
         }
+
         if (!empty($documentoInvalido)) {
             $erros[] = [
                 'msg' => mb_convert_encoding("Encontrados documentos inválidos ou de tipo diferente do escolhido no arquivo", 'UTF-8', 'UTF-8'),
@@ -754,14 +781,14 @@ class new_arquivo extends Controller
     }
 
 
-    public function soaps()
-    {
+    // public function soaps()
+    // {
 
-        echo "<pre>";
+    //     echo "<pre>";
 
-        $pep = "N";
-        $resPep = $this->soaps->verificaConstaPEP('44004294827');
+    //     $pep = "N";
+    //     $resPep = $this->soaps->verificaConstaPEP('44004294827');
 
-        print_R('meus dadaos');
-    }
+    //     print_R('meus dadaos');
+    // }
 }

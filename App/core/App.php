@@ -77,10 +77,7 @@ class App
                     require_once "App/controllers/{$controller}.php";
 
                     $controller = new $controller;
-
-                    echo "<pre>";
-
-                    print_R($controller);
+                    //removido daqui
                     call_user_func_array([$controller, $method], $matches);
 
                     return;

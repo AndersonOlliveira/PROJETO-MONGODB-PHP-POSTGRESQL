@@ -82,8 +82,17 @@ class CapturaCamposConsultas extends Model
 
     public function Consultation_header_new($dados, $headers)
     {
-        $description = array_map('trim', explode(',', $headers));
+        // echo "<pre>";
 
+        // print_r('estou chamando dentro do dados');
+        // print_r($dados);
+
+
+        $description = array_map('trim', explode(';', $headers));
+        // echo "<pre>";
+
+        // print_r('estou chamando dentro do headers');
+        // print_r($description);
         $orderBy = "CASE cpovar ";
         foreach ($description as $i => $campo) {
             $campo = addslashes($campo);
@@ -92,10 +101,11 @@ class CapturaCamposConsultas extends Model
         $orderBy .= "END";
 
         $ids = $dados;
-        $idConsultation = array_map('intval', $dados);
+        $idConsultation = array_map('intval', (array)$dados);
         $ids = implode(',', $ids);
         $placeholders = implode(',', array_fill(0, count($idConsultation), '?'));
 
+        $sql = "";
         $sql = "SELECT
         	DISTINCT cpovar, cpodsc, regcod,
              {$orderBy} AS ordem
@@ -117,6 +127,12 @@ class CapturaCamposConsultas extends Model
                 $description
             );
 
+
+            echo "<pre>";
+            echo "meus PARAMETROS";
+
+            var_dump($params);
+
             $results = $this->db->prepare($sql);
             $results->execute($params);
 
@@ -125,9 +141,13 @@ class CapturaCamposConsultas extends Model
             $cpodsc = [];
             $plugin = [];
 
+
+
             if ($results->rowCount() > 0) {
 
                 while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+
+
 
                     $cpovar[] = trim($row['cpovar']);
 
@@ -140,10 +160,9 @@ class CapturaCamposConsultas extends Model
                     $cpodsc[] = mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1');
                 }
 
-                // If you want to call heades for each idConsultation, collect results in an array
                 $headersNew = [];
                 foreach ($idConsultation as $id) {
-                    $headersNew[$id] = self::heades($id);
+                    $headersNew[$id] = self::heades($id, $headers);
                 }
 
                 $result = [
@@ -154,16 +173,15 @@ class CapturaCamposConsultas extends Model
                     'headersNew' => $headersNew
                 ];
 
+
                 $retorno_consulta =  $this->consult_header_plugin($result);
 
                 return $retorno_consulta;
             }
             return false;
         } catch (PDOException $e) {
-            // Loga ou exibe o erro (não exiba em produção!)
-
-            error_log('Erro ao buscar consultas: ' . $e->getMessage());
             return 'Erro ao buscar consultas: ' . $e->getMessage();
+            var_dump('Erro ao buscar consultas: ' . $e->getMessage());
         }
     }
     public function heades($codConsulta)

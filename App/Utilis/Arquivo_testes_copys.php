@@ -62,249 +62,6 @@ class Arquivo_testes extends Controller
             return true;
         }
     }
-
-    function ValidaCpf($cpf)
-    {
-
-
-        // Extrai somente os números
-        $cpf = preg_replace('/[^0-9]/is', '', $cpf);
-        // Verifica se foi informado todos os digitos corretamente
-        if (strlen($cpf) != 11) {
-            return ['valid' => 0, 'reason' => 'comprimento'];
-            // return false;
-        }
-        // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
-        if (preg_match('/(\d)\1{10}/', $cpf)) {
-            return ['valid' => 0, 'reason' => 'sequencia'];
-            // return false;
-        }
-
-        // Faz o calculo para validar o CPF
-        for ($t = 9; $t < 11; $t++) {
-            for ($d = 0, $c = 0; $c < $t; $c++) {
-                $d += $cpf[$c] * (($t + 1) - $c);
-            }
-            $d = ((10 * $d) % 11) % 10;
-            if ($cpf[$c] != $d) {
-                return ['valid' => 0, 'reason' => 'digit_mismatch', 'possicao' => $t];
-            }
-        }
-
-        return ['valid' => true, 'reason' => 'ok'];
-    }
-
-
-    function ValidaCnpj($cnpj)
-    {
-        $cnpj = preg_replace('/[^0-9]/', '', (string) $cnpj);
-
-        // Valida tamanho
-        if (strlen($cnpj) != 14) {
-            return ['valid' => 0, 'reason' => 'comprimento'];
-        }
-
-        // Verifica se todos os dígitos são iguais
-        if (preg_match('/(\d)\1{13}/', $cnpj)) {
-            return ['valid' => 0, 'reason' => 'sequencia'];
-        }
-
-        // Valida dígitos verificadores
-        if (self::validaDigito($cnpj, 12)) {
-            return ['valid' => 0, 'reason' => 'digito1'];
-        }
-        if (self::validaDigito($cnpj, 13)) {
-            return ['valid' => 0, 'reason' => 'digito2'];
-        }
-
-        return ['valid' => 1, 'reason' => null];
-    }
-
-    function validaDigito($cnpj, $pos)
-    {
-        $tamanho = $pos;
-        $multiplicador = $pos - 7;
-        $soma = 0;
-
-        for ($i = 0; $i < $tamanho; $i++) {
-            $soma += $cnpj[$i] * $multiplicador;
-            $multiplicador = ($multiplicador == 2) ? 9 : $multiplicador - 1;
-        }
-
-        $resto = $soma % 11;
-        $digito = ($resto < 2) ? 0 : 11 - $resto;
-
-        return $cnpj[$pos] == $digito;
-    }
-
-
-
-
-
-    public function validarLinhaNew(
-        array $associado,
-        int $idConsulta,
-        array &$documentoInvalido,
-        int $linha,
-        array $obrigatoriosPorConsulta,
-        array &$registrosValidos,
-        $colunasEsperadas
-    ) {
-
-        $linhaValida = true;
-
-        // ===============================
-        // 1️⃣ VALIDAR CAMPOS OBRIGATÓRIOS
-        // ===============================
-        foreach ($obrigatoriosPorConsulta as $chaveObrigatoria) {
-
-            $chaveObrigatoria = trim($chaveObrigatoria);
-
-            if (
-                array_key_exists($chaveObrigatoria, $associado) &&
-                trim((string)$associado[$chaveObrigatoria]) === ''
-            ) {
-
-                $linhaValida = false;
-
-                $documentoInvalido['linha'][] = $linha;
-                $documentoInvalido['quantidade']++;
-                $documentoInvalido['erro_tipo'] = 'Campo Obrigatório Faltante';
-
-                if (!isset($documentoInvalido[$chaveObrigatoria])) {
-                    $documentoInvalido[$chaveObrigatoria] = [
-                        'linha'      => [$linha],
-                        'erro_tipo'  => 'Campo Obrigatório Faltante',
-                        'quantidade' => 1
-                    ];
-                } else {
-                    $documentoInvalido[$chaveObrigatoria]['quantidade']++;
-                    $documentoInvalido[$chaveObrigatoria]['linha'][] = $linha;
-                }
-            }
-        }
-
-        // ===============================
-        // VALIDAR CPF / CNPJ
-        // ===============================
-        if (isset($associado['tcpfcnpj'])) {
-
-            $docBruto = preg_replace("/\r|\n/", "", (string)$associado['tcpfcnpj']);
-            $numero   = preg_replace("/\D/", "", $docBruto);
-
-            if ($numero !== '') {
-
-                if (strlen($numero) === 11) {
-
-                    if (!$this->validarDocumento($numero, 'cpf', $registrosValidos, $documentoInvalido)) {
-                        $linhaValida = false;
-                    }
-                } elseif (strlen($numero) === 14) {
-
-                    if (!$this->validarDocumento($numero, 'cnpj', $registrosValidos, $documentoInvalido)) {
-                        $linhaValida = false;
-                    }
-                } else {
-
-                    $linhaValida = false;
-
-                    if (!isset($documentoInvalido[$numero])) {
-                        $documentoInvalido[$numero] = [
-                            'documento'  => $numero,
-                            'valid'      => 0,
-                            'reason'     => 'comprimento inválido',
-                            'quantidade' => 1
-                        ];
-                    } else {
-                        $documentoInvalido[$numero]['quantidade']++;
-                    }
-                }
-            }
-        }
-
-        // ===============================
-        //  VALIDAR LINHA COMPLETA 
-        // ===============================
-        $coluna = preg_replace(
-            "/\r|\n/",
-            "",
-            implode(';', array_values($associado))
-        );
-
-        $somenteNumeros = preg_replace("/\D/", "", $coluna);
-
-
-
-
-        // ===============================
-        // RETORNO FINAL
-        // ===============================
-        return $linhaValida;
-    }
-
-
-    public function process_new($pathFile, $consultas, $contrato, $nomeArquivo, $valortotal, $headers, $fingers)
-    {
-
-        // $r = 0;
-        // $contadorLinha = 0;
-        // $dadosCtr = $this->CapturaRedeLojaDoContrato->execute($contrato);
-        $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_header_new($consultas, $headers);
-        // $cabecalhos = [];
-
-        $idConsultation = array_map('intval', $consultas);
-        $id_headres = implode(',', $idConsultation);
-
-        //trasformo os ids em int e vira um array, para busca
-        $idsConsulta = is_array($id_headres)
-            ? $id_headres
-            : explode(',', $id_headres);
-
-
-        // $documentoInvalido = [];
-        // $registrosValidos = [];
-        // $registros = [];
-        $fh = fopen($pathFile, "r");
-        $coluna_obrigatorio = $colunasEsperadas['campos'];
-
-        foreach ($idsConsulta as $idConsulta) {
-
-            $idConsulta = (int) trim($idConsulta);
-
-            if (!isset($colunasEsperadas['headersNew'][$idConsulta][$idConsulta])) {
-                continue;
-            }
-
-            $headersConsulta = $colunasEsperadas['headersNew'][$idConsulta][$idConsulta]['cpovars'];
-
-
-            $retornodosdados = self::processarArquivoCSVNew(
-                $fh,
-                $headersConsulta,
-                $idConsulta,
-                $coluna_obrigatorio,
-                $pathFile,
-                $contrato,
-                $nomeArquivo,
-                $valortotal,
-                $fingers,
-                $colunasEsperadas
-            );
-        } //final do foreach
-
-        fclose($fh);
-    }
-    function ajustarColunas(array $colunas, array $headers): array
-    { {
-            while (count($colunas) < count($headers)) {
-                $colunas[] = '';
-            }
-
-            return array_slice($colunas, 0, count($headers));
-        }
-    }
-
-
     function processarArquivoCSVNew(
         $fh,
         array $headersConsulta,
@@ -335,11 +92,6 @@ class Arquivo_testes extends Controller
 
             $contadorLinha++;
 
-            echo "<pre>";
-            echo "minhas linhas\n";
-
-            print_r($linha);
-
             $linha = preg_replace('/^\xEF\xBB\xBF/', '', $linha);
 
             if (trim($linha) == '') {
@@ -355,6 +107,7 @@ class Arquivo_testes extends Controller
                 }
             }
 
+            // $colunas = self::ajustarColunas($colunas, $headersConsulta, $idConsulta);
             $colunas = self::ajustarColunas($colunas, $headersConsulta);
 
             $associado = array_combine($headersConsulta, $colunas);
@@ -430,7 +183,7 @@ class Arquivo_testes extends Controller
         echo "MEU TOTAL DE ARQUIVOS A SER PROCESSADOS\n";
 
         // print_r($registros);
-        print_r($registros);
+        print_r($documentoInvalido);
 
 
         die();
@@ -569,16 +322,267 @@ class Arquivo_testes extends Controller
         return "Sucesso";
     }
 
+    function validarLinhaNew(array $associado, int $idConsulta, array &$documentoInvalido, int $linha, array $obrigatoriosPorConsulta, array &$registrosValidos, $colunasEsperadas)
+    {
+        $linhaValida = true;
+        $contadorLinha = 0;
+        $registrosValidos = [];
+        $documentosProcessados = [];
+        $documentoInvalido = [
+            'linha'      => [],          // Array vazio para armazenar os números das linhas problemáticas
+            'erro_tipo'  => '',
+            'quantidade' => 0,           // Contador de erros inicializado em zero
+        ];
 
+        // echo "<pre>";
+        // echo "minha lista de associado \n";
+        // echo "minha linha {$linha} \n";
+
+        echo "<pre>";
+        echo "minhas colunas e chaves por id da consultas \n";
+        print_R($associado);
+        // colunasEsperadas
+
+
+        foreach ($obrigatoriosPorConsulta as $chave_obrigatoria) {
+
+            $chave_obrigatoria = trim($chave_obrigatoria);
+
+            if (array_key_exists($chave_obrigatoria, $associado) && trim($associado[$chave_obrigatoria]) === '') {
+                $linhaValida = false;
+
+                $documentoInvalido['linha'][] = $linha;
+
+                // Incrementa a quantidade de erros
+                $documentoInvalido['quantidade']++;
+
+                // Define o tipo de erro
+                $documentoInvalido['erro_tipo'] = 'Campo Obrigatório Faltante';
+
+                if (!isset($documentoInvalido[$chave_obrigatoria])) {
+                    $documentoInvalido[$chave_obrigatoria] = [
+                        'linha'   => [$linha],
+                        'erro_tipo'  => 'Campo Obrigatório Faltante',
+                        'quantidade' => 1
+                    ];
+                }
+            }
+
+
+            if (isset($associado['tcpfcnpj']) && !empty($associado['tcpfcnpj'])) {
+
+                $docBruto = preg_replace("/\r|\n/", "", $associado['tcpfcnpj']);
+                $numero = preg_replace("/\D/", "", $docBruto);
+
+
+
+                if (isset($documentosProcessados[$numero])) {
+                    continue;
+                }
+
+                $documentosProcessados[$numero] = true;
+
+                if (strlen($numero) === 11) {
+                    if (!$this->validarDocumento($numero, 'cpf', $registrosValidos, $documentoInvalido)) {
+                        $linhaValida = false;
+                    }
+                } elseif (strlen($numero) === 14) {
+                    if (!$this->validarDocumento($numero, 'cnpj', $registrosValidos, $documentoInvalido)) {
+                        $linhaValida = false;
+                    }
+                } else {
+                    if (!isset($documentoInvalido[$numero])) {
+                        $documentoInvalido[$numero] = [
+                            'documento'  => $numero,
+                            'valid'      => 0,
+                            'reason'     => 'comprimento',
+                            'quantidade' => 1
+                        ];
+                    } else {
+                        $documentoInvalido[$numero]['quantidade']++;
+                    }
+                    $linhaValida = false;
+                }
+
+
+                // array_unique(array_column($associado, $chave_obrigatoria));
+            }
+
+
+            $coluna  = preg_replace("/\r|\n/", "", implode(';', array_values($associado)));
+
+            echo "<pre>";
+            echo "minha coluna depois do pregrEPLACES\n";
+
+            print_R($coluna);
+            $numero = preg_replace("/\D/", "", $coluna);
+
+            if (!$linhaValida) {
+                return false;
+            }
+
+            // SE a linha for válida, guarda a linha ORIGINAL
+            if ($linhaValida) {
+
+                return true;
+            }
+        }
+    }
+
+    public function process_new($pathFile, $consultas, $contrato, $nomeArquivo, $valortotal, $headers, $fingers)
+    {
+
+        // $r = 0;
+        // $contadorLinha = 0;
+        // $dadosCtr = $this->CapturaRedeLojaDoContrato->execute($contrato);
+        $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_header_new($consultas, $headers);
+        // $cabecalhos = [];
+
+        $idConsultation = array_map('intval', $consultas);
+        $id_headres = implode(',', $idConsultation);
+
+        //trasformo os ids em int e vira um array, para busca
+        $idsConsulta = is_array($id_headres)
+            ? $id_headres
+            : explode(',', $id_headres);
+
+
+        // $documentoInvalido = [];
+        // $registrosValidos = [];
+        // $registros = [];
+        $fh = fopen($pathFile, "r");
+        $coluna_obrigatorio = $colunasEsperadas['campos'];
+
+        foreach ($idsConsulta as $idConsulta) {
+
+            $idConsulta = (int) trim($idConsulta);
+
+            if (!isset($colunasEsperadas['headersNew'][$idConsulta][$idConsulta])) {
+                continue;
+            }
+
+            $headersConsulta = $colunasEsperadas['headersNew'][$idConsulta][$idConsulta]['cpovars'];
+
+
+            echo "<pre>";
+            echo "HEADERS LOCALIZADOS\n";
+
+            print_r($headersConsulta);
+
+            die();
+
+            $retornodosdados = self::processarArquivoCSVNew(
+                $fh,
+                $headersConsulta,
+                $idConsulta,
+                $coluna_obrigatorio,
+                $pathFile,
+                $contrato,
+                $nomeArquivo,
+                $valortotal,
+                $fingers,
+                $colunasEsperadas
+            );
+        } //final do foreach
+
+        fclose($fh);
+    }
+
+    function ValidaCpf($cpf)
+    {
+
+
+        // Extrai somente os números
+        $cpf = preg_replace('/[^0-9]/is', '', $cpf);
+        // Verifica se foi informado todos os digitos corretamente
+        if (strlen($cpf) != 11) {
+            return ['valid' => 0, 'reason' => 'comprimento'];
+            // return false;
+        }
+        // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
+        if (preg_match('/(\d)\1{10}/', $cpf)) {
+            return ['valid' => 0, 'reason' => 'sequencia'];
+            // return false;
+        }
+
+        // Faz o calculo para validar o CPF
+        for ($t = 9; $t < 11; $t++) {
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) {
+                return ['valid' => 0, 'reason' => 'digit_mismatch', 'possicao' => $t];
+            }
+        }
+
+        return ['valid' => true, 'reason' => 'ok'];
+    }
+
+
+    function ValidaCnpj($cnpj)
+    {
+        $cnpj = preg_replace('/[^0-9]/', '', (string) $cnpj);
+
+        // Valida tamanho
+        if (strlen($cnpj) != 14) {
+            return ['valid' => 0, 'reason' => 'comprimento'];
+        }
+
+        // Verifica se todos os dígitos são iguais
+        if (preg_match('/(\d)\1{13}/', $cnpj)) {
+            return ['valid' => 0, 'reason' => 'sequencia'];
+        }
+
+        // Valida dígitos verificadores
+        if (self::validaDigito($cnpj, 12)) {
+            return ['valid' => 0, 'reason' => 'digito1'];
+        }
+        if (self::validaDigito($cnpj, 13)) {
+            return ['valid' => 0, 'reason' => 'digito2'];
+        }
+
+        return ['valid' => 1, 'reason' => null];
+    }
+
+    function validaDigito($cnpj, $pos)
+    {
+        $tamanho = $pos;
+        $multiplicador = $pos - 7;
+        $soma = 0;
+
+        for ($i = 0; $i < $tamanho; $i++) {
+            $soma += $cnpj[$i] * $multiplicador;
+            $multiplicador = ($multiplicador == 2) ? 9 : $multiplicador - 1;
+        }
+
+        $resto = $soma % 11;
+        $digito = ($resto < 2) ? 0 : 11 - $resto;
+
+        return $cnpj[$pos] == $digito;
+    }
+
+
+
+    function ajustarColunas(array $colunas, array $headers): array
+    { {
+            while (count($colunas) < count($headers)) {
+                $colunas[] = '';
+            }
+
+            return array_slice($colunas, 0, count($headers));
+        }
+    }
 
     function validarLinha(array $associado, int $idConsulta, array &$documentoInvalido, int $linha, &$obrigatoriosPorConsulta)
     {
         $linhaValida = true;
         $contadorLinha = 0;
+
+
         foreach ($obrigatoriosPorConsulta as $chave_obrigatoria) {
 
             $chave_obrigatoria = trim($chave_obrigatoria);
-
 
             if (array_key_exists($chave_obrigatoria, $associado) && trim($associado[$chave_obrigatoria]) === '') {
                 $linhaValida = false;

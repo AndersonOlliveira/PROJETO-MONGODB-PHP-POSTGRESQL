@@ -353,6 +353,47 @@ class process extends Model
 
 		];
 	}
+	//finizo o job com status 8 para 17 para finalizar o job
+	public function up_status_eight($dados)
+	{
+		$erros = [];
+
+		echo "<pre>";
+		echo "chegando no update para o status 17\n";
+
+		print_r($dados['processo_id']);
+
+
+		try {
+			//recebe 17
+			$sql = " UPDATE progestor.transacao SET status = ?, sucesso = ? , resposta_json = ?  WHERE id_processo = ? 
+			AND transacao_id IN ( SELECT transacao_id FROM progestor.transacao 
+			WHERE id_processo = ?  AND status = ? )";
+
+			$sql_up =  [17, 0, 'error', $dados['processo_id'], $dados['processo_id'], 8];
+
+			echo "<pre>";
+			echo "meu sql pronto\n";
+			print_R($sql_up);
+			$result = $this->db->prepare($sql);
+			$result->execute($sql_up);
+		} catch (\Exception $e) {
+
+			echo $e->getMessage();
+
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
+	}
 	public function atualizarValorJobs($id_process, $contrato, $valor)
 	{
 		$erros = [];
@@ -774,5 +815,85 @@ HAVING
 			'status' => empty($erros) ? 2 : 0,
 
 		];
+	}
+
+	public function busca_erros_eight()
+	{
+
+		$sql =  "";
+		$sql = "SELECT  p.processo_id,
+          SUM(t.qtd_registros) AS qtd_registros,
+          SUM(t.qtd_status_egth) AS qtd_status_egth,
+          SUM(t.qtd_registros_processado) AS qtd_registros_processado
+		  FROM progestor.processo AS p
+		  INNER JOIN (
+		  SELECT 
+           id_processo, 
+           transacao_id,
+		   SUM(
+            CASE 
+                WHEN campo_aquisicao IS NOT NULL 
+                AND status NOT IN (6,17)
+                THEN 1 ELSE 0 
+            END
+        ) AS qtd_registros,
+       
+        SUM(
+            CASE 
+                WHEN campo_aquisicao IS NOT NULL 
+                AND status IN (3)
+                THEN 1 ELSE 0 
+            END
+        ) AS qtd_registros_processado,
+				SUM(
+					CASE 
+						WHEN campo_aquisicao IS NOT NULL 
+						AND status = 8
+						THEN 1 ELSE 0 
+					END
+				) AS qtd_status_egth
+			FROM progestor.transacao
+			GROUP BY id_processo, transacao_id
+		) t ON t.id_processo = p.processo_id
+		where p.processo_id = 168 AND p.pause = false AND p.error = false
+		GROUP BY p.processo_id
+		HAVING SUM(t.qtd_status_egth) > 0 order by p.processo_id desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute();
+			// $result = $this->db->query($sql);
+
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+		}
+	}
+
+	public function up_status_finish_eight($id)
+	{
+
+		echo "<pre>";
+		echo "MEUS DADOS PARA SER ATUALIZAD NO POSTEGREE\n";
+
+		$sql = "UPDATE progestor.processo SET finalizado = ? where processo_id = ?;";
+
+		try {
+			//true = 1 
+			$dadosTransacao = [1, $id];
+			$results = $this->db->prepare($sql);
+			$results->execute($dadosTransacao);
+
+			echo "ok para atualizar\n";
+
+			return true;
+		} catch (\Exception $e) {
+			echo "<pre>";
+
+			print_r($e->getMessage());
+
+			return $e->getMessage();
+		}
 	}
 }

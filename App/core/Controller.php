@@ -36,9 +36,13 @@ class Controller
     public function Utilis($className)
     {
         //para windows
-        //$file = __DIR__ . "../../Utilis/{$className}.php";
-        $file = __DIR__ . "/../Utilis/{$className}.php";
 
+        // echo "<pre>";
+
+        // print_R($className);
+        $file = __DIR__ . "../../Utilis/{$className}.php";
+        // $file = __DIR__ . "/../Utilis/{$className}.php";
+//
         if (!file_exists($file)) {
             throw new \Exception("Arquivo {$file} não encontrado! \n");
         }

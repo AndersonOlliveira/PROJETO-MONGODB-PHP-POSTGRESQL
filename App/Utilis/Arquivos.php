@@ -1021,8 +1021,60 @@ class Arquivos
 		}
 
 		//vou atualizar o valor correto com o que tiver de 3 ou 12 que teve sucesso na consulta
+	}
+
+	public function process_finalizar_status_erros($dados)
+	{
+
+		echo "<pre>";
+
+		print_R('estou chegando aqui');
 
 
+		$somatar = 0;
 
+		foreach ($dados as $key => $valores) {
+
+			// echo "<pre>";
+
+			// print_r($valores);
+			$somar =  $valores['qtd_registros_processado'] + $valores['qtd_status_egth'];
+
+			if ($somar == $valores['qtd_registros']) {
+
+				echo "<pre>";
+				echo "valores a ser processado\n";
+
+				print_r($valores);
+
+				//localizado vou realizar o update na base 
+				$resultado = $this->filtros->up_status_eight($valores);
+				// echo "<pre>";
+				// echo "meu resultado vindo aqui?\n";
+
+				// print_r($resultado);
+
+
+				if (isset($resultado) && $resultado['status'] == 2) {
+
+					echo "<pre>";
+					echo "passei no if?\n";
+
+					var_dump($resultado);
+					var_dump($valores['processo_id']);
+
+					//realizo o update para true dentro do processo para finalizar o job e gerar o resultado.s
+					$result_up = $this->filtros->up_status_finish_eight($valores['processo_id']);
+
+					echo "<pre>";
+					echo "passei no if?\n";
+
+					var_dump($result_up);
+					// var_dump($valores['processo_id']);
+
+
+				}
+			}
+		}
 	}
 }

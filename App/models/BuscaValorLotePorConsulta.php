@@ -25,6 +25,11 @@ class BuscaValorLotePorConsulta  extends Model
 			$codConsulta = 280968;
 		}
 
+		echo "<pre>";
+		echo "MEUS DADOS VINDO AQUI COM O COD DA CONSULTA\n";
+
+		print_r($codConsulta);
+
 		$volumetria = $CapturaVolumetria->captura($rede, $codConsulta);
 
 		$temFaixa = (is_array($volumetria) && isset($volumetria['rdefxacnsvlr']));
