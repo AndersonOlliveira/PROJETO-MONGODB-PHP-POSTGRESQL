@@ -1,0 +1,15 @@
+[
+        {
+        "id_process": "42",
+        "data_alteracao": "2026-02-10 13:54:56",
+        "status": 6,
+        "Qta_Original": "29968",
+        "infos": "Qta_Original  29968 Qta_Afetada 26713",
+        "info_auditoria_finger": "{\"fingerprint\":1758330160,\"browser\":\"Chrome 144\",\"flash\":\"N\/A\",\"cookie\":true,\"display\":\"24|2560|1080|2560|1032\",\"formfields\":\"url=https:\/\/site2.proscore.com.br\/progestor\/progestor.chp?r=extrato&tctrid=417039&tctraut=4849a8ea87bdfd589051d53faa1e0da6|FORM=|Input=|FORM=\",\"java\":\"false\",\"language\":\"lang=pt-BR|syslang=|userlang=\",\"silverlight\":\"N\/A\",\"os\":\"Windows NT 4.0|32 bits\",\"timezone\":-3,\"touch\":false,\"plugins\":\"pdf viewer|chrome pdf viewer|chromium pdf viewer|microsoft edge pdf viewer|webkit built-in pdf\",\"useragent\":\"mozilla\/5.0 (windows nt 10.0; win64; x64) applewebkit\/537.36 (khtml, like gecko) chrome\/144.0.0.0 safari\/537.36|Win32|pt-BR\",\"truebrowser\":\"Safari\",\"ip_address\":{\"ip\":\"201.26.23.44\",\"hostname\":\"201-26-23-44.dsl.telesp.net.br\",\"city\":\"S\u00e3o Paulo\",\"region\":\"S\u00e3o Paulo\",\"country\":\"BR\",\"loc\":\"-23.5475,-46.6361\",\"org\":\"AS27699 TELEF\u00d4NICA BRASIL S.A\",\"postal\":\"01000-000\",\"timezone\":\"America\/Sao_Paulo\",\"readme\":\"https:\/\/ipinfo.io\/missingauth\"}}",
+        "requested": true,
+        "reprocessado_day": "2026-02-10 15:02:05",
+        "new_id_process": "43",
+        "info_reprocess": "Reprocessamento id 42 Qta Repres 25980 Atualizado o transation_id para 43"
+
+}
+]

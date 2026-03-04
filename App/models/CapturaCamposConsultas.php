@@ -80,127 +80,8 @@ class CapturaCamposConsultas extends Model
         return $cpovar;
     }
 
-    public function Consultation_header_new($dados, $headers)
+    public function Consultation_header_new($idConsultation)
     {
-        // echo "<pre>";
-
-        // print_r('estou chamando dentro do dados');
-        // print_r($dados);
-
-
-        $description = array_map('trim', explode(';', $headers));
-        // echo "<pre>";
-
-        // print_r('estou chamando dentro do headers');
-        // print_r($description);
-        $orderBy = "CASE cpovar ";
-        foreach ($description as $i => $campo) {
-            $campo = addslashes($campo);
-            $orderBy .= "WHEN '{$campo}' THEN {$i} ";
-        }
-        $orderBy .= "END";
-
-        $ids = $dados;
-        $idConsultation = array_map('intval', (array)$dados);
-        $ids = implode(',', $ids);
-        $placeholders = implode(',', array_fill(0, count($idConsultation), '?'));
-
-        $sql = "";
-        $sql = "SELECT
-        	DISTINCT cpovar, cpodsc, regcod,
-             {$orderBy} AS ordem
-            FROM
-            rdecns inner join 
-            rdecnsreg on rdecnsid = rdecnsregrdecns inner join 
-            regcpo on rdecnsregreg = regcporeg  inner join
-            cpo on cpoid = regcpocpo
-            inner join
-            reg on regid = rdecnsregreg
-            WHERE rdecnsid IN ($placeholders)
-            AND cpo.cpovar IN (" . implode(',', array_fill(0, count($description), '?')) . ")
-            ORDER BY ordem, regcod";
-
-        try {
-
-            $params = array_merge(
-                $idConsultation,
-                $description
-            );
-
-
-            echo "<pre>";
-            echo "meus PARAMETROS";
-
-            var_dump($params);
-
-            $results = $this->db->prepare($sql);
-            $results->execute($params);
-
-            $cpovar = [];
-            $dados_geral = [];
-            $cpodsc = [];
-            $plugin = [];
-
-
-
-            if ($results->rowCount() > 0) {
-
-                while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-
-
-
-                    $cpovar[] = trim($row['cpovar']);
-
-                    $dados_geral[] = [
-                        $row['cpovar'],
-                        $row['regcod'],
-                        mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1')
-                    ];
-                    $plugin[] = $row['regcod'];
-                    $cpodsc[] = mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1');
-                }
-
-                $headersNew = [];
-                foreach ($idConsultation as $id) {
-                    $headersNew[$id] = self::heades($id, $headers);
-                }
-
-                $result = [
-                    'cpovars' => array_unique($cpovar),
-                    // 'plugin' => $plugin,
-                    'descriptions' => array_unique($cpodsc),
-                    'geral' => $dados_geral,
-                    'headersNew' => $headersNew
-                ];
-
-
-                $retorno_consulta =  $this->consult_header_plugin($result);
-
-                return $retorno_consulta;
-            }
-            return false;
-        } catch (PDOException $e) {
-            return 'Erro ao buscar consultas: ' . $e->getMessage();
-            var_dump('Erro ao buscar consultas: ' . $e->getMessage());
-        }
-    }
-    public function heades($codConsulta)
-    {
-
-
-        echo "<pre>";
-        echo "meu header enviado";
-
-        print_R($codConsulta);
-
-
-
-
-        echo "<pre>";
-        echo "MEU COND DE CONSULTA \n";
-
-        print_R($codConsulta);
-        $ids = $codConsulta;
 
         $sql = "";
         $sql = "SELECT
@@ -212,78 +93,58 @@ class CapturaCamposConsultas extends Model
             cpo on cpoid = regcpocpo
             inner join
             reg on regid = rdecnsregreg
-            WHERE rdecnsid = ?;";
+            where
+            rdecnsid = ?;";
+
+        $dados = [];
+        $dados[] = $idConsultation;
+
+        $result = $this->db->prepare($sql);
+        $result->execute($dados);
+
+        $cpovar = [];
+        $dados_geral = [];
+        $cpodsc = [];
+        $plugin = [];
 
 
-        try {
+        if ($result->rowCount() > 0) {
 
-            $dadoss = [];
-            $dadoss[] = $codConsulta;
-            // echo "<pre>";
-            // echo "dados para consultas";
-            // print_R($ids);
-            // echo "<pre>";
-            // echo "id vindo do consultation passando para a variavle dados";
-            // print_R($dadoss);
+            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 
-            $results = $this->db->prepare($sql);
-            $results->execute([$codConsulta]);
-
-            $cpovar = [];
-            $cpovarCod = [];
-            $dados_geral = [];
-            $cpodsc = [];
-            $plugin = [];
-
-
-            if ($results->rowCount() > 0) {
-
-                while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-
-
-                    // echo "<pre>";
-                    // echo "meu resultado da consulta\n";
-                    // print_r($row);
-
-                    $cpovar[] = trim($row['cpovar']);
-                    // $cpovar[] = implode(',',$row['cpovar']);
-                    // Use $codConsulta as the key, since $dadoss is an array and cannot be used as an array key
-                    // $cpovarCod[] = $row['cpovar'];
-                    // $dados_geral[] = [
-                    //     $row['cpovar'],
-                    //     $row['regcod'],
-                    //     mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1')
-                    // ];
-                    // $plugin[] = $row['regcod'];
-                    // $cpodsc[] = mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1');
-                }
-
-                return [
-                    $codConsulta => [
-                        'cpovars'       => array_values(array_unique($cpovar)),
-                        'tes'       => trim(implode(',', array_unique($cpovar))),
-                        // 'descriptions' => array_values(array_unique($cpodsc)),
-                        // 'geral'        => $dados_geral
-                    ]
+                $cpovar[] = $row['cpovar'];
+                $dados_geral[] = [
+                    $row['cpovar'],
+                    $row['regcod'],
+                    mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1')
                 ];
-
-
-                // echo "<pre>";
-                // echo "meu resultado da consulta\n";
-                // print_r($result);
-
-
-                // $retorno_consulta =  $this->consult_header_plugin($result);
-
-                // return $retorno_consulta;
+                $plugin[] = $row['regcod'];
+                $cpodsc[] = mb_convert_encoding($row['cpodsc'], 'UTF-8', 'ISO-8859-1');
             }
-            return false;
-        } catch (PDOException $e) {
-            // Loga ou exibe o erro (não exiba em produção!)
 
-            error_log('Erro ao buscar consultas: ' . $e->getMessage());
-            return 'Erro ao buscar consultas: ' . $e->getMessage();
+            $result = [
+                'cpovars' => array_unique($cpovar),
+                // 'plugin' => $plugin,
+                'descriptions' => array_unique($cpodsc),
+                'geral' => $dados_geral
+            ];
+
+            // return [
+            //     'cpovars' => array_unique($cpovar),
+            //     'plugin' => $plugin,
+            //     'descriptions' => array_unique($cpodsc),
+            //     'geral' => $dados_geral
+            // ];
+
+
+            // print_r($result);
+
+            $retorno_consulta =  $this->consult_header_plugin($result);
+            // echo "<pre>";
+            // print_r($retorno_consulta);
+            return $retorno_consulta;
         }
+        return false;
     }
 
     public function consult_header_plugin($dados_consult)

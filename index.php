@@ -1,4 +1,4 @@
- <?php
+<?php
 
 
 date_default_timezone_set('America/Sao_Paulo');
@@ -17,9 +17,9 @@ function logInfo($mensagem)
     echo "[" . date('H:i:s') . "] $mensagem\n";
 }
 
-$tempo_esperara = 20;
+$tempo_esperara = 60;
 $id = null;
-$quantidade = 100;
+$quantidade = 1000;
 logInfo("Iniciando a aplicação...");
 $app = new App();
 
@@ -30,7 +30,7 @@ if (php_sapi_name() == 'cli') {
         try {
 
             logInfo('Executando o Loop da Aplicação...');
-            sleep(2);
+            sleep(5);
 
             $app->processar($id, $quantidade);
 

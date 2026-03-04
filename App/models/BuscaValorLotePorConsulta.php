@@ -17,18 +17,18 @@ class BuscaValorLotePorConsulta  extends Model
 
 		$result = $CapturaModulo->resultModulo($codConsulta);
 
-		if ($codConsulta == 265919) {
-			$result = true;
-		}
-		if ($codConsulta == 283092) {
-			$rede = 5290;
-			$codConsulta = 280968;
-		}
+		// if ($codConsulta == 265919) {
+		// 	$result = true;
+		// }
+		// if ($codConsulta == 283092) {
+		// 	$rede = 5290;
+		// 	$codConsulta = 280968;
+		// }
 
-		echo "<pre>";
-		echo "MEUS DADOS VINDO AQUI COM O COD DA CONSULTA\n";
+		// echo "<pre>";
+		// echo "MEUS DADOS VINDO AQUI COM O COD DA CONSULTA\n";
 
-		print_r($codConsulta);
+		// print_r($codConsulta);
 
 		$volumetria = $CapturaVolumetria->captura($rede, $codConsulta);
 
@@ -40,7 +40,7 @@ class BuscaValorLotePorConsulta  extends Model
 
 			$valor = $CapturaModulo->CaputuraValor($codConsulta);
 			if ($valor) {
-				return [0.98 * $quantidade, $result];
+				return [$valor * $quantidade, $result];
 			}
 		}
 
