@@ -64,11 +64,14 @@ class ListarController extends Controller
 
 
     //aqui vem os dados paralisados
-    $jobs_parados = $this->utilss->get_data_paralizar();
+    // $jobs_parados = $this->utilss->get_data_paralizar();
 
-    if (isset($jobs_parados)) {
-        $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
-    }
+
+    // die();
+
+    // if (isset($jobs_parados)) {
+    //   $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
+    // }
 
     // if (isset($pasta)) {
     //   //envio para a pasta de arquivos para processarl

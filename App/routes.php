@@ -22,6 +22,7 @@ return [
     '/soap' => ['ProcessController', 'soapControll'],
     '/Lista_json' => ['ProcessController', 'get_all_json'],
     '/api/get_dados/{id}' => ['ApiController', 'lista_dados'],
-    '/api/get_dadoss' => ['ApiController', 'inserir_info_paralizado'],
-    '/api/get_upDados' => ['ApiController', 'inserir_info_paralizados']
+    '/api/up_dados_paralisar' => ['ApiController', 'inserir_info_paralizados_true'],
+    '/api/get_upDados' => ['ApiController', 'inserir_info_paralizados'],
+    '/api/get_fingers/{id}' => ['ApiController', 'push_fingers']
 ];

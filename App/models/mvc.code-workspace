@@ -5,6 +5,12 @@
 		},
 		{
 			"path": "../.."
+		},
+		{
+			"path": "../../../../new_projeto_progestor"
+		},
+		{
+			"path": "../../../../projeto_mvc_teste"
 		}
 	],
 	"settings": {}

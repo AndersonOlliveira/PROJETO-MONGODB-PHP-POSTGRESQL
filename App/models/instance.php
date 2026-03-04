@@ -1,5 +1,11 @@
 
 <?php
+
+// ini_set('memory_limit', '1256M');
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 //como náo tem o autoLoad precisa passar o nome do aquivo de conexao para poder usar dentro do porjeto
 require_once __DIR__ . '../../core/MongoConect.php';
 
@@ -585,7 +591,108 @@ class instance extends MongoConect
         ];
 
         $query = new MongoDB\Driver\Query([], $option);
-        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizars}", $query);
+        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizar}", $query);
         return iterator_to_array($cursor);
+    } //BUSCO A DATA PARA NO MONGO PARA SANER 
+
+    public function get_finger_paralizar($id)
+    {
+
+        $filtros = [];
+        if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
+            $filtros[] = [
+                'contrato' => new MongoDB\BSON\ObjectId($id)
+            ];
+        } else {
+
+            $filtros[] = [
+                'contrato'  => $id,
+            ];
+        }
+
+        if (empty($filtros)) {
+            return [];
+        }
+
+
+        $option = [
+            'projection' => [
+                'id_processo' => 1,
+                'contrato' => 1,
+                'paralisado' => 1,
+                'data' => 1,
+                'finger' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+
+            $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizars}", $query);
+
+            return iterator_to_array($cursor);
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function get_finger_parar_reprocessar($id)
+    {
+
+
+        $filtros = [];
+        if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
+            $filtros[] = [
+                'id_process' => new MongoDB\BSON\ObjectId($id)
+            ];
+        } else {
+
+            $filtros[] = [
+                //busca por um string e como esta salvo dentro do mongo
+                'id_process' => (string)$id
+            ];
+        }
+
+        if (empty($filtros)) {
+            return [];
+        }
+
+
+
+        $option = [
+            'projection' => [
+                'id_process' => 1,
+                'data_alteracao' => 1,
+                'info_auditoria_finger' => 1,
+                // 'data' => 1,
+                'finger' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+            //collection finger
+            $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados}", $query);
+
+            return iterator_to_array($cursor);
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }

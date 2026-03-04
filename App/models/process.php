@@ -855,7 +855,7 @@ HAVING
 			FROM progestor.transacao
 			GROUP BY id_processo, transacao_id
 		) t ON t.id_processo = p.processo_id
-		where p.processo_id = 168 AND p.pause = false AND p.error = false
+		where p.pause = false AND p.error = false
 		GROUP BY p.processo_id
 		HAVING SUM(t.qtd_status_egth) > 0 order by p.processo_id desc;";
 
@@ -894,6 +894,93 @@ HAVING
 			print_r($e->getMessage());
 
 			return $e->getMessage();
+		}
+	}
+
+	public function get_ids_contrato($id_contrato)
+	{
+
+		$sql =  "";
+		$sql = "SELECT p.processo_id
+		 FROM progestor.processo AS p
+		 where p.contrato = ?
+		 GROUP BY p.processo_id
+		 order by p.processo_id desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute([$id_contrato]);
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+
+	public function get_fingers_process_jobs($id_contrato)
+	{
+
+		$sql =  "";
+		$sql = "SELECT p.processo_id, p.data_cadastro, p.finger,p.mensagem_alerta
+		 FROM progestor.processo AS p
+		 where p.contrato = ?
+		 GROUP BY p.processo_id
+		 order by p.processo_id desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute([$id_contrato]);
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+
+	public function get_fingers_downloads_jobs($id_contrato)
+	{
+
+		$sql =  "";
+		$sql = "SELECT d.id_info_downloads, d.finger_download, d.ids_baixados,d.data_download
+		 FROM progestor.info_downloads AS d
+		 where d.ctr_cliente = ?
+		 GROUP BY d.id_info_downloads
+		 order by d.id_info_downloads desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute([$id_contrato]);
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
 		}
 	}
 }

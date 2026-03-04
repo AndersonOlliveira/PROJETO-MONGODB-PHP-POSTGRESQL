@@ -842,7 +842,7 @@ class Arquivos
 
 			if (isset($values->paralisado) && !isset($values->data_finalizacao)) {
 
-				if ($values->id_processo == 105) {
+				if ($values->id_processo) {
 					$prazoMaximos = $this->filtros->get_limit_day_contrato($values->contrato);
 					$prazoMaximo = 	2;
 
@@ -867,14 +867,14 @@ class Arquivos
 
 
 					echo "Início: " . $values->data . "\n";
-					echo "Prazo final (" . $prazoMaximos . " dias úteis): " . $data_paralisacao->format('d/m/Y H:i:s') . "\n";
+					echo "Prazo final (" . $prazoMaximos . " dias úteis): " . $data_paralisacao->format('d/m/Y H:i:s') .  "\n";
 
 					$msg = '';
 
 					// Comparação com a data atual para encerrar o trabalho
 					$hoje = new DateTime();
 					if ($hoje > $data_paralisacao) {
-						echo "STATUS: ENCERRAR TRABALHO (Prazo excedido)\n";
+						echo "STATUS: ENCERRAR TRABALHO (Prazo excedido) " . $values->id_processo .  "\n";
 
 
 						$dadosP[$key]->finalizar = true;
