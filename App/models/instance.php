@@ -591,7 +591,7 @@ class instance extends MongoConect
         ];
 
         $query = new MongoDB\Driver\Query([], $option);
-        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizar}", $query);
+        $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizars}", $query);
         return iterator_to_array($cursor);
     } //BUSCO A DATA PARA NO MONGO PARA SANER 
 
