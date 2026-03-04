@@ -30,8 +30,8 @@ class process extends Model
 		    progestor.transacao t INNER JOIN 
 			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-			t.status in (12,3) AND 
-			p.contrato = 417039 AND
+			 t.status in (12,3) AND 
+			 --p.contrato = 417039 AND
 			 p.finalizado = false AND
 			 p.error = false";
 
@@ -205,7 +205,7 @@ class process extends Model
 			p.valor_total,
 			p.contrato,
 			p.codcns,
-			 COALESCE(SUM(CASE WHEN  t.status != 6 or t.status != 17 AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END), 0) AS qtd_registros
+			COALESCE(SUM(CASE WHEN t.status not in (6 ,17) AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END), 0) AS qtd_registros
 			FROM
 			progestor.processo p 
 			inner join 
@@ -213,7 +213,7 @@ class process extends Model
 		    (p.processo_id = t.id_processo)
 		WHERE 
 		    p.status_output = 2 and 
-			-- p.processo_id = 51 AND
+			-- p.processo_id = 156 AND
 		    p.finalizado = true AND
 		    p.pause = false
 			group by p.processo_id ";
@@ -578,7 +578,7 @@ class process extends Model
     COALESCE(
         SUM(
             CASE 
-                WHEN t.status != 6 AND t.status != 17
+                WHEN t.status not in(6 ,17)
                      AND t.campo_aquisicao IS NOT NULL 
                 THEN 1 
                 ELSE 0 
@@ -590,6 +590,7 @@ INNER JOIN progestor.transacao t
     ON p.processo_id = t.id_processo
 WHERE 
     p.status_output = 2 
+	--AND p.processo_id = 156
 	AND p.finalizado = true 
     AND p.pause = false
 GROUP BY 
@@ -598,10 +599,10 @@ GROUP BY
     p.contrato,
     p.codcns
 HAVING 
-    p.valor_total < COALESCE(
+    p.valor_total > COALESCE(
         SUM(
             CASE 
-                WHEN t.status != 6 and t.status != 17
+                WHEN t.status not in(6 ,17)
                      AND t.campo_aquisicao IS NOT NULL 
                 THEN 1 
                 ELSE 0 

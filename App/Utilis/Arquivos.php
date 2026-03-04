@@ -747,6 +747,8 @@ class Arquivos
 	public function contar_atualizar_valores($dados)
 	{
 		$valorTotal = 0;
+		var_dump('cheguei até aqui');
+
 
 		foreach ($dados as $key => $values) {
 
@@ -761,15 +763,24 @@ class Arquivos
 
 			$dados[$key]['new_valor'] = $valorLoteConsulta;
 
+
+
 			$valorBanco = (int) floatval($values['valor_total']);
 			$novoValor  = (int) $valorLoteConsulta;
+			var_dump($novoValor);
+			var_dump($valorBanco);
 
+			if ($valorBanco > $novoValor) {
 
-			if ($novoValor > $valorBanco) {
+				echo "<pre>";
+				print_r('estou passando no if');
 
 				var_dump($novoValor > $valorBanco . ' MEU ID PARA SER ALTERADO ' . $values['processo_id']);
 
 				$this->filtros->atualizarValorJobs($values['processo_id'], $values['contrato'], $novoValor);
+			} else {
+
+				var_dump('naão atualizei ndad');
 			}
 		}
 
