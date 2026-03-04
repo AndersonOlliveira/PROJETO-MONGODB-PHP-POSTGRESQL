@@ -56,17 +56,22 @@ class App
         if ($requestUri == '') {
             $requestUri = '/';
         }
-        echo "<pre>";
-        echo "tenho a minha solicitação esta e minha url\n";
+        // echo "<pre>";
+        // echo "tenho a minha solicitação esta e minha url\n";
 
-        print_R($requestUri);
+        // print_R($requestUri);
 
         if (isset($requestUri)) {
 
             foreach ($routes as $route => $action) {
 
-                $pattern = preg_replace('/\{id\}/', '([a-zA-Z0-9]+)', $route);
+                // $pattern = preg_replace('/\{id\}/', '([a-zA-Z0-9]+)', $route);
+                $pattern = preg_replace('/\{[a-zA-Z_]+\}/', '([a-zA-Z0-9]+)', $route);
                 $pattern = "#^" . $pattern . "$#";
+
+                // echo "<pre>";
+                // echo "MINHA SOLICITACAO\n";
+                // print_r($pattern);
 
                 if (preg_match($pattern, $requestUri, $matches)) {
 
@@ -87,19 +92,20 @@ class App
             // print_R($routes);
             // if (isset($routes[$requestUri])) {
 
-            //     echo "estou caindo aqui?";
+            //     echo "estou caindo aqui?\n";
 
 
             //     [$controller, $method] = $routes[$requestUri];
 
-            // foreach ($routes as $route => $action) {
+            //     foreach ($routes as $route => $action) {
 
-            //     $pattern = preg_replace('/\{id\}/', '([a-zA-Z0-9]+)', $route);
-            //     $pattern = "#^" . $pattern . "$#";
+            //         $pattern = preg_replace('/\{id\}/', '([a-zA-Z0-9]+)', $route);
+            //         $pattern = "#^" . $pattern . "$#";
 
-            //     echo "<pre>";
-            //     echo "meu dados";
-            //     print_R($pattern);
+            //         echo "<pre>";
+            //         echo "meu dados";
+            //         print_R($pattern);
+            //     }
             // }
         } else {
             $url = $this->parseUrl();
@@ -132,27 +138,27 @@ class App
             }
         }  //FINAL DA SOLICITACAO
 
-        echo "<pre>";
+        // echo "<pre>";
 
-        print_r("estou saindod aqui!\n");
-        print_r("controller localizada\n" . $controller);
+        // print_r("estou saindod aqui!\n");
+        // print_r("controller localizada\n" . $controller);
 
         $this->controller = $controller;
         $this->method = $method;
 
         $controllerPath = "App/controllers/{$this->controller}.php";
 
-        echo "<pre>";
-        echo "Solicitacao da url navegador! ... apresentando minha controller \n";
+        // echo "<pre>";
+        // echo "Solicitacao da url navegador! ... apresentando minha controller \n";
 
-        echo "</pre>";
-        print_r($controllerPath);
+        // echo "</pre>";
+        // print_r($controllerPath);
 
-        echo "<pre>";
-        echo "meu metodo\n";
-        print_r($this->method);
+        // echo "<pre>";
+        // echo "meu metodo\n";
+        // print_r($this->method);
 
-        echo "</pre>";
+        // echo "</pre>";
 
         if (file_exists($controllerPath)) {
             require_once $controllerPath;
@@ -165,7 +171,15 @@ class App
                 echo " \n Método {$this->method} não encontrado!";
             }
         } else {
-            echo "Controller {$this->controller} não encontrado!";
+           
+         echo "Controller {$this->controller} não encontrado!";
+            http_response_code(422);
+			ob_clean();
+			echo json_encode([
+				'status'  => 0,
+				'message' => "Controller {$this->controller} não encontrado!"
+			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			die();
         }
     }
 

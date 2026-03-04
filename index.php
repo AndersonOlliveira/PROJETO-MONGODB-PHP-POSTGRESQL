@@ -1,48 +1,48 @@
 <?php
 
 
-date_default_timezone_set('America/Sao_Paulo');
+    date_default_timezone_set('America/Sao_Paulo');
 
 
-require_once 'App/core/App.php';
-require_once 'App/core/Controller.php';
-require_once 'App/core/Model.php';
-require_once 'App/Utilis/Arquivos.php';
+    require_once 'App/core/App.php';
+    require_once 'App/core/Controller.php';
+    require_once 'App/core/Model.php';
+    require_once 'App/Utilis/Arquivos.php';
 
 
-set_time_limit(0);
+    set_time_limit(0);
 
-function logInfo($mensagem)
-{
-    echo "[" . date('H:i:s') . "] $mensagem\n";
-}
-
-$tempo_esperara = 60;
-$id = null;
-$quantidade = 1000;
-logInfo("Iniciando a aplicação...");
-$app = new App();
-
-
-if (php_sapi_name() == 'cli') {
-    while (true) {
-
-        try {
-
-            logInfo('Executando o Loop da Aplicação...');
-            sleep(5);
-
-            $app->processar($id, $quantidade);
-
-            logInfo("Aguardando {$tempo_esperara} segundos para a próximo interação...");
-            sleep($tempo_esperara);
-        } catch (Exception $e) {
-
-            logInfo("Erro ao executar a aplicação: " . $e->getMessage());
-            sleep($tempo_esperara);
-        }
+    function logInfo($mensagem)
+    {
+        echo "[" . date('H:i:s') . "] $mensagem\n";
     }
-} else {
 
-    // $app->processar(null, $quantidade);
-}
+    $tempo_esperara = 20;
+    $id = null;
+    $quantidade = 100;
+    // logInfo("Iniciando a aplicação...");
+    $app = new App();
+
+
+    if (php_sapi_name() == 'cli') {
+        while (true) {
+
+            try {
+
+                logInfo('Executando o Loop da Aplicação...');
+                sleep(2);
+
+                $app->processar($id, $quantidade);
+
+                logInfo("Aguardando {$tempo_esperara} segundos para a próximo interação...");
+                sleep($tempo_esperara);
+            } catch (Exception $e) {
+
+                logInfo("Erro ao executar a aplicação: " . $e->getMessage());
+                sleep($tempo_esperara);
+            }
+        }
+    } else {
+
+        // $app->processar(null, $quantidade);
+    }
