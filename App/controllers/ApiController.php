@@ -36,7 +36,6 @@ class ApiController extends Controller
             $data = $_POST;
         }
 
-
         $retorno_dados = $this->Process_api->index($data);
 
         if ($retorno_dados) {
@@ -45,6 +44,31 @@ class ApiController extends Controller
             echo json_encode(array(
                 'sucesso' => true,
                 'mensagem' => "Processo paralisado com sucesso!"
+            ));
+        }
+    }
+    public function inserir_info_paralizados_reprocessar()
+    {
+
+        $input = file_get_contents('php://input');
+
+
+        $type_condific  = $_SERVER['CONTENT_TYPE'];
+        if (stripos($type_condific, 'application/json') !== false) {
+            $data = $input;
+        } else {
+            $data = $_POST;
+        }
+        // vou reprocesar o job
+
+        $retorno_dados = $this->Process_api->insert_all_paralizar_reprocesar($data);
+
+        if ($retorno_dados) {
+            // echo "<pre>";
+            // return 'informação salva com sucesso!';
+            echo json_encode(array(
+                'sucesso' => true,
+                'mensagem' => "Processo Reiniciado com sucesso!"
             ));
         }
     }
@@ -95,5 +119,100 @@ class ApiController extends Controller
 
         // // print_r('')
         // var_dump($data);
+    }
+
+    public function verificar_data_reprocessar($idProcess, $contrato)
+    {
+
+        $retorno_busca = $this->Process_api->get_dados_finger_parar($idProcess, $contrato);
+
+        if ($retorno_busca) {
+
+            http_response_code(422);
+
+            $response = [
+                'sucesso' => false,
+                'status'  => 1,
+                'reprocessar' => 1,
+                'mensagem' => 'Tempo para solicitar o reprocessamento expirou'
+            ];
+        } else {
+
+
+            http_response_code(200);
+
+            $response = [
+                'sucesso' => true,
+                'status'  => 0,
+                'reprocessar' => 0,
+                'mensagem' => 'Pode seguir com o reprocessamento'
+            ];
+        }
+
+        ob_clean();
+        echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        die();
+    }
+
+    public function push_status_dies()
+    {
+        $input = file_get_contents('php://input');
+
+        $type_condific  = $_SERVER['CONTENT_TYPE'];
+
+        if (stripos($type_condific, 'application/json') !== false) {
+
+            $data = $input;
+        } else {
+            $data = $_POST;
+        }
+        //processar os dados para salvar dentro do json pois a estrura esta assim.
+        $retorno_json = $this->Process_api->die_status_process($data);
+
+        if (isset($retorno_json)) {
+            http_response_code(200);
+            ob_clean();
+            echo json_encode([
+                'sucesso' => true,
+                'status'  => 0,
+                'reprocessar' => 1,
+                'mensagem' => 'Solicitação efetuada com sucesso!'
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            die();
+        }
+    }
+
+    public function testes()
+    {
+        print_r('CONSIGO ACESSAR A API');
+    }
+    public function info_reprocess($idProcess)
+    {
+        $retorno = $this->Process_api->info_reprocess_dados($idProcess);
+
+        http_response_code(200);
+        ob_clean();
+        echo json_encode([
+            'sucesso' => true,
+            'data' => $retorno
+
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        exit;
+    }
+
+    public function info_paralizar_die($idProcess)
+    {
+        $retorno = $this->Process_api->paralizar_date_info($idProcess);
+
+        // http_response_code(200);
+        // ob_clean();
+        // echo json_encode([
+        //     'sucesso' => true,
+        //     'data' => $retorno
+
+        // ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        // exit;
     }
 }

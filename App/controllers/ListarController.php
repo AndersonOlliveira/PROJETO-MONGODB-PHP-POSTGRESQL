@@ -45,14 +45,34 @@ class ListarController extends Controller
     $return = $this->model('process');
     $returns = $return->list_processo($idProcesso, $qtLimit, false);
     $dados_parar = $return->busca_erros_eight();
+
+    $pegar_dados_parados = $return->list_processo_parar($idProcesso, $qtLimit, false);
+
+    $push_dados_process_die = $return->get_info_status_process();
+
+
+    if (isset($pegar_dados_parados)) {
+      $this->utils->get_dados_id($pegar_dados_parados);
+    }
+
+    if (isset($push_dados_process_die) && $push_dados_process_die) {
+       $this->utils->treat_dados_die($push_dados_process_die);
+    }
+
+
+
+
+    //aqui vou implmentar para quando ele não achar mais o 12 ele finaliza o job e atualiza os valores junto com as quantidades corretas
+
+
     // $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
 
 
     //para parar os processo do status 8 que esta com erro.
 
-    if (isset($dados_parar)) {
-      $this->utils->process_finalizar_status_erros($dados_parar);
-    }
+    // if (isset($dados_parar)) {
+    //   $this->utils->process_finalizar_status_erros($dados_parar);
+    // }
 
 
     //este processa todos os jobs
@@ -64,11 +84,11 @@ class ListarController extends Controller
 
 
     //aqui vem os dados paralisados
-    $jobs_parados = $this->utilss->get_data_paralizar();
+    // $jobs_parados = $this->utilss->get_data_paralizar();
 
-    if (isset($jobs_parados)) {
-        $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
-    }
+    // if (isset($jobs_parados)) {
+    //   $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
+    // }
 
     // if (isset($pasta)) {
     //   //envio para a pasta de arquivos para processarl
@@ -179,25 +199,33 @@ class ListarController extends Controller
     $returns = $return->list_processo($idProcesso, $qtLimit);
     $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
 
-    if (empty($returns)) {
-      echo "Nenhum dado encontrado!\n";
-    }
+    $pegar_dados_parados = $return->push_dados_parar_processo();
 
-
-    $result_idProcess = array_values(
-      array_column(
-        array_filter($returns, fn($row) => !empty($row['processo_id'])),
-        'processo_id'
-      )
-    );
     echo "<pre>";
-    echo "meus result_idProcess\n";
 
-    print_r($result_idProcess);
+    print_r($pegar_dados_parados);
+
+    die();
+
+    // if (empty($returns)) {
+    //   echo "Nenhum dado encontrado!\n";
+    // }
+
+
+    // $result_idProcess = array_values(
+    //   array_column(
+    //     array_filter($returns, fn($row) => !empty($row['processo_id'])),
+    //     'processo_id'
+    //   )
+    // );
+    // echo "<pre>";
+    // echo "meus result_idProcess\n";
+
+    // print_r($result_idProcess);
 
 
 
-    $re = $this->utils->get_dados_id($returns);
+    // $re = $this->utils->get_dados_id($returns);
     // die();
 
 

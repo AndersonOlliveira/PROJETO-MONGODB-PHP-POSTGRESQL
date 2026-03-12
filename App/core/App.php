@@ -69,15 +69,20 @@ class App
                 $pattern = preg_replace('/\{[a-zA-Z_]+\}/', '([a-zA-Z0-9]+)', $route);
                 $pattern = "#^" . $pattern . "$#";
 
-                // echo "<pre>";
-                // echo "MINHA SOLICITACAO\n";
-                // print_r($pattern);
 
                 if (preg_match($pattern, $requestUri, $matches)) {
 
                     array_shift($matches); // remove match completo
 
                     [$controller, $method] = $action;
+
+
+                    // echo "<pre>";
+                    // echo "MINHA SOLICITACAO\n";
+                    // print_r($controller);
+                    // echo "meu methodo\n";
+
+                    // print_r($method);
 
                     require_once "App/controllers/{$controller}.php";
 
@@ -171,15 +176,15 @@ class App
                 echo " \n Método {$this->method} não encontrado!";
             }
         } else {
-           
-         echo "Controller {$this->controller} não encontrado!";
+
+            echo "Controller {$this->controller} não encontrado!";
             http_response_code(422);
-			ob_clean();
-			echo json_encode([
-				'status'  => 0,
-				'message' => "Controller {$this->controller} não encontrado!"
-			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-			die();
+            ob_clean();
+            echo json_encode([
+                'status'  => 0,
+                'message' => "Controller {$this->controller} não encontrado!"
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            die();
         }
     }
 

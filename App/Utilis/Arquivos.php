@@ -18,6 +18,9 @@ class Arquivos
 	protected $CapturaRedeLojaDoContrato;
 	protected $CapturaCamposConsultas;
 	protected $BuscaValorLotePorConsulta;
+	protected $GravarUpdateDieProcess;
+	protected $arquivos_json;
+
 
 	public function __construct()
 	{
@@ -36,6 +39,9 @@ class Arquivos
 		require_once __DIR__ . '/../models/GravaUpdateParalizar.php';
 		$this->GravaUpdateParalizar = new GravaUpdateParalizar();
 
+		require_once __DIR__ . '/../models/GravarUpdateDieProcess.php';
+		$this->GravarUpdateDieProcess = new GravarUpdateDieProcess();
+
 		require_once __DIR__ . '/../models/process.php';
 		$this->teste = new process();
 
@@ -51,6 +57,9 @@ class Arquivos
 		$this->CapturaCamposConsultas = new CapturaCamposConsultas();
 		require_once __DIR__ . '/../models/BuscaValorLotePorConsulta.php';
 		$this->BuscaValorLotePorConsulta = new BuscaValorLotePorConsulta();
+
+		require_once __DIR__ . '/../Utilis/Config.php';
+		$this->arquivos_json = new Config();
 	}
 
 
@@ -1075,6 +1084,146 @@ class Arquivos
 
 				}
 			}
+		}
+	}
+
+
+	// public function process_finalizar_status_parar_processos($dados_enviados)
+	// {
+
+	//    $dados_para_alterar = [];
+
+	// 	foreach ($dados_enviados as $key => $values) {
+
+	// 		if ($values['status'] == 12) {
+	// 			$contar = 100;
+
+	// 			$returns =  $this->filtros->list_processo_parar($values['processo_id'], $contar, false);
+
+	// 			if (isset($returns)) {
+	// 				$re = self::get_dados_id($returns);
+	// 			}
+	// 		}
+
+	// 		if($values['status'] >)
+	// 	}
+	// }
+
+	public function treat_dados_die($dados)
+	{
+
+		$idBusca = [];
+
+		foreach ($dados as $key => $die_process) {
+
+			echo  "<pre>";
+			echo  "MEU STATUS 12";
+			print_r($die_process['qta_processar_status']);
+			//$die_process['qta_processar_status']
+			//varialvel acima recebe o status 12 assim que o valor chegar em 0, ele vai fazer o processo para pegar o que e status 3 processados e fazer as atualizacoes dos valores
+
+			if ($die_process['qta_processar_status'] > 0) {
+				$idBusca = $die_process['processo_id'];
+			} else if ($die_process['qta_processar'] > 0) {
+				$idBusca = $die_process['processo_id'];
+			}
+		}
+
+		if (isset($idBusca)) {
+
+			$this->GravarUpdateDieProcess->UpdateBatchDieProcess($idBusca);
+		}
+
+		$retorno_transacao = self::alter_dados_process($dados);
+	}
+
+	//depois que ocorrer tudo vem para esta funcao para calcular o que tem e fazer os novos calculos
+	public function alter_dados_process($dados)
+	{
+
+		$retorno_path_arquivo = $this->arquivos_json->env_json('path_arquivos_info');
+		$arquivos = $retorno_path_arquivo  . DIRECTORY_SEPARATOR .  'meu_arquivo.json';
+		$dados_mongo = [];
+
+		// $dados_mongo = $this->instance->get_dados_parar($dados);
+
+		// $documento = file_get_contents($arquivos);
+
+		// $dados_json = json_decode($documento, true);
+
+		// $novoJson = null;
+
+		$upProcessDaddos = [];
+		$valorTotal = 0;
+
+
+		echo "<pre>";
+		echo "passei nos dados\n";
+
+		print_r($dados);
+
+		foreach ($dados as $key => $valores) {
+
+			$somataria_dados_processado =  $valores['qta'] - $valores['qta_processado'];
+
+
+			if ($valores['qta_processar_status'] == 0 && $valores['qta_paralizado'] > 0) {
+
+				$redeLoja =  $this->CapturaRedeLojaDoContrato->execute($valores['contrato']);
+				list($valorLoteConsulta, $modulo) =	$this->BuscaValorLotePorConsulta->calcula($valores['codcns'], $redeLoja['rede'], $valores['qta_processado']);
+				$upProcessDaddos[] = [
+					'processo_id' => $valores['processo_id'],
+					'valor_lote' => $valorLoteConsulta,
+					'modulo' => $modulo,
+					'total_registros_parados' => $somataria_dados_processado,
+					'data_atualizacao' => date('Y-m-d H:i:s'),
+					'qta_processado' => $valores['qta_processado'],
+					'qta' => $valores['qta']
+				];
+				$valorTotal += $valorLoteConsulta;
+				//update na tabela processo
+			}
+		}
+
+		echo "<pre>";
+		echo "passei nos dados\n";
+
+		print_r($upProcessDaddos);
+
+		// die();
+		foreach ($dados as $index => $key) {
+			if (is_array($key) && isset($key['processo_id'])) {
+				foreach ($upProcessDaddos as $processData) {
+
+					if ($key['processo_id'] == $processData['processo_id']) {
+						$modulo = $processData['modulo'];
+
+						$msg = 'Foi Parado total de  ' . $processData['total_registros_parados'] . ' registros do processo Id ' . $processData['processo_id'] .
+							' Gerado no valor de R$ ' . number_format($valorLoteConsulta, 2, ',', '.') .  ' Refereente a ' . $valores['qta_processado'] . ' registros processados Atualizado Valor na tabela!';
+						if ($modulo) {
+							$msg .=  "<br><span style='color:red;font-weight:bold'> Atenção: Esta consulta que é do tipo modular, o valor informado representa o teto máximo 
+                            e poderá ser ajustado ao final do processamento.</span>";
+						}
+
+						// Atualizar dados no JSON
+						$dados[$index]['valor_lote'] = $processData['valor_lote'];
+						$dados[$index]['modulo'] = $processData['modulo'];
+						$dados[$index]['id_process'] = (string)$processData['processo_id'];
+						$dados[$index]['total_registros'] = $processData['total_registros_parados'];
+						$dados[$index]['data_atualizacao'] = $processData['data_atualizacao'];
+						$dados[$index]['Qta_Original'] = $processData['total_registros_parados'];
+						$dados[$index]['infos'] = 'Qta_Original  ' . $processData['qta'] . ' Qta_Afetada ' . $processData['qta_processado'];
+						$dados[$index]['msg'] = $msg;
+						$result_alter = $this->filtros->alter_value_process_status($processData['processo_id'], $processData['valor_lote']);
+					}
+				}
+			}
+		}
+
+		$json_enconde = json_encode($dados, true);
+
+		if (isset($json_enconde)) {
+			$return = $this->instance->inset_json_dados($json_enconde, 'meu_arquivo.json');
 		}
 	}
 }

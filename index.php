@@ -19,7 +19,7 @@
 
     $tempo_esperara = 20;
     $id = null;
-    $quantidade = 100;
+    $quantidade = 20;
     // logInfo("Iniciando a aplicação...");
     $app = new App();
 

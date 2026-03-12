@@ -24,5 +24,13 @@ return [
     '/api/get_dados/{id}' => ['ApiController', 'lista_dados'],
     '/api/up_dados_paralisar' => ['ApiController', 'inserir_info_paralizados_true'],
     '/api/get_upDados' => ['ApiController', 'inserir_info_paralizados'],
-    '/api/get_fingers/{id}' => ['ApiController', 'push_fingers']
+    '/api/up_dados_reprocessar' => ['ApiController', 'inserir_info_paralizados_reprocessar'],
+    '/api/verify_data_reprocess/{id}/{contrato}' => ['ApiController', 'verificar_data_reprocessar'],
+    '/api/get_fingers/{id}' => ['ApiController', 'push_fingers'],
+    '/api/alter_status_dies' => ['ApiController', 'push_status_dies'],
+    '/api/teste' => ['ApiController', 'testes'],
+    '/api/get_info_reprocess/{id}' => ['ApiController', 'info_reprocess'],
+    '/api/get_info_paralizar/{id}' => ['ApiController', 'info_paralizar_die']
+    // '/api/alter_status_die/{id}/{contrato}' => ['ApiController', 'push_status_die']
+
 ];
