@@ -33,6 +33,16 @@ class Process_api
         }
     }
 
+    public function index_cancelar($dados)
+    {
+        $retorno = $this->utils->insert_all_cancelar($dados);
+
+        if ($retorno['success'] > 1) {
+
+            return true;
+        }
+    }
+
     public function insert_all_paralizar_reprocesar($dados)
 
     {
@@ -229,32 +239,32 @@ class Process_api
                 'data_paralizacao' => $retorno_info_reprocess->data_alteracao ?? null
             ]
             : [
-                'info_reprocess' => $retorno_info_reprocess->info_reprocess,
-                'msg' => $retorno_info_reprocess->msg ?? null,
-                'data_paralizacao' => $retorno_info_reprocess->data_alteracao ?? null
+                'info_reprocess' => null,
+                'msg' =>  null,
+                'data_paralizacao' => null
             ];
     }
 
     public function paralizar_date_info($id)
     {
+
         $retorno = $this->utils->get_dados_info_paralizar_die($id);
 
+        //vou contar a quantide de dados que foram parados com a execucáo do paralizar
 
+        $novo_dados = [];
 
-        echo '<pre>';
+        if ($retorno != null) {
 
-        print_r($retorno);
+            $contar_paralizar = $this->filtros->count_process_paradados($id);
 
-        // return !empty($retorno_info_reprocess)
-        //     ? [
-        //         'info_reprocess' => $retorno_info_reprocess->info_reprocess,
-        //         'msg' => $retorno_info_reprocess->msg ?? null,
-        //         'data_paralizacao' => $retorno_info_reprocess->data_alteracao ?? null
-        //     ]
-        //     : [
-        //         'info_reprocess' => $retorno_info_reprocess->info_reprocess,
-        //         'msg' => $retorno_info_reprocess->msg ?? null,
-        //         'data_paralizacao' => $retorno_info_reprocess->data_alteracao ?? null
-        //     ];
+            $info_msg =   !empty($retorno->processo_finalizado) ? $retorno->processo_finalizado : 'Sem info de data';
+
+            $novo_dados = ['msg_info' => $info_msg .  ',' . ' na data de  ' . $retorno->data_finalizacao . ',' . ' total de registros paralizados ' . $contar_paralizar['total_paralizados']];
+        }
+
+        return !empty($retorno)
+            ? $novo_dados
+            : null;
     }
 }

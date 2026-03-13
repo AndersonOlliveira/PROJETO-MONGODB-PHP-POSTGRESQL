@@ -126,15 +126,6 @@ class process extends Model
 			p.error = false";
 
 
-		// echo "meu info enviado\n";
-
-		// var_dump($info);
-		// echo "vem vazio?\n";
-		// print_r(empty($info));
-
-		// var_dump($idProcesso);
-
-
 		$params = [];
 		if ($idProcesso !== null) {
 			$sql .= " AND p.processo_id = ?";
@@ -143,22 +134,10 @@ class process extends Model
 
 
 		$sql .= " AND p.pause = ?";
-		$params[] = $info ? 1 : 0;;
+		$params[] = $info ? 1 : 0;
 
-		// if ($info !== null) {
 
-		// 	echo "<pre>";
-		// 	echo "E DIFERENTE DE NULL\n";
-		// 	var_dump($info);
-		// 	$sql .= " AND p.pause = ?";
-		// 	$params[] = (bool) true;
-		// } else {
-		// 	echo "<pre>";
-		// 	echo "E NULL\n";
-		// 	var_dump($info);
-		// 	$sql .= " AND p.pause = ?";
-		// 	$params[] =  (bool)false;
-		// }
+
 
 		if ($qtLimit !== null) {
 			$qtLimit = (int)$qtLimit; // garante que é inteiro
@@ -174,11 +153,15 @@ class process extends Model
 		// print_r($sql);
 
 
-		$results = $this->db->prepare($sql);
-		$results->execute($params);
-		// $result = $this->db->query($sql);
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute($params);
+			// $result = $this->db->query($sql);
 
-		return $results->fetchAll(PDO::FETCH_ASSOC);
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+		}
 	}
 
 	public function list_processo_alert($idProcesso, $qtLimit)
@@ -849,6 +832,40 @@ HAVING
 			   AND status IN (3,12)
 			--    AND p.menssagem_alerta is null
 			   group by  p.contrato, p.processo_id,p.mensagem_alerta;";
+
+		try {
+
+			$Newregistros = [];
+			$dados = [$idProcesso];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (PDOException $e) {
+			print_R("Erro na consulta: " . $e->getMessage());
+			return null;
+		}
+
+		if ($result->rowCount() == 0) {
+			return null;
+		}
+
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$Newregistros = $row;
+		}
+
+		return $Newregistros;
+	}
+
+	//pega a quantidade para realizar o update
+	public function count_process_paradados($idProcesso)
+	{
+		$sql =  "";
+		$sql =  "SELECT 
+		  SUM(CASE WHEN t.status in (17)
+                     AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END) AS total_paralizados
+	      FROM
+		    progestor.transacao t INNER JOIN 
+			  progestor.processo p ON p.processo_id = t.id_processo 
+			   where id_processo = ?;";
 
 		try {
 

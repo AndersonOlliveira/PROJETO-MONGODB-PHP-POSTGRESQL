@@ -18,6 +18,7 @@ class MongoConect
     private $db_colletion_json_dados;
     private $db_colletion_json_dados_reprocess;
     private $db_colletion_json_dados_paralizar;
+    private $db_colletion_json_dados_cancelar;
 
 
     private function __construct()
@@ -39,6 +40,7 @@ class MongoConect
         $this->db_colletion_json_dados = getenv('BD_MONGO_BD_COLLETION_JSON_DADOS');
         $this->db_colletion_json_dados_reprocess = getenv('BD_MONGO_BD_COLLETION_JSON_DADOS_REPROCESS');
         $this->db_colletion_json_dados_paralizar = getenv('BD_MONGO_BD_COLLETION_JSON_DADOS_PARALIZAR');
+        $this->db_colletion_json_dados_cancelar = getenv('BD_MONGO_BD_COLLETION_JSON_DADOS_CANCELAR');
 
 
 
@@ -132,5 +134,10 @@ class MongoConect
     public function getDBColetion_jobs_dados_paralizar()
     {
         return $this->db_colletion_json_dados_paralizar;
+    }
+
+    public function getDBColetion_jobs_dados_cancelar()
+    {
+        return $this->db_colletion_json_dados_cancelar;
     }
 }

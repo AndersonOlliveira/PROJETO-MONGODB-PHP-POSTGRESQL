@@ -47,6 +47,32 @@ class ApiController extends Controller
             ));
         }
     }
+
+    public function inserir_info_cancelados_true()
+    {
+
+        $input = file_get_contents('php://input');
+
+        $type_condific  = $_SERVER['CONTENT_TYPE'];
+        if (stripos($type_condific, 'application/json') !== false) {
+            $data = $input;
+            // echo 'saida no opreim';
+        } else {
+            // echo 'saida aqui ou aqui ';
+            $data = json_encode($_POST, true);
+        }
+
+        $retorno_dados = $this->Process_api->index_cancelar($data);
+
+        if ($retorno_dados) {
+            // echo "<pre>";
+            // return 'informação salva com sucesso!';
+            echo json_encode(array(
+                'sucesso' => true,
+                'mensagem' => "Processo paralisado com sucesso!"
+            ));
+        }
+    }
     public function inserir_info_paralizados_reprocessar()
     {
 
@@ -205,14 +231,45 @@ class ApiController extends Controller
     {
         $retorno = $this->Process_api->paralizar_date_info($idProcess);
 
-        // http_response_code(200);
-        // ob_clean();
-        // echo json_encode([
-        //     'sucesso' => true,
-        //     'data' => $retorno
+        if ($retorno) {
 
-        // ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            http_response_code(200);
+            ob_clean();
+            echo json_encode([
+                'sucesso' => true,
+                'data' => $retorno
 
-        // exit;
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            exit;
+        } else {
+
+            http_response_code(422);
+            ob_clean();
+            echo json_encode([
+                'sucesso' => false,
+                'data' => $retorno
+
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            exit;
+        }
+    }
+
+    //aqui vou criar uma api para gerar novamente os dados e criar o arquivo corretamente e atualizar os dados dentro da tabela de processos
+    public function gerar_novo_arquivo($id)
+    {
+
+        echo "<pre>";
+        echo "meu id enviado\n";
+
+        $qtLimit = 1;
+        print_r($id);
+
+        $pegar_dados_parados = $this->utilis_pgadmin->list_processo_parar($id, $qtLimit, false);
+
+        echo "<pre>";
+
+        print_r($pegar_dados_parados);
     }
 }

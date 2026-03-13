@@ -24,6 +24,7 @@ class instance extends MongoConect
     private $db_colletion_json_dados;
     private $db_colletion_json_dados_paralizars;
     private $db_colletion_json_dados_reprocess;
+    private $db_colletion_json_dados_cancelar;
 
 
 
@@ -42,6 +43,7 @@ class instance extends MongoConect
         $this->db_colletion_json_dados = $conn->getDBColetion_jobs_dados_json();
         $this->db_colletion_json_dados_reprocess = $conn->getDBColetion_jobs_dados_json_reprocess();
         $this->db_colletion_json_dados_paralizars = $conn->getDBColetion_jobs_dados_paralizar();
+        $this->db_colletion_json_dados_cancelar = $conn->getDBColetion_jobs_dados_cancelar();
     }
 
     public function all()
@@ -597,6 +599,96 @@ class instance extends MongoConect
         }
     }
 
+    public function insert_all_cancelar($dadosJson)
+    {
+
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        // $bulk = new MongoDB\Driver\BulkWrite;
+
+        print_r($dadosJson);
+
+        $data  = json_decode($dadosJson, true);
+
+
+
+        $query = new MongoDB\Driver\Query(
+            ['id_processo' => $data['id_processo']],
+            ['projection' => ['finger' => 1]]
+        );
+
+        $cursor = $this->manager->executeQuery(
+            "{$this->dbname}.{$this->db_colletion_json_dados_cancelar}",
+            $query
+        );
+
+        $document = current($cursor->toArray());
+        $finger_inicial = $document->finger ?? null;
+        $operacoes = 0;
+
+
+
+        if (!is_array($data)) {
+            return [
+                'success' => false,
+                'message' => 'JSON inválido ou não é um array'
+            ];
+        }
+
+
+        $filter = ['id_processo' => $data['id_processo']];
+        $inser  = [
+            '$set' => $data,
+
+            '$push' => [
+                'historico_solicitacao_cancelar' => [
+
+                    'data_solicitacao' => new MongoDB\BSON\UTCDateTime(),
+                    'finger_old' => $finger_inicial
+                ]
+            ]
+        ];
+
+        $bulk->update(
+            $filter,
+            $inser,
+            ['upsert' => true, 'multi' => false]
+        );
+
+        $operacoes++;
+
+        try {
+
+            if ($operacoes > 0) {
+
+                $result = $this->manager->executeBulkWrite(
+                    "{$this->dbname}.{$this->db_colletion_json_dados_cancelar}",
+                    $bulk
+                );
+
+                return [
+                    'success' => true,
+                    'inserted' => $result->getInsertedCount(),
+                    'modified' => $result->getModifiedCount(),
+                    'upserted' => $result->getUpsertedCount(),
+                    'matched'  => $result->getMatchedCount(),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Nenhuma operação executada'
+            ];
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
 
     //BUSCO A DATA PARA NO MONGO PARA SANER 
 
@@ -936,13 +1028,23 @@ class instance extends MongoConect
         try {
 
             $cursor = $this->manager->executeQuery(
-                "{$this->dbname}.{$this->db_colletion_json_dados_paralizar}",
+                "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
                 $query
             );
 
             $result = current($cursor->toArray());
 
-            return $result ?: null;
+            if ($result && !empty($result->data_finalizacao->date)) {
+
+                $data = new DateTime($result->data_finalizacao->date);
+                $dataFormatada = $data->format('d/m/Y H:i:s');
+
+                $result->data_finalizacao = $dataFormatada;
+            }
+
+            $tamanho = count(get_object_vars($result));
+
+            return $tamanho  > 0 ? $result : null;
         } catch (MongoDB\Driver\Exception\Exception $e) {
 
             return [
