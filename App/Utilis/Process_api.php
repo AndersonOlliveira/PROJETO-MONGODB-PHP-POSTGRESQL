@@ -116,15 +116,12 @@ class Process_api
 
         // buscos os dados por correspondencia ao id
         $retorno_finger_paralizar = $this->utils->get_finger_paralizar($contrato);
-
         $buscar_ids_contrato = $this->filtros->get_ids_contrato($contrato);
         //finger do aceite a processar
-
         $busca_finger_process = $this->filtros->get_fingers_process_jobs($contrato);
-
         $busca_finger_download = $this->filtros->get_fingers_downloads_jobs($contrato);
 
-        // $busca_finger_download = $this->utils->get_fingers_parliszar($contrato);
+        $busca_finger_cancelar = $this->utils->get_fingers_cancelar($contrato);
 
 
 
@@ -133,18 +130,38 @@ class Process_api
             $dados_completo['processar_inicial'] = $busca_finger_process;
         } else {
 
-            foreach ($busca_finger_process as $key => $dados_process) {
+            foreach ($busca_finger_process as $keys => $dados_process) {
 
-                if ($dados_process['mensagem_alerta'] != null) {
-                    $busca_finger_process[$key]['job_reprocessado'] = [
-                        'status' => true,
-                        'message' => 'job foi reprocessado'
-                    ];
+                $info_reprocess = $this->utils->get_finger_info_reprocess($dados_process['processo_id']);
+
+                $info_reprocess = isset($info_reprocess) ? $info_reprocess : null;
+
+                if ($info_reprocess !== null) {
+                    foreach ($info_reprocess as $key => $dados_reprocess) {
+
+                        if (!empty($dados_reprocess->requested)) {
+                            $busca_finger_process[$keys]['job_reprocessado'] = [
+                                'status' => true,
+                                'message' => 'job foi reprocessado',
+                                'dados' => $info_reprocess,
+
+                            ];
+                        }
+                    }
                 }
+
+
+                // if ($dados_process['mensagem_alerta'] != null) {
+                //     $busca_finger_process[$key]['job_reprocessado'] = [
+                //         'status' => true,
+                //         'message' => 'job foi reprocessado'
+                //     ];
+                // }
             }
 
             $dados_completo['processar_inicial'] = $busca_finger_process;
         }
+
 
         if (isset($busca_finger_download)   && !isset($busca_finger_download['success']) === false) {
 
@@ -157,6 +174,16 @@ class Process_api
         if (isset($retorno_finger_paralizar)) {
 
             $dados_completo['paralisado'] = $retorno_finger_paralizar;
+        }
+
+        if (isset($busca_finger_cancelar)) {
+
+            $dados_completo['cancelados'] = $busca_finger_cancelar;
+        } else {
+            $dados_completo['cancelados'] = [
+                'success' => (boolval(false)),
+                'message' => 'dados para o contrato não localizado'
+            ];
         }
 
 

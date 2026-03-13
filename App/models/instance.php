@@ -10,6 +10,7 @@
 require_once __DIR__ . '../../core/MongoConect.php';
 
 use MongoDB\Builder\Expression;
+use MongoDB\BSON\UTCDateTime;
 
 class instance extends MongoConect
 {
@@ -721,7 +722,8 @@ class instance extends MongoConect
         } else {
 
             $filtros[] = [
-                'contrato'  => $id,
+                'contrato'  => $id
+                // 'id_processo'  => (string)184,
             ];
         }
 
@@ -737,6 +739,8 @@ class instance extends MongoConect
                 'paralisado' => 1,
                 'data' => 1,
                 'finger' => 1,
+                'historico_paralisacao' => 1,
+                'historico_solicitacao_paralizar' => 1,
                 '_id' => 0
             ]
         ];
@@ -750,7 +754,124 @@ class instance extends MongoConect
 
             $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados_paralizars}", $query);
 
-            return iterator_to_array($cursor);
+            $dados = iterator_to_array($cursor);
+
+            foreach ($dados as $item => $values) {
+
+                $historico_paralisacao = isset($values->historico_paralisacao) ? $values->historico_paralisacao : null;
+
+                if ($historico_paralisacao !== null) {
+                    foreach ($historico_paralisacao as $dados_paralizar) {
+
+                        if ($dados_paralizar->data_solicitacao instanceof MongoDB\BSON\UTCDateTime) {
+                            $data = $dados_paralizar->data_solicitacao->toDateTime();
+                            $dados_paralizar->data_solicitacao = $data->format('d/m/Y H:i:s');
+                        } else {
+                            $data = new DateTime($dados_paralizar->data_solicitacao);
+                        }
+
+                        // $dados[$dados_paralizar->data_solicitacao] = $data->format('d/m/Y H:i:s');
+                    }
+                }
+            }
+
+
+            foreach ($dados as $item => $values) {
+
+                $historico_solicitacao_paralizar = isset($values->historico_solicitacao_paralizar) ? $values->historico_solicitacao_paralizar : null;
+
+                if ($historico_solicitacao_paralizar !== null) {
+                    foreach ($historico_solicitacao_paralizar as $dados_paralizar_historico) {
+
+                        if ($dados_paralizar_historico->data_solicitacao instanceof MongoDB\BSON\UTCDateTime) {
+                            $data = $dados_paralizar_historico->data_solicitacao->toDateTime();
+                            $dados_paralizar_historico->data_solicitacao = $data->format('d/m/Y H:i:s');
+                        } else {
+                            $data = new DateTime($dados_paralizar_historico->data_solicitacao);
+                        }
+
+                        // $dados[$dados_paralizar_historico->data_solicitacao] = $data->format('d/m/Y H:i:s');
+                    }
+                }
+            }
+            // foreach ($dados as  $item => $values) {
+
+            //     foreach ($values->historico_paralisacao as $item => $dados_paralizar) {
+
+            //         if ($dados_paralizar->data_solicitacao instanceof MongoDB\BSON\UTCDateTime) {
+            //             $data = $dados_paralizar->data_solicitacao->toDateTime();
+            //             $dados_paralizar->data_solicitacao = $data->format('d/m/Y H:i:s');
+            //         } else {
+            //             $data = new DateTime($dados_paralizar->data_solicitacao->data_solicitacao);
+            //         }
+
+            //         $dados[$dados_paralizar->data_solicitacao] = $data->format('d/m/Y H:i:s');
+            //     }
+
+            //     foreach ($values->historico_solicitacao_paralizar as $item => $historico_solicitacao_paralizar) {
+
+            //         if ($historico_solicitacao_paralizar->data_solicitacao instanceof MongoDB\BSON\UTCDateTime) {
+            //             $data = $historico_solicitacao_paralizar->data_solicitacao->toDateTime();
+            //             $historico_solicitacao_paralizar->data_solicitacao = $data->format('d/m/Y H:i:s');
+            //         } else {
+            //             $data = new DateTime($historico_solicitacao_paralizar->data_solicitacao->data_solicitacao);
+            //         }
+
+            //         $dados[$historico_solicitacao_paralizar->data_solicitacao] = $data->format('d/m/Y H:i:s');
+            //     }
+            // }
+
+            return $dados ?: null;
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+    public function get_finger_info_reprocess($id)
+    {
+        $filtros = [];
+        if (preg_match('/^[a-f0-9]{24}$/i', $id)) {
+            $filtros[] = [
+                'id_process' => new MongoDB\BSON\ObjectId($id)
+            ];
+        } else {
+
+            $filtros[] = [
+                'id_process'  => (string)$id
+                // 'id_processo'  => (string)184,
+            ];
+        }
+
+        if (empty($filtros)) {
+            return [];
+        }
+
+
+        $option = [
+            'projection' => [
+                'id_process' => 1,
+                'contrato' => 1,
+                'requested' => 1,
+                'reprocessado_day' => 1,
+                'new_id_process' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+
+            $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados}", $query);
+
+            $dados = iterator_to_array($cursor);
+
+            return $dados ?: null;
         } catch (MongoDB\Driver\Exception\Exception $e) {
             return [
                 'success' => false,
@@ -1043,6 +1164,78 @@ class instance extends MongoConect
             }
 
             $tamanho = count(get_object_vars($result));
+
+            return $tamanho  > 0 ? $result : null;
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+
+    public function get_fingers_cancelar($contrato)
+    {
+
+        $filtros = [];
+        if (preg_match('/^[a-f0-9]{24}$/i', $contrato)) {
+            $filtros[] = [
+                'contrato' => new MongoDB\BSON\ObjectId($contrato)
+            ];
+        } else {
+
+            $filtros[] = [
+                'contrato'  => $contrato
+
+            ];
+        }
+
+        if (empty($filtros)) {
+            return [];
+        }
+
+        $option = [
+            'projection' => [
+                'id_processo' => 1,
+                'cancelado' => 1,
+                'contrato' => 1,
+                'finger' => 1,
+                'historico_solicitacao_cancelar' => 1,
+
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+
+            $cursor = $this->manager->executeQuery(
+                "{$this->dbname}.{$this->db_colletion_json_dados_cancelar}",
+                $query
+            );
+
+            $result = current($cursor->toArray());
+
+            if ($result && !empty($result->historico_solicitacao_cancelar[0]->data_solicitacao)) {
+                $data =  $result->historico_solicitacao_cancelar[0]->data_solicitacao instanceof MongoDB\BSON\UTCDateTime;
+                $data = $result->historico_solicitacao_cancelar[0]->data_solicitacao->toDateTime();
+                $dataFormatada = $data->format('d/m/Y H:i:s');
+                $result->historico_solicitacao_cancelar = $dataFormatada;
+            }
+
+            if (isset($result) && !empty($result)) {
+                $tamanho = count(get_object_vars($result));
+            } else {
+                $tamanho = 0;
+            }
+
+
 
             return $tamanho  > 0 ? $result : null;
         } catch (MongoDB\Driver\Exception\Exception $e) {
