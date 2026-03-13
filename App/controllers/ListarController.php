@@ -51,6 +51,19 @@ class ListarController extends Controller
 
     $dados_parar = $return->busca_erros_eight();
 
+    $pegar_dados_parados = $return->list_processo_parar($idProcesso, $qtLimit, false);
+
+    $push_dados_process_die = $return->get_info_status_process();
+
+
+    if (isset($pegar_dados_parados)) {
+      $this->utils->get_dados_id($pegar_dados_parados);
+    }
+
+    if (isset($push_dados_process_die) && $push_dados_process_die) {
+      $this->utils->treat_dados_die($push_dados_process_die);
+    }
+
     ///pegos dentro da collection de paralizar
     $jobs_parados = $this->utilss->get_data_paralizar();
 
@@ -176,25 +189,33 @@ class ListarController extends Controller
     $returns = $return->list_processo($idProcesso, $qtLimit);
     $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
 
-    if (empty($returns)) {
-      echo "Nenhum dado encontrado!\n";
-    }
+    $pegar_dados_parados = $return->push_dados_parar_processo();
 
-
-    $result_idProcess = array_values(
-      array_column(
-        array_filter($returns, fn($row) => !empty($row['processo_id'])),
-        'processo_id'
-      )
-    );
     echo "<pre>";
-    echo "meus result_idProcess\n";
 
-    print_r($result_idProcess);
+    print_r($pegar_dados_parados);
+
+    die();
+
+    // if (empty($returns)) {
+    //   echo "Nenhum dado encontrado!\n";
+    // }
+
+
+    // $result_idProcess = array_values(
+    //   array_column(
+    //     array_filter($returns, fn($row) => !empty($row['processo_id'])),
+    //     'processo_id'
+    //   )
+    // );
+    // echo "<pre>";
+    // echo "meus result_idProcess\n";
+
+    // print_r($result_idProcess);
 
 
 
-    $re = $this->utils->get_dados_id($returns);
+    // $re = $this->utils->get_dados_id($returns);
     // die();
 
 

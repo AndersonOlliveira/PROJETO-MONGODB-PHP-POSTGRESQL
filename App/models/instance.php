@@ -24,6 +24,7 @@ class instance extends MongoConect
     private $db_colletion_json_dados;
     private $db_colletion_json_dados_paralizars;
     private $db_colletion_json_dados_reprocess;
+    private $db_colletion_json_dados_cancelar;
 
 
 
@@ -42,6 +43,7 @@ class instance extends MongoConect
         $this->db_colletion_json_dados = $conn->getDBColetion_jobs_dados_json();
         $this->db_colletion_json_dados_reprocess = $conn->getDBColetion_jobs_dados_json_reprocess();
         $this->db_colletion_json_dados_paralizars = $conn->getDBColetion_jobs_dados_paralizar();
+        $this->db_colletion_json_dados_cancelar = $conn->getDBColetion_jobs_dados_cancelar();
     }
 
     public function all()
@@ -84,13 +86,7 @@ class instance extends MongoConect
         ]];
 
         $query = new MongoDB\Driver\Query($filter, $option);
-        echo "<pre>";
-        echo "que dados vem results?\n";
 
-
-        print_r($query);
-        print_r($this->dbname);
-        print_r($this->collection_json);
 
         // $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection}", $query);
         $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->collection_json}", $query);
@@ -98,11 +94,11 @@ class instance extends MongoConect
         $results = iterator_to_array($cursor);
 
 
-        echo "<pre>";
-        echo "que dados vem results?\n";
+        // echo "<pre>";
+        // echo "que dados vem results?\n";
 
 
-        print_r($results);
+        // print_r($results);
 
         // die();
 
@@ -462,6 +458,7 @@ class instance extends MongoConect
         $bulk = new MongoDB\Driver\BulkWrite;
         $operacoes = 0;
 
+
         $data  = json_decode($dadosJson, true);
 
         foreach ($data as $dados) {
@@ -470,8 +467,9 @@ class instance extends MongoConect
                 continue;
             }
 
-            $filter = ['id_process' => $dados['id_process']];
+            $filter = ['id_process' => (string)$dados['id_process']];
             $inser  = ['$set' => $dados];
+            //MUDAR O PARALIZAR PARA FALSE
 
             $bulk->update(
                 $filter,
@@ -520,9 +518,26 @@ class instance extends MongoConect
 
 
         $bulk = new MongoDB\Driver\BulkWrite;
-        $operacoes = 0;
+
+        // $bulk = new MongoDB\Driver\BulkWrite;
 
         $data  = json_decode($dadosJson, true);
+
+        $query = new MongoDB\Driver\Query(
+            ['id_processo' => $data['id_processo']],
+            ['projection' => ['finger' => 1]]
+        );
+
+        $cursor = $this->manager->executeQuery(
+            "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
+            $query
+        );
+
+        $document = current($cursor->toArray());
+        $finger_inicial = $document->finger ?? null;
+        $operacoes = 0;
+
+
 
         if (!is_array($data)) {
             return [
@@ -533,7 +548,17 @@ class instance extends MongoConect
 
 
         $filter = ['id_processo' => $data['id_processo']];
-        $inser  = ['$set' => $data];
+        $inser  = [
+            '$set' => $data,
+
+            '$push' => [
+                'historico_solicitacao_paralizar' => [
+
+                    'data_solicitacao' => new MongoDB\BSON\UTCDateTime(),
+                    'finger_old' => $finger_inicial
+                ]
+            ]
+        ];
 
         $bulk->update(
             $filter,
@@ -549,6 +574,96 @@ class instance extends MongoConect
 
                 $result = $this->manager->executeBulkWrite(
                     "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
+                    $bulk
+                );
+
+                return [
+                    'success' => true,
+                    'inserted' => $result->getInsertedCount(),
+                    'modified' => $result->getModifiedCount(),
+                    'upserted' => $result->getUpsertedCount(),
+                    'matched'  => $result->getMatchedCount(),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Nenhuma operação executada'
+            ];
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function insert_all_cancelar($dadosJson)
+    {
+
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        // $bulk = new MongoDB\Driver\BulkWrite;
+
+        print_r($dadosJson);
+
+        $data  = json_decode($dadosJson, true);
+
+
+
+        $query = new MongoDB\Driver\Query(
+            ['id_processo' => $data['id_processo']],
+            ['projection' => ['finger' => 1]]
+        );
+
+        $cursor = $this->manager->executeQuery(
+            "{$this->dbname}.{$this->db_colletion_json_dados_cancelar}",
+            $query
+        );
+
+        $document = current($cursor->toArray());
+        $finger_inicial = $document->finger ?? null;
+        $operacoes = 0;
+
+
+
+        if (!is_array($data)) {
+            return [
+                'success' => false,
+                'message' => 'JSON inválido ou não é um array'
+            ];
+        }
+
+
+        $filter = ['id_processo' => $data['id_processo']];
+        $inser  = [
+            '$set' => $data,
+
+            '$push' => [
+                'historico_solicitacao_cancelar' => [
+
+                    'data_solicitacao' => new MongoDB\BSON\UTCDateTime(),
+                    'finger_old' => $finger_inicial
+                ]
+            ]
+        ];
+
+        $bulk->update(
+            $filter,
+            $inser,
+            ['upsert' => true, 'multi' => false]
+        );
+
+        $operacoes++;
+
+        try {
+
+            if ($operacoes > 0) {
+
+                $result = $this->manager->executeBulkWrite(
+                    "{$this->dbname}.{$this->db_colletion_json_dados_cancelar}",
                     $bulk
                 );
 
@@ -689,6 +804,249 @@ class instance extends MongoConect
 
             return iterator_to_array($cursor);
         } catch (MongoDB\Driver\Exception\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function insert_all_paralizar_reprocesar_jobs($id, $paralisadoAtual, $acao, $fingerUsuario)
+    {
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        $query = new MongoDB\Driver\Query(
+            ['id_processo' => $id],
+            ['projection' => ['data' => 1]]
+        );
+
+        $cursor = $this->manager->executeQuery(
+            "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
+            $query
+        );
+
+        $document = current($cursor->toArray());
+        $dataInicial = $document->data ?? null;
+
+        $filter = ['id_processo' => $id];
+
+        $update = [
+            '$set' => [
+                'paralisado' => $paralisadoAtual,
+                'data' => null
+            ],
+            '$push' => [
+                'historico_paralisacao' => [
+                    'acao' => $acao == 1 ? 'paralisar' : 'desparalisar',
+                    'data_solicitacao' => new MongoDB\BSON\UTCDateTime(),
+                    'finger' => $fingerUsuario,
+                    'dataInicial_paralisazao' => $dataInicial
+                ]
+            ]
+        ];
+
+        $bulk->update(
+            $filter,
+            $update,
+            ['upsert' => true, 'multi' => false]
+        );
+
+        try {
+            $result = $this->manager->executeBulkWrite(
+                "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
+                $bulk
+            );
+            return [
+                'success' => true,
+                'inserted' => $result->getInsertedCount(),
+                'modified' => $result->getModifiedCount(),
+                'upserted' => $result->getUpsertedCount(),
+                'matched'  => $result->getMatchedCount(),
+            ];
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function busca_dados_finger_parar($id)
+    {
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        $query = new MongoDB\Driver\Query(
+            ['id_process' => $id],
+            ['projection' => ['data_alteracao' => 1, '']]
+        );
+
+
+        try {
+            $cursor = $this->manager->executeQuery(
+                "{$this->dbname}.{$this->db_colletion_json_dados}",
+                $query
+            );
+            $document = current($cursor->toArray());
+            $data_alteracao = $document->data_alteracao ?? null;
+            return $data_alteracao;
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function get_dados_parar($dados)
+    {
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        $filtros = [];
+
+        foreach ($dados as $values) {
+
+            if (preg_match('/^[a-f0-9]{24}$/i', $values['processo_id'])) {
+
+                $filtros[] = [
+                    'id_process' => new MongoDB\BSON\ObjectId($values['processo_id'])
+                ];
+            } else {
+
+                $filtros[] = [
+                    'id_process'  => (string)$values['processo_id'],
+                ];
+            }
+        }
+
+        if (empty($filtros)) {
+            return [];
+        }
+
+        $option = ['projection' => [
+            '_id' => 1,
+            'id_process' => 1,
+            'data_alteracao' => 1,
+            'info_auditoria_finger' => 1,
+            'paralizar_processos' => 1,
+            'status' => 1
+        ]];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+            //collection finger
+            $cursor = $this->manager->executeQuery("{$this->dbname}.{$this->db_colletion_json_dados}", $query);
+
+            return iterator_to_array($cursor);
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+    public function get_dados_info_reprocess($dados)
+    {
+        $filtros = [];
+
+        if (preg_match('/^[a-f0-9]{24}$/i', $dados)) {
+            $filtros[] = [
+                'id_process' => new MongoDB\BSON\ObjectId($dados)
+            ];
+        } else {
+            $filtros[] = [
+                'id_process' => (string)$dados,
+            ];
+        }
+
+        $option = [
+            'projection' => [
+                'info_reprocess' => 1,
+                'msg' => 1,
+                'data_alteracao' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+
+            $cursor = $this->manager->executeQuery(
+                "{$this->dbname}.{$this->db_colletion_json_dados}",
+                $query
+            );
+
+            $result = current($cursor->toArray());
+
+            return $result ?: null;
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function get_dados_info_paralizar_die($dados)
+    {
+        $filtros = [];
+
+        if (preg_match('/^[a-f0-9]{24}$/i', $dados)) {
+            $filtros[] = [
+                'id_processo' => new MongoDB\BSON\ObjectId($dados)
+            ];
+        } else {
+            $filtros[] = [
+                'id_processo' => (string)$dados,
+            ];
+        }
+
+        $option = [
+            'projection' => [
+                'data_finalizacao' => 1,
+                'processo_finalizado' => 1,
+
+                '_id' => 0
+            ]
+        ];
+
+        $query = new MongoDB\Driver\Query(
+            ['$or' => $filtros],
+            $option
+        );
+
+        try {
+
+            $cursor = $this->manager->executeQuery(
+                "{$this->dbname}.{$this->db_colletion_json_dados_paralizars}",
+                $query
+            );
+
+            $result = current($cursor->toArray());
+
+            if ($result && !empty($result->data_finalizacao->date)) {
+
+                $data = new DateTime($result->data_finalizacao->date);
+                $dataFormatada = $data->format('d/m/Y H:i:s');
+
+                $result->data_finalizacao = $dataFormatada;
+            }
+
+            $tamanho = count(get_object_vars($result));
+
+            return $tamanho  > 0 ? $result : null;
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
             return [
                 'success' => false,
                 'error' => $e->getMessage()

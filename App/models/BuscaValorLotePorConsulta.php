@@ -25,10 +25,6 @@ class BuscaValorLotePorConsulta  extends Model
 		// 	$codConsulta = 280968;
 		// }
 
-		// echo "<pre>";
-		// echo "MEUS DADOS VINDO AQUI COM O COD DA CONSULTA\n";
-
-		// print_r($codConsulta);
 
 		$volumetria = $CapturaVolumetria->captura($rede, $codConsulta);
 
@@ -40,6 +36,7 @@ class BuscaValorLotePorConsulta  extends Model
 
 			$valor = $CapturaModulo->CaputuraValor($codConsulta);
 			if ($valor) {
+				// return [0.98 * $quantidade, $result];
 				return [$valor * $quantidade, $result];
 			}
 		}
