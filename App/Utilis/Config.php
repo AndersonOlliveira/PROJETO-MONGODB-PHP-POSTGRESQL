@@ -51,10 +51,7 @@ class Config
 
         $confContent = file_get_contents('https://site2.proscore.com.br/progestor/env.json');
 
-        echo "<pre>";
-        echo "meu json";
 
-        print_r($confContent);
         $obj = json_decode($confContent, true);
 
         return $obj[$param];

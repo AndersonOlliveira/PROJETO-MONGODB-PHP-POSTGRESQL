@@ -40,9 +40,9 @@ class Controller
         // echo "<pre>";
 
         // print_R($className);
-        $file = __DIR__ . "../../Utilis/{$className}.php";
-        // $file = __DIR__ . "/../Utilis/{$className}.php";
-//
+        // $file = __DIR__ . "../../Utilis/{$className}.php";
+        $file = __DIR__ . "/../Utilis/{$className}.php";
+        //
         if (!file_exists($file)) {
             throw new \Exception("Arquivo {$file} não encontrado! \n");
         }

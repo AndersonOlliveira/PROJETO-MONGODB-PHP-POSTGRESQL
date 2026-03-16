@@ -91,6 +91,79 @@ class process extends Model
 		return $results->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	public function list_processo_parar($idProcesso, $qtLimit, $info = false)
+	{
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando list_processo com idProcessos:  {$idProcesso}  \n");
+		logInfo(date('Y-m-d H:i:s') . " - Iniciando list_processo com x linhas : {$qtLimit} \n");
+
+
+		$sql = "";
+		$sql = "SELECT p.processo_id, p.contrato,
+			p.rede,
+			p.codcns,
+			p.nome_arquivo,
+			p.aceite_execucao,
+			p.mensagem_alerta,
+			p.data_cadastro,
+			p.configuracao_json,
+			p.campos_aquisicao,
+			p.loja,
+			p.finalizado,
+			p.data_finalizacao,
+			p.pause,
+			t.transacao_id,
+			t.id_processo,
+			t.resposta_json
+			FROM
+		    progestor.transacao t INNER JOIN 
+			progestor.processo p ON p.processo_id = t.id_processo 
+		WHERE 
+			t.status in (12) AND 
+			p.mensagem_alerta = 'parar_processo'
+			AND 
+			p.contrato = 417039 AND
+			p.finalizado = false AND
+			p.error = false";
+
+
+		$params = [];
+		if ($idProcesso !== null) {
+			$sql .= " AND p.processo_id = ?";
+			$params[] = $idProcesso;
+		}
+
+
+		$sql .= " AND p.pause = ?";
+		$params[] = $info ? 1 : 0;
+
+
+
+
+		if ($qtLimit !== null) {
+			$qtLimit = (int)$qtLimit; // garante que é inteiro
+			$sql .= " ORDER BY random() LIMIT $qtLimit;";
+		} else {
+			$sql .= " ORDER BY random() LIMIT 10;";
+		}
+
+
+		// echo "<pre>";
+		// echo "MEUS PARAM MONTADO\n";
+
+		// print_r($sql);
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute($params);
+			// $result = $this->db->query($sql);
+
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+		}
+	}
+
 	public function list_processo_alert($idProcesso, $qtLimit)
 	{
 
@@ -631,6 +704,7 @@ HAVING
 	public function get_limit_day_contrato($contrato)
 	{
 
+
 		$sql = "";
 		$sql = "SELECT limite_dias
 			FROM
@@ -781,6 +855,40 @@ HAVING
 		return $Newregistros;
 	}
 
+	//pega a quantidade para realizar o update
+	public function count_process_paradados($idProcesso)
+	{
+		$sql =  "";
+		$sql =  "SELECT 
+		  SUM(CASE WHEN t.status in (17)
+                     AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END) AS total_paralizados
+	      FROM
+		    progestor.transacao t INNER JOIN 
+			  progestor.processo p ON p.processo_id = t.id_processo 
+			   where id_processo = ?;";
+
+		try {
+
+			$Newregistros = [];
+			$dados = [$idProcesso];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (PDOException $e) {
+			print_R("Erro na consulta: " . $e->getMessage());
+			return null;
+		}
+
+		if ($result->rowCount() == 0) {
+			return null;
+		}
+
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$Newregistros = $row;
+		}
+
+		return $Newregistros;
+	}
+
 	public function alter_valores_process_paralizar($id_process, $value)
 	{
 		$erros = [];
@@ -855,7 +963,7 @@ HAVING
 			FROM progestor.transacao
 			GROUP BY id_processo, transacao_id
 		) t ON t.id_processo = p.processo_id
-		where p.processo_id = 168 AND p.pause = false AND p.error = false
+		where p.pause = false AND p.error = false
 		GROUP BY p.processo_id
 		HAVING SUM(t.qtd_status_egth) > 0 order by p.processo_id desc;";
 
@@ -895,5 +1003,293 @@ HAVING
 
 			return $e->getMessage();
 		}
+	}
+
+	public function get_ids_contrato($id_contrato)
+	{
+
+		$sql =  "";
+		$sql = "SELECT p.processo_id
+		 FROM progestor.processo AS p
+		 where p.contrato = ?
+		 GROUP BY p.processo_id
+		 order by p.processo_id desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute([$id_contrato]);
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+
+	public function get_fingers_process_jobs($id_contrato)
+	{
+
+		$sql =  "";
+		$sql = "SELECT p.processo_id, p.data_cadastro, p.finger,p.mensagem_alerta
+		 FROM progestor.processo AS p
+		 where p.contrato = ?
+		 GROUP BY p.processo_id
+		 order by p.processo_id desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute([$id_contrato]);
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+
+	public function get_fingers_downloads_jobs($id_contrato)
+	{
+
+		$sql =  "";
+		$sql = "SELECT d.id_info_downloads, d.finger_download, d.ids_baixados,d.data_download
+		 FROM progestor.info_downloads AS d
+		 where d.ctr_cliente = ?
+		 GROUP BY d.id_info_downloads
+		 order by d.id_info_downloads desc;";
+
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute([$id_contrato]);
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+
+
+	public function push_dados_parar_processo()
+	{
+
+		$sql =  "";
+		$sql = "SELECT p.processo_id,t.transacao_id,t.status,t.sucesso,
+		t.campo_aquisicao from progestor.processo as p
+		INNER JOIN progestor.transacao as t on (t.id_processo = p.processo_id)
+		WHERE p.processo_id = 184 and p.mensagem_alerta = 'parar_processo'
+		and t.resposta is null;";
+
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute();
+			if ($results->rowCount() == 0) {
+				return [
+					'success' => (boolval(false)),
+					'message' => 'dados para o contrato não localizado'
+				];
+			}
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+
+	public function alter_die_msg_process($id_process)
+	{
+		$erros = [];
+
+		try {
+
+			$sql = "UPDATE progestor.processo SET mensagem_alerta = ? WHERE processo_id = ?";
+			$dados =  ['parar_processo', $id_process];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (\Exception $e) {
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
+	}
+
+	public function get_info_status_process()
+	{
+		$erros = [];
+
+		try {
+
+			$sql = "";
+
+			$sql = "SELECT count(t.id_processo)  as qta,
+		  p.processo_id,
+		  p.codcns,
+		  p.contrato,
+		 --COALESCE(t.qtd_registros, 0) AS qtd_registros,
+		  COALESCE(SUM(CASE WHEN t.status in (12) THEN 1 ELSE 0 END), 0) AS qta_processar_status,
+		  COALESCE(SUM(CASE WHEN t.status in (3) THEN 1 ELSE 0 END), 0) AS qta_processado,
+		  COALESCE(SUM(CASE WHEN t.status not in (12,3,6) THEN 1 ELSE 0 END), 0) AS qta_processar,
+		  COALESCE(SUM(CASE WHEN t.status in (6) THEN 1 ELSE 0 END), 0) AS qta_paralizado
+		  FROM progestor.transacao as t
+		  INNER JOIN progestor.processo as p on
+		  (p.processo_id = t.id_processo)
+          --WHERE t.id_processo = 181 and campo_aquisicao is  not null and mensagem_alerta = 'parar_processo'
+          WHERE campo_aquisicao is not null and mensagem_alerta = 'parar_processo' and  p.finalizado = false AND
+		  p.error = false and p.pause = false GROUP BY p.processo_id, p.codcns, p.contrato;";
+
+
+			$result = $this->db->prepare($sql);
+			$result->execute();
+
+
+			if ($result->rowCount() > 0) {
+
+				return $result->fetchAll(PDO::FETCH_ASSOC);
+			} else {
+				return false;
+			}
+		} catch (\Exception $e) {
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
+	}
+
+	public function process_breackss($id_process, $id_status)
+	{
+
+		$erros = [];
+
+		try {
+			//recebe 6 
+			$sql = "UPDATE progestor.transacao SET status = ? WHERE id_processo = ? and status not in (12,3);";
+			// $sql = "SELET progestor.transacao SET status = ? WHERE id_processo = ? ";
+
+			$dados = array();
+			$dados[] = $id_status;
+			$dados[] = $id_process;
+
+			$result = $this->db->prepare($sql);
+
+			$result->execute($dados);
+		} catch (\Exception $e) {
+
+			//   $conexaoBd->BD_COM->rollback();
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+			'qta_afetadas' => $result->rowCount()
+
+		];
+	}
+
+	public  function list_transation($id)
+	{
+		$erros = [];
+
+		try {
+
+			$sql = "";
+			$sql = "SELECT t.transacao_id, p.processo_id FROM progestor.transacao as t
+		  INNER JOIN progestor.processo as p on
+		  (p.processo_id = t.id_processo)
+          WHERE t.id_processo =  ?  and t.status not in (3,12)
+		  GROUP BY t.transacao_id , p.processo_id;";
+
+
+			$result = $this->db->prepare($sql);
+			$result->execute([$id]);
+
+
+			if ($result->rowCount() > 0) {
+
+				return $result->fetchAll(PDO::FETCH_ASSOC);
+			} else {
+				return false;
+			}
+		} catch (\Exception $e) {
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
+	}
+
+	public function alter_value_process_status($id_process, $value)
+	{
+		$erros = [];
+
+		try {
+			//recebe 6 
+			$sql = "UPDATE progestor.processo SET valor_total = ?, mensagem_alerta = ? WHERE processo_id = ? ";
+
+			$dados =  [$value, 1, $id_process];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (\Exception $e) {
+
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0,
+
+		];
 	}
 }
