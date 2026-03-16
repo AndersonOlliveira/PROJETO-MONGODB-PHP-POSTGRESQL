@@ -1057,22 +1057,9 @@ class Arquivos
 
 				if (isset($resultado) && $resultado['status'] == 2) {
 
-					echo "<pre>";
-					echo "passei no if?\n";
-
-					var_dump($resultado);
-					var_dump($valores['processo_id']);
 
 					//realizo o update para true dentro do processo para finalizar o job e gerar o resultado.s
 					$result_up = $this->filtros->up_status_finish_eight($valores['processo_id']);
-
-					echo "<pre>";
-					echo "passei no if?\n";
-
-					var_dump($result_up);
-					// var_dump($valores['processo_id']);
-
-
 				}
 			}
 		}

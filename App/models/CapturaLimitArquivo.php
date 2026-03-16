@@ -2,26 +2,27 @@
 
 class CapturaLimitArquivo extends Model
 {
-	protected $conection;
-	protected $infoArquivojson;
-	protected $alterProcess;
+	// protected $conection;
+	// protected $infoArquivojson;
+	// protected $alterProcess;
 
 
-	public function __construct()
-	{
-		// require_once 'ConexaoBd.php';
-		// $this->conection = new conexaoBd();
+	// public function __construct()
+	// {
+	// require_once 'ConexaoBd.php';
+	// $this->conection = new conexaoBd();
 
-		// require_once 'Config_arquivo.php';
-		// $this->infoArquivojson = new Config_arquivo();
+	// require_once 'Config_arquivo.php';
+	// $this->infoArquivojson = new Config_arquivo();
 
-		// require_once 'AlterarJobsProcessNew.php';
-		// $this->alterProcess = new AlterarJobsProcessNew();
-	}
+	// require_once 'AlterarJobsProcessNew.php';
+	// $this->alterProcess = new AlterarJobsProcessNew();
+	// }
 	public function limitArquivo($contrato)
 	{
 
 
+		var_dump($this->db);
 		// $contrato = 352249;
 
 		$sql = "";
