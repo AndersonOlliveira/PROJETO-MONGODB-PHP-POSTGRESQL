@@ -30,8 +30,10 @@ class process extends Model
 		    progestor.transacao t INNER JOIN 
 			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-			t.status in (12,3) AND 
-			p.contrato = 417039 AND
+
+		  --revovmento o 3 pois ele já e o resultado final, quando faz a busca dento do mongo ele não acha os dados e gera uma demora para concluir os dados
+			t.status in (12) AND 
+			--p.contrato = 417039 AND
 			 p.finalizado = false AND
 			 p.error = false";
 
@@ -122,17 +124,8 @@ class process extends Model
 			p.mensagem_alerta = 'parar_processo'
 			AND 
 			p.contrato = 417039 AND
-			p.finalizado = false AND
+			(p.finalizado = false or p.finalizado = true) AND 
 			p.error = false";
-
-
-		// echo "meu info enviado\n";
-
-		// var_dump($info);
-		// echo "vem vazio?\n";
-		// print_r(empty($info));
-
-		// var_dump($idProcesso);
 
 
 		$params = [];
@@ -143,22 +136,10 @@ class process extends Model
 
 
 		$sql .= " AND p.pause = ?";
-		$params[] = $info ? 1 : 0;;
+		$params[] = $info ? 1 : 0;
 
-		// if ($info !== null) {
 
-		// 	echo "<pre>";
-		// 	echo "E DIFERENTE DE NULL\n";
-		// 	var_dump($info);
-		// 	$sql .= " AND p.pause = ?";
-		// 	$params[] = (bool) true;
-		// } else {
-		// 	echo "<pre>";
-		// 	echo "E NULL\n";
-		// 	var_dump($info);
-		// 	$sql .= " AND p.pause = ?";
-		// 	$params[] =  (bool)false;
-		// }
+
 
 		if ($qtLimit !== null) {
 			$qtLimit = (int)$qtLimit; // garante que é inteiro
@@ -174,11 +155,15 @@ class process extends Model
 		// print_r($sql);
 
 
-		$results = $this->db->prepare($sql);
-		$results->execute($params);
-		// $result = $this->db->query($sql);
+		try {
+			$results = $this->db->prepare($sql);
+			$results->execute($params);
+			// $result = $this->db->query($sql);
 
-		return $results->fetchAll(PDO::FETCH_ASSOC);
+			return $results->fetchAll(PDO::FETCH_ASSOC);
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+		}
 	}
 
 	public function list_processo_alert($idProcesso, $qtLimit)
@@ -872,6 +857,40 @@ HAVING
 		return $Newregistros;
 	}
 
+	//pega a quantidade para realizar o update
+	public function count_process_paradados($idProcesso)
+	{
+		$sql =  "";
+		$sql =  "SELECT 
+		  SUM(CASE WHEN t.status in (17)
+                     AND t.campo_aquisicao IS NOT NULL  THEN 1 ELSE 0 END) AS total_paralizados
+	      FROM
+		    progestor.transacao t INNER JOIN 
+			  progestor.processo p ON p.processo_id = t.id_processo 
+			   where id_processo = ?;";
+
+		try {
+
+			$Newregistros = [];
+			$dados = [$idProcesso];
+			$result = $this->db->prepare($sql);
+			$result->execute($dados);
+		} catch (PDOException $e) {
+			print_R("Erro na consulta: " . $e->getMessage());
+			return null;
+		}
+
+		if ($result->rowCount() == 0) {
+			return null;
+		}
+
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$Newregistros = $row;
+		}
+
+		return $Newregistros;
+	}
+
 	public function alter_valores_process_paralizar($id_process, $value)
 	{
 		$erros = [];
@@ -992,7 +1011,7 @@ HAVING
 	{
 
 		$sql =  "";
-		$sql = "SELECT p.processo_id
+		$sql = "SELECT p.processo_id 
 		 FROM progestor.processo AS p
 		 where p.contrato = ?
 		 GROUP BY p.processo_id
@@ -1050,7 +1069,7 @@ HAVING
 	{
 
 		$sql =  "";
-		$sql = "SELECT d.id_info_downloads, d.finger_download, d.ids_baixados,d.data_download
+		$sql = "SELECT d.id_info_downloads as processo_id_downloads, TO_CHAR(d.data_download, 'DD/MM/YYYY HH24:MI') as data_download ,d.finger_download, d.ids_baixados
 		 FROM progestor.info_downloads AS d
 		 where d.ctr_cliente = ?
 		 GROUP BY d.id_info_downloads
@@ -1149,7 +1168,7 @@ HAVING
 		  INNER JOIN progestor.processo as p on
 		  (p.processo_id = t.id_processo)
           --WHERE t.id_processo = 181 and campo_aquisicao is  not null and mensagem_alerta = 'parar_processo'
-          WHERE campo_aquisicao is not null and mensagem_alerta = 'parar_processo' and  p.finalizado = false AND
+          WHERE t.campo_aquisicao is not null and p.mensagem_alerta = 'parar_processo' and  (p.finalizado = false or p.finalizado = true) AND
 		  p.error = false and p.pause = false GROUP BY p.processo_id, p.codcns, p.contrato;";
 
 

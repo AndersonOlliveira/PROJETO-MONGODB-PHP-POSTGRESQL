@@ -1066,22 +1066,9 @@ class Arquivos
 
 				if (isset($resultado) && $resultado['status'] == 2) {
 
-					echo "<pre>";
-					echo "passei no if?\n";
-
-					var_dump($resultado);
-					var_dump($valores['processo_id']);
 
 					//realizo o update para true dentro do processo para finalizar o job e gerar o resultado.s
 					$result_up = $this->filtros->up_status_finish_eight($valores['processo_id']);
-
-					echo "<pre>";
-					echo "passei no if?\n";
-
-					var_dump($result_up);
-					// var_dump($valores['processo_id']);
-
-
 				}
 			}
 		}
@@ -1128,6 +1115,11 @@ class Arquivos
 				$idBusca = $die_process['processo_id'];
 			}
 		}
+
+		echo "<pre>";
+		echo "MEU ID DE BUSCA";
+
+		print_r($idBusca);
 
 		if (isset($idBusca)) {
 
@@ -1182,6 +1174,19 @@ class Arquivos
 				];
 				$valorTotal += $valorLoteConsulta;
 				//update na tabela processo
+			} else if ($valores['qta_processar_status'] == 0 && $valores['qta_processado'] > 0) {
+				$redeLoja =  $this->CapturaRedeLojaDoContrato->execute($valores['contrato']);
+				list($valorLoteConsulta, $modulo) =	$this->BuscaValorLotePorConsulta->calcula($valores['codcns'], $redeLoja['rede'], $valores['qta_processado']);
+				$upProcessDaddos[] = [
+					'processo_id' => $valores['processo_id'],
+					'valor_lote' => $valorLoteConsulta,
+					'modulo' => $modulo,
+					'total_registros_parados' => $somataria_dados_processado,
+					'data_atualizacao' => date('Y-m-d H:i:s'),
+					'qta_processado' => $valores['qta_processado'],
+					'qta' => $valores['qta']
+				];
+				$valorTotal += $valorLoteConsulta;
 			}
 		}
 

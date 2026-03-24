@@ -1,2 +1,5 @@
 .env
-.log
+*.log
+*_.log
+*.log
+serverss_.log

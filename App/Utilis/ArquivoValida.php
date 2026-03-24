@@ -3,16 +3,16 @@
 class ArquivoValida
 {
 
-    protected $CapturaLimitArquivo;
+    protected $capturaLimitArquivo;
     public function __construct()
     {
 
 
         require_once __DIR__ . '/../models/CapturaLimitArquivo.php';
-        $this->CapturaLimitArquivo = new CapturaLimitArquivo();
+        $this->capturaLimitArquivo = new CapturaLimitArquivo();
     }
 
-    public static function ValidaFormat($pathFile)
+    public function ValidaFormat($pathFile)
     {
 
         echo "<pre>";
@@ -37,6 +37,24 @@ class ArquivoValida
             return  ['error' => true, 'msg' => 'Codificação do arquivo deve ser UTF-8 e Enviar arquivo delimitado por ; (ponto e virgula) formato CSV '];
         }
 
+        // list($qtRegistros, $limiteRegArquivo) = self::ValidaQuantidade($pathFile, $contrato);
+        list($qtRegistros, $limiteRegArquivo) = self::ValidaQuantidade($pathFile, 417039);
+
+
+        echo "<pre>";
+
+        print_r($qtRegistros);
+        // if ($qtRegistros > 2500) {
+        if ($qtRegistros > $limiteRegArquivo) {
+            return [
+                'error' => true,
+                // 'msg' => "Quantidade de registros no arquivo excede o limite de processamento de " . number_format(2500, 0, ',', '.')
+                'msg' => "Quantidade de registros no arquivo excede o limite de processamento de " . number_format($limiteRegArquivo, 0, ',', '.')
+
+            ];
+        }
+
+
         return ['error' => false, 'msg' => 'Arquivo válido.'];
     }
 
@@ -53,10 +71,10 @@ class ArquivoValida
     public function ValidaQuantidade($pathFile)
     {
 
-        require_once 'Config.php';
-        require_once 'CapturaLimitArquivo.php';
+        // require_once 'Config.php';
+        // require_once 'CapturaLimitArquivo.php';
 
-        // $newlimiteRegArquivo = $this->capturaLimitArquivo->limitArquivo(417039);
+        $newlimiteRegArquivo = $this->capturaLimitArquivo->limitArquivo(417039);
 
         $limiteRegArquivo = $newlimiteRegArquivo['limite_uso'];
         $contador = 0;
@@ -66,7 +84,11 @@ class ArquivoValida
         if (($handle = fopen($pathFile, "r")) !== false) {
             while (($linha = fgets($handle)) !== false) {
 
-                if (trim($linha) == '') {
+                $limpa = trim($linha);
+                $checarConteudo = str_replace(';', '', $limpa);
+
+
+                if ($limpa == '' || $checarConteudo == '') {
                     continue;
                 }
                 $contador++;

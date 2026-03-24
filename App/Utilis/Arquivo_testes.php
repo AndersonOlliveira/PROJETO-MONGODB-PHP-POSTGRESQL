@@ -189,10 +189,21 @@ class Arquivo_testes extends Controller
         // ===============================
         if (isset($associado['tcpfcnpj'])) {
 
-            $docBruto = preg_replace("/\r|\n/", "", (string)$associado['tcpfcnpj']);
-            $numero   = preg_replace("/\D/", "", $docBruto);
 
-            if ($numero !== '') {
+
+            $docBruto = preg_replace("/\r|\n/", "", (string)$associado['tcpfcnpj']);
+
+
+
+            $numero  = preg_replace("/\D/", "", $docBruto);
+            echo "<pre>";
+            echo "meu associado vindo aqui\n";
+
+            print_r($numero);
+
+
+            if ($docBruto !== '') {
+
 
                 if (strlen($numero) === 11) {
 
@@ -218,6 +229,17 @@ class Arquivo_testes extends Controller
                     } else {
                         $documentoInvalido[$numero]['quantidade']++;
                     }
+                }
+            } else {
+                if (!isset($documentoInvalido[$numero])) {
+                    $documentoInvalido[$numero] = [
+                        'documento'  => $numero,
+                        'valid'      => 0,
+                        'reason'     => 'comprimento inválido',
+                        'quantidade' => 1
+                    ];
+                } else {
+                    $documentoInvalido[$numero]['quantidade']++;
                 }
             }
         }

@@ -51,44 +51,29 @@ class ListarController extends Controller
     $push_dados_process_die = $return->get_info_status_process();
 
 
-    if (isset($pegar_dados_parados)) {
-      $this->utils->get_dados_id($pegar_dados_parados);
-    }
-
-    if (isset($push_dados_process_die) && $push_dados_process_die) {
-       $this->utils->treat_dados_die($push_dados_process_die);
-    }
-
-
-
-
-    //aqui vou implmentar para quando ele não achar mais o 12 ele finaliza o job e atualiza os valores junto com as quantidades corretas
-
-
-    // $return_valores = $return->count_new_quantidade($idProcesso, $qtLimit);
-
-
-    //para parar os processo do status 8 que esta com erro.
-
-    // if (isset($dados_parar)) {
-    //   $this->utils->process_finalizar_status_erros($dados_parar);
+    // if (isset($pegar_dados_parados)) {
+    //     $this->utils->get_dados_id($pegar_dados_parados);
     // }
 
+    // if (isset($push_dados_process_die) && $push_dados_process_die) {
+    //   $this->utils->treat_dados_die($push_dados_process_die);
+    // }
 
-    //este processa todos os jobs
-    // $re = $this->utils->get_dados_id($returns);
+    ///pegos dentro da collection de paralizar
+    $jobs_parados = $this->utilss->get_data_paralizar();
 
-    // $return_valores = $return->count_new_quantidade();
+    echo "<pre>";
+
+    print_r($jobs_parados);
+
+    die();
+    if (isset($jobs_parados)) {
+      $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
+    }
+
+
 
     // $pasta = $this->arquivos_json->env_json('path_arquivos_info');
-
-
-    //aqui vem os dados paralisados
-    // $jobs_parados = $this->utilss->get_data_paralizar();
-
-    // if (isset($jobs_parados)) {
-    //   $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
-    // }
 
     // if (isset($pasta)) {
     //   //envio para a pasta de arquivos para processarl
@@ -101,6 +86,11 @@ class ListarController extends Controller
     //   $this->utils->contar_atualizar_valores($return_valores);
     // }
 
+    // //finalizar jobs parados com o status 17 para gerarr o resultado 
+    // if (isset($dados_parar)) {
+    //   echo "chamei o parar";
+    //   $this->utils->process_finalizar_status_erros($dados_parar);
+    // }
     // //vou percorrer para pegar o id e calcular o valorer correto;
 
 
@@ -178,6 +168,8 @@ class ListarController extends Controller
 
     //       $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
     //     } else {
+
+
     //       $return->finish_process_die($values['processo_id']);
     //     }
     //   }

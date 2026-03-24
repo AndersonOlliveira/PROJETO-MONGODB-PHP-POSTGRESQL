@@ -24,7 +24,7 @@ class ProcessController extends Controller
         // $this->utilis_processs_teste = $this->Utilis('Arquivo_testes_copys');
         $this->utilis_processs_new = $this->Utilis('new_arquivo');
         $this->utilis_process_valida = $this->Utilis('ArquivoValida');
-        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('arquivos_n');
+        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('consulta-pf-integrada');
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('teste-base');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTAS-testes');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CPF-VARIOS-CAMPOS- Copia');
@@ -171,12 +171,13 @@ class ProcessController extends Controller
 
 
 
-        $validateArquivo = $arquivoValida->ValidaFormat($pathFile);
+        $validateArquivo = $this->utilis_process_valida->ValidaFormat($pathFile);
 
 
-        // echo "<pre>";
+        echo "<pre>";
+        echo "ME RESULTADO\n";
 
-        // print_R($validateArquivo);
+        print_R($validateArquivo);
 
         // echo "<pre>";
         // print_R($consultasStr);
@@ -186,7 +187,7 @@ class ProcessController extends Controller
         // echo "[$dateNow] --- NOVO PROCESSO: $pathFile, $consultas, $contrato, $filename \n";
 
         // require_once 'Arquivo_testes.php';
-        $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
+        // $result = $this->utilis_processs_teste->process_new($pathFile, $consultas, $contrato, $filename, $valortotal, $headers, $finger);
         // $validate = $this->utilis_processs_new->validate($pathFile, $consultas, $headers);
 
 
