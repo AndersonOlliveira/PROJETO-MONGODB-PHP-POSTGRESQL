@@ -4,6 +4,8 @@
 class BuscaValorLotePorConsulta  extends Model
 {
 
+	/**VERSAO PRÉ PAGO */
+	// public function calcula($codConsulta, $rede, $quantidade, $contrato)
 	public function calcula($codConsulta, $rede, $quantidade)
 	{
 
@@ -11,9 +13,31 @@ class BuscaValorLotePorConsulta  extends Model
 		require_once 'CapturaValorDaConsultaPorFaixa.php';
 		require_once 'CapturaModulo.php';
 		require_once 'CapturaVolumetria.php';
+		require_once 'CapturaValorPrePago.php';
 
 		$CapturaModulo = new CapturaModulo();
 		$CapturaVolumetria = new CapturaVolumetria();
+		$CapturaValorPrePago = new CapturaValorPrePago();
+
+
+		/**VERSÃO PRE PAGO */
+		/*
+		if ($contrato) {
+
+			$result_prePago = $CapturaValorPrePago->push_value_prePago($contrato, $codConsulta);
+
+
+
+			$values = $result_prePago[0];
+			if (filter_var($values['perfilcobtipo'], FILTER_VALIDATE_BOOLEAN)) {
+				// if (!empty($values['perfilcobtipo'])) {
+				return [$values['valor'] * $quantidade, ['perfilcobtipo' => true]];
+				// }
+			}
+		}
+
+		*/
+
 
 		$result = $CapturaModulo->resultModulo($codConsulta);
 

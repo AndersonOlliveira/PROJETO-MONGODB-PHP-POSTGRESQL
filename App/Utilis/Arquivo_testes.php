@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 class Arquivo_testes extends Controller
 {
@@ -14,6 +17,8 @@ class Arquivo_testes extends Controller
     protected $MontaJsonConfigEHeadersDaConsulta;
     protected $BuscaValorLotePorConsulta;
     protected $db;
+    protected $capturaValorPrePago;
+    protected $modelMongo;
     public function __construct()
     {
 
@@ -23,6 +28,8 @@ class Arquivo_testes extends Controller
 
         require_once __DIR__ . '/../models/GravaProcesso.php';
         $this->gravaProcess = new GravaProcesso();
+        require_once __DIR__ . '/../models/CapturaValorPrePago.php';
+        $this->capturaValorPrePago = new CapturaValorPrePago();
         // $this->gravaProcess = new GravaProcesso();
         require_once __DIR__ . '/../models/RemoveProcesso.php';
         $this->RemoveProcesso = new RemoveProcesso();
@@ -36,6 +43,9 @@ class Arquivo_testes extends Controller
         $this->BuscaValorLotePorConsulta = new BuscaValorLotePorConsulta();
         require_once __DIR__ . '/../Utilis/MontaJsonConfigEHeadersDaConsulta.php';
         $this->MontaJsonConfigEHeadersDaConsulta = new MontaJsonConfigEHeadersDaConsulta();
+
+        require_once __DIR__ . '/../models/instance.php';
+        $this->modelMongo = new instance();
     }
 
 
@@ -343,11 +353,13 @@ class Arquivo_testes extends Controller
 
         $valorTotal = 0;
         $contadorLinha = 0;
+        $status_inicial = 0;
         $registros = [];
         $documentoInvalido = [];
         $documentoInvalidos = [];
         $registrosValidos = [];
         $newregistros = [];
+        $jsonStatusPrepago = [];
 
         rewind($fh);
 
@@ -448,21 +460,32 @@ class Arquivo_testes extends Controller
         // $totalvalidos = count($registrosValidos);
         $totalRegistros = count($registros);
 
-        echo "<pre>";
-        echo "MEU TOTAL DE ARQUIVOS A SER PROCESSADOS\n";
+        // echo "<pre>";
+        // echo "MEU TOTAL DE ARQUIVOS A SER PROCESSADOS\n";
 
+        // // print_r($registros);
         // print_r($registros);
-        print_r($registros);
 
 
-        die();
+        // die();
 
 
         $confCns = $this->MontaJsonConfigEHeadersDaConsulta->execute($idConsulta);
         $resultado = $this->CapturaCamposConsultas->heades($idConsulta);
 
         $redeLoja = $this->CapturaRedeLojaDoContrato->execute($contrato);
-        list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($idConsulta, $redeLoja['rede'], $totalRegistrosporArray);
+        list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($idConsulta, $redeLoja['rede'], $totalRegistrosporArray, $contrato);
+        /**VERSAÕ PRE PAGO */
+        // list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($idConsulta, $redeLoja['rede'], $totalRegistrosporArray, $contrato);
+        $retorno_saldo_disponivel = $this->capturaValorPrePago->valor($contrato);
+
+
+
+        echo "<pre>";
+        echo "MEU RESULTADO DO MODULO\n";
+
+        print_R($modulo);
+        print_R($retorno_saldo_disponivel->valor_unitario);
 
         $valorTotal += $valorLoteConsulta;
 
@@ -474,6 +497,22 @@ class Arquivo_testes extends Controller
 
 
 
+        if (isset($modulo['perfilcobtipo'])) {
+
+            $retorno_saldo_disponivel->valor_unitario = 17.00;
+
+            $status_alterado = $retorno_saldo_disponivel->valor_unitario > $valorLoteConsulta ? null : 18;
+        }
+
+
+
+        echo "<pre>";
+        echo "meus dados de alterado";
+
+        var_dump($status_alterado);
+
+
+
 
         foreach ($registros as $reg) {
             // echo "<pre>";
@@ -481,8 +520,8 @@ class Arquivo_testes extends Controller
             // $valores = array_map('trim', explode(';', $reg));
 
             // // corta ou ajusta conforme o header
-            $valores = array_slice($valores, 0, count($heders));
-            $registroAssociado = array_combine($heders, $valores);
+            // $valores = array_slice($valores, 0, count($heders));
+            // $registroAssociado = array_combine($heders, $valores);
 
             // // echo "meu registro final\n";
             // // print_R($registroAssociado);
@@ -493,16 +532,16 @@ class Arquivo_testes extends Controller
             // // $payload = json_encode($registroAssociado, JSON_UNESCAPED_UNICODE);
 
 
-            $valores = array_map('trim', $valores);
-            $payloads = implode(';', $valores);
+            // $valores = array_map('trim', $valores);
+            // $payloads = implode(';', $valores);
 
-            // // echo "<pre>";
+            // // // echo "<pre>";
 
 
-            // // print_r($registroAssociado);
-            echo "<pre>";
-            echo "final";
-            print_r($payloads);
+            // // // print_r($registroAssociado);
+            // echo "<pre>";
+            // echo "final";
+            // print_r($payloads);
         }
 
         // $idProcesso = $this->gravaProcess->execute(
@@ -523,6 +562,26 @@ class Arquivo_testes extends Controller
         // );
 
         // $this->db->beginTransaction();
+
+        $idProcesso = 10;
+
+        $jsonStatusPrepago = [
+            'contrato' => $contrato,
+            'status' => empty($status_alterado) ? $status_inicial : $status_alterado,
+            'id_processo' => $idProcesso,
+            'data_solicitacao' => date("Y-m-d H:i:s", time()),
+            'info_pagamento' =>  empty($status_alterado) ? true : false,
+            'quantidade_registros' => count($registros)
+        ];
+
+        $this->modelMongo->prePaggoInfo(json_encode($jsonStatusPrepago), true);
+
+
+
+
+        echo "<pre>";
+
+        print_r($jsonStatusPrepago);
 
         $totalInseridos = 0;
         try {
@@ -561,6 +620,16 @@ class Arquivo_testes extends Controller
                 echo "final\n";
 
                 print_r($payloads);
+
+                $status_inicial =  empty($status_alterado) ? $status_inicial : $status_alterado;
+
+                echo "<pre>";
+                echo "status_inicial\n";
+
+                print_r($status_inicial);
+
+
+
 
 
 

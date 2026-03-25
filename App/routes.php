@@ -21,6 +21,7 @@ return [
     '/LerJson' => ['ProcessController', 'JsonArquivo'],
     '/soap' => ['ProcessController', 'soapControll'],
     '/Lista_json' => ['ProcessController', 'get_all_json'],
+    '/lerPrepago' => ['PrepagoController', 'ler_prePago'],
     '/api/get_dados/{id}' => ['ApiController', 'lista_dados'],
     '/api/up_dados_paralisar' => ['ApiController', 'inserir_info_paralizados_true'],
     '/api/up_dados_cancelar' => ['ApiController', 'inserir_info_cancelados_true'],
@@ -32,7 +33,8 @@ return [
     '/api/teste' => ['ApiController', 'testes'],
     '/api/get_info_reprocess/{id}' => ['ApiController', 'info_reprocess'],
     '/api/get_info_paralizar/{id}' => ['ApiController', 'info_paralizar_die'],
-    '/api/reprocess_jobs/{id}' => ['ApiController', 'gerar_novo_arquivo']
+    '/api/reprocess_jobs/{id}' => ['ApiController', 'gerar_novo_arquivo'],
+
     // '/api/alter_status_die/{id}/{contrato}' => ['ApiController', 'push_status_die']
 
 ];

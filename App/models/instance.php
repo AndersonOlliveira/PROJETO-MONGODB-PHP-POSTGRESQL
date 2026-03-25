@@ -1,10 +1,10 @@
 
 <?php
 
-// ini_set('memory_limit', '1256M');
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+ini_set('memory_limit', '1256M');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 //como náo tem o autoLoad precisa passar o nome do aquivo de conexao para poder usar dentro do porjeto
 require_once __DIR__ . '../../core/MongoConect.php';
@@ -26,6 +26,7 @@ class instance extends MongoConect
     private $db_colletion_json_dados_paralizars;
     private $db_colletion_json_dados_reprocess;
     private $db_colletion_json_dados_cancelar;
+    private $db_colletion_json_dados_prepago;
 
 
 
@@ -45,6 +46,7 @@ class instance extends MongoConect
         $this->db_colletion_json_dados_reprocess = $conn->getDBColetion_jobs_dados_json_reprocess();
         $this->db_colletion_json_dados_paralizars = $conn->getDBColetion_jobs_dados_paralizar();
         $this->db_colletion_json_dados_cancelar = $conn->getDBColetion_jobs_dados_cancelar();
+        $this->db_colletion_json_dados_prepago = $conn->getDBColetion_jobs_dados_pre_pago();
     }
 
     public function all()
@@ -1295,5 +1297,145 @@ class instance extends MongoConect
     function removerAcentos($texto)
     {
         return preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/"), explode(" ", "a A e E i I o O u U n N"), $texto);
+    }
+
+    public function prePaggoInfo($dados)
+    {
+        // $this->db_colletion_json_dados_prepago
+
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        $dados = json_decode($dados);
+
+        $query = new MongoDB\Driver\Query(
+            ['id_processo' => $dados->id_processo],
+            [
+                'projection' => [
+                    'data_solicitacao' => 1,
+                    'info_pagamento' => 1,
+                    'status' => 1,
+                    '_id' => 0
+                ]
+            ]
+        );
+
+        $cursor = $this->manager->executeQuery(
+            "{$this->dbname}.{$this->db_colletion_json_dados_prepago}",
+            $query
+        );
+
+        $document = current($cursor->toArray());
+        $dataInicial = $document->data_solicitacao ?? null;
+        $info_pagamento = $document->info_pagamento ?? null;
+        $status = $document->status ?? null;
+
+        $info = true;
+
+        $filter = ['id_processo' => $dados->id_processo];
+
+        $historico = [
+            'acao_prepago' => $dados->info_pagamento == 1 ? true : false,
+            'data_solicitacao' => empty($dataInicial) ? $dados->data_solicitacao : $dataInicial,
+            'info_pagamento' => empty($info_pagamento) ? $dados->info_pagamento : $info_pagamento,
+            'status' => empty($status) ? $dados->status : $status,
+        ];
+
+        // 2. Adicionamos a data apenas se a condição ($info) for atendida
+        if ($info) {
+            $historico['data_process_pagamento'] = new MongoDB\BSON\UTCDateTime();
+        }
+        // 3. Montamos o update final
+        $update = [
+            '$set' => array_merge(
+                (array) $dados,
+                [
+                    'info_pagamento' => $info ? true : $info_pagamento,
+                    'status' => $info ? 0 : $status,
+                ]
+            ),
+            '$push' => [
+                'historico_solicitacao_preapago' => $historico,
+            ]
+        ];
+        $bulk->update(
+            $filter,
+            $update,
+            ['upsert' => true, 'multi' => false]
+        );
+
+        try {
+            $result = $this->manager->executeBulkWrite(
+                "{$this->dbname}.{$this->db_colletion_json_dados_prepago}",
+                $bulk
+            );
+            $da = [
+                'success' => true,
+                'inserted' => $result->getInsertedCount(),
+                'modified' => $result->getModifiedCount(),
+                'upserted' => $result->getUpsertedCount(),
+                'matched'  => $result->getMatchedCount(),
+            ];
+            echo "<pre>";
+
+            print_R($da);
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            // echo $e->getMessage();
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function get_prePago_info()
+    {
+
+        $bulk = new MongoDB\Driver\BulkWrite;
+
+        $option = [
+            'projection' => [
+                'id_processo'    => 1,
+                'contrato' => 1,
+                'info_pagamento' => 1,
+                'status' => 1,
+                '_id' => 0
+            ]
+        ];
+
+        //filtro acima para o que for maior
+        // $filter = ['status' => ['$gt' => 18]];
+        //COLO O FILTRO PARA TRAZER OS DADOS SE O E SE FOR TRUE, PARA QUE POSSA ATUALIZAR OS DADOS DENTRO DA BASE
+
+        // $filter = ['status' => ['$eq' => 18], 'info_pagamento' => false];
+
+        $query = new MongoDB\Driver\Query(
+            // $filter,
+            [],
+            $option,
+
+        );
+
+        try {
+
+            $cursor = $this->manager->executeQuery(
+                "{$this->dbname}.{$this->db_colletion_json_dados_prepago}",
+                $query
+            );
+            $result = $cursor->toArray();
+
+            if (count($result) > 0) {
+                return $result;
+            }
+
+
+            return false;
+        } catch (\MongoDB\Driver\Exception\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }

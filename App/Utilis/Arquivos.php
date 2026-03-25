@@ -767,6 +767,16 @@ class Arquivos
 					$redeLoja['rede'],
 					$values['qtd_registros']
 				);
+			/**VERSAO PRÉ PAGO */
+			/*list($valorLoteConsulta, $modulo) =
+				$this->BuscaValorLotePorConsulta->calcula(
+					$values['codcns'],
+					$redeLoja['rede'],
+					$values['qtd_registros'],
+					$values['contrato']
+				);
+
+				*/
 
 			$dados[$key]['new_valor'] = $valorLoteConsulta;
 
@@ -910,7 +920,7 @@ class Arquivos
 			if ($value['total'] == $value['finalizados'] && ($value['mensagem_alerta'] === null || $value['mensagem_alerta'] === '')) {
 				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($value['contrato']);
 
-				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($value['consultas'], $redeLoja['rede'], $value['total']);
+				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($value['consultas'], $redeLoja['rede'], $value['total'], $value['contrato']);
 				$valorTotal_auxilar = +$valorLoteConsulta;
 
 				// $result_alter_ = $this->filtros->alter_valores_process_paralizar($value['processo_id'], $valorTotal_auxilar);
@@ -993,7 +1003,7 @@ class Arquivos
 
 				print_r($val);
 				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($val['contrato']);
-				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total']);
+				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total'], $val['contrato']);
 				$valorTotal = +$valorLoteConsulta;
 				if ($val['mensagem_alerta'] != 1) {
 					$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
@@ -1162,7 +1172,7 @@ class Arquivos
 			if ($valores['qta_processar_status'] == 0 && $valores['qta_paralizado'] > 0) {
 
 				$redeLoja =  $this->CapturaRedeLojaDoContrato->execute($valores['contrato']);
-				list($valorLoteConsulta, $modulo) =	$this->BuscaValorLotePorConsulta->calcula($valores['codcns'], $redeLoja['rede'], $valores['qta_processado']);
+				list($valorLoteConsulta, $modulo) =	$this->BuscaValorLotePorConsulta->calcula($valores['codcns'], $redeLoja['rede'], $valores['qta_processado'], $valores['contrato']);
 				$upProcessDaddos[] = [
 					'processo_id' => $valores['processo_id'],
 					'valor_lote' => $valorLoteConsulta,
@@ -1176,7 +1186,7 @@ class Arquivos
 				//update na tabela processo
 			} else if ($valores['qta_processar_status'] == 0 && $valores['qta_processado'] > 0) {
 				$redeLoja =  $this->CapturaRedeLojaDoContrato->execute($valores['contrato']);
-				list($valorLoteConsulta, $modulo) =	$this->BuscaValorLotePorConsulta->calcula($valores['codcns'], $redeLoja['rede'], $valores['qta_processado']);
+				list($valorLoteConsulta, $modulo) =	$this->BuscaValorLotePorConsulta->calcula($valores['codcns'], $redeLoja['rede'], $valores['qta_processado'], $valores['contrato']);
 				$upProcessDaddos[] = [
 					'processo_id' => $valores['processo_id'],
 					'valor_lote' => $valorLoteConsulta,

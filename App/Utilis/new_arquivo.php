@@ -64,7 +64,7 @@ class new_arquivo extends Controller
         require_once __DIR__ . '/../Utilis/Configs.php';
         $this->Config = new Configs();
 
-        require_once __DIR__ . '/../Utilis/ValidaCampos.php';
+        require_once __DIR__ . '/../Utilis/validaCampos.php';
         $this->enconde = new ValidaCampos();
 
         require_once __DIR__ . '/../Utilis/LimpaString.php';
