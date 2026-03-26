@@ -217,6 +217,10 @@ class Process_api
         if (isset($busca_finger_cancelar)) {
 
             $dados_completo['Cancelados'] = $busca_finger_cancelar;
+
+            // foreach ($busca_finger_cancelar as $key => $values) {
+            //     $dados_completo[''][$key]['finger']  = $this->utils->removerAcentos($values['finger']);
+            // }
         } else {
             $dados_completo['Cancelados'] = [
                 'success' => (boolval(false)),
@@ -224,15 +228,15 @@ class Process_api
             ];
         }
 
-        if (isset($busca_finger_cancelar)) {
+        // if (isset($busca_finger_cancelar)) {
 
-            $dados_completo['cancelados'] = $busca_finger_cancelar;
-        } else {
-            $dados_completo['cancelados'] = [
-                'success' => (boolval(false)),
-                'message' => 'dados para o contrato não localizado'
-            ];
-        }
+        //     $dados_completo['cancelados'] = $busca_finger_cancelar;
+        // } else {
+        //     $dados_completo['cancelados'] = [
+        //         'success' => (boolval(false)),
+        //         'message' => 'dados para o contrato não localizado'
+        //     ];
+        // }
 
 
         if (isset($buscar_ids_contrato) && !isset($buscar_ids_contrato['success']) === false) {
