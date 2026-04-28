@@ -1216,8 +1216,7 @@ class Arquivos
 						$msg = 'O Total de ' . $processData['total_registros_parados'] . ' registros do processo (job) foi pausado. o id ' . $processData['processo_id'] . '
 						     gerado no valor de R$ ' . number_format($valorLoteConsulta, 2, ',', '.') .  ' refereente a ' . $valores['qta_processado'] . ' registros processados. Valor atualizado na tabela!';
 						if ($modulo) {
-							$msg .=  "<br><span style='color:red;font-weight:bold'> Atenção: Esta consulta que é do tipo modular, o valor informado representa o teto máximo 
-                            e poderá ser ajustado ao final do processamento.</span>";
+							$msg .=  "<br><span style='color:red;font-weight:bold'> Atenção: esta consulta é do tipo modular. O valor informado representa o teto máximo, e poderá sofrer ajustes ao final do processamento.</span>";
 						}
 
 						// Atualizar dados no JSON
