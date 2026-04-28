@@ -1213,8 +1213,8 @@ class Arquivos
 					if ($key['processo_id'] == $processData['processo_id']) {
 						$modulo = $processData['modulo'];
 
-						$msg = 'Foi Parado total de  ' . $processData['total_registros_parados'] . ' registros do processo Id ' . $processData['processo_id'] .
-							' Gerado no valor de R$ ' . number_format($valorLoteConsulta, 2, ',', '.') .  ' Refereente a ' . $valores['qta_processado'] . ' registros processados Atualizado Valor na tabela!';
+						$msg = 'O Total de ' . $processData['total_registros_parados'] . ' registros do processo (job) foi pausado. o id ' . $processData['processo_id'] . '
+						     gerado no valor de R$ ' . number_format($valorLoteConsulta, 2, ',', '.') .  ' refereente a ' . $valores['qta_processado'] . ' registros processados. Valor atualizado na tabela!';
 						if ($modulo) {
 							$msg .=  "<br><span style='color:red;font-weight:bold'> Atenção: Esta consulta que é do tipo modular, o valor informado representa o teto máximo 
                             e poderá ser ajustado ao final do processamento.</span>";
