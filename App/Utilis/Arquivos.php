@@ -786,7 +786,7 @@ class Arquivos
 
 			if ($novoValor > $valorBanco) {
 
-				var_dump($novoValor > $valorBanco . ' MEU ID PARA SER ALTERADO ' . $values['processo_id']);
+				// var_dump($novoValor > $valorBanco . ' MEU ID PARA SER ALTERADO ' . $values['processo_id']);
 
 				$this->filtros->atualizarValorJobs($values['processo_id'], $values['contrato'], $novoValor);
 			}
