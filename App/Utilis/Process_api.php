@@ -339,7 +339,7 @@ class Process_api
 
             $info_msg =   !empty($retorno->processo_finalizado) ? $retorno->processo_finalizado : 'Sem info de data';
 
-            $novo_dados = ['msg_info' => $info_msg .  ',' . ' na data de  ' . $retorno->data_finalizacao . ',' . ' total de registros paralizados ' . $contar_paralizar['total_paralizados']];
+            $novo_dados = ['msg_info' => $info_msg .  ',' . ' na data de  ' . $retorno->data_finalizacao . ',' . ' Total de registros interrompidos: ' . $contar_paralizar['total_paralizados']];
         }
 
         return !empty($retorno)

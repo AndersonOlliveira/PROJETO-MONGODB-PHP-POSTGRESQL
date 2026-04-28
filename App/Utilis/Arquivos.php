@@ -988,20 +988,20 @@ class Arquivos
 		if (isset($quantidade_dados_paralizados_sucessos) && !empty($quantidade_dados_paralizados_sucessos)) {
 			$valorTotal = 0;
 
-			echo "<pre>";
+			// echo "<pre>";
 
-			print_r('SAINDO DENTRO DO FOREACH');
+			// print_r('SAINDO DENTRO DO FOREACH');
 
-			var_dump($quantidade_dados_paralizados_sucessos);
+			// var_dump($quantidade_dados_paralizados_sucessos);
 
 
 
 			foreach ($quantidade_dados_paralizados_sucessos as $valores_busca => $val) {
 
-				echo "<pre>";
-				echo "o que esta saindo aquui no vaal!!!\n";
+				// echo "<pre>";
+				// echo "o que esta saindo aquui no vaal!!!\n";
 
-				print_r($val);
+				// print_r($val);
 				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($val['contrato']);
 				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total'], $val['contrato']);
 				$valorTotal = +$valorLoteConsulta;
@@ -1016,7 +1016,7 @@ class Arquivos
 
 				$dados_atualizar = [
 					'id_processo' => (string)$val['processo_id'],
-					'processo_finalizado' => 'Jobs finalizado pelo sistema, pois passou do prazo de ' . $prazoMaximos,
+					'processo_finalizado' => 'Jobs interrompidos pelo sistema pois o prazo de ' . $prazoMaximos  . ' dia foi ultrapassado na data de',
 					'data_finalizacao' =>  $hoje,
 					'valor_job' => 'valor atualizado do job  para ' . $valorTotal
 				];
