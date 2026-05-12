@@ -1,0 +1,252 @@
+﻿regcod;cpodsc
+312;01 - CPF/CNPJ                                               
+312;RAZAO SOCIAL                                                
+313;01 - CPF/CNPJ                                               
+313;DATA DE ABERTURA                                            
+331;NOME:                                                       
+332;CHASSI                                                      
+332;PLACA                                                       
+333;CHASSI                                                      
+333;PLACA                                                       
+334;CHASSI                                                      
+334;PLACA                                                       
+335;CHASSI                                                      
+335;PLACA                                                       
+336;CHASSI                                                      
+336;PLACA                                                       
+337;CHASSI                                                      
+337;PLACA                                                       
+338;CHASSI                                                      
+338;PLACA                                                       
+339;CHASSI                                                      
+339;PLACA                                                       
+345;CHASSI                                                      
+345;PLACA                                                       
+346;CHASSI                                                      
+346;PLACA                                                       
+347;CHASSI                                                      
+347;PLACA                                                       
+349;01 - CPF/CNPJ                                               
+349;02 - NOME                                                   
+352;01 - CPF/CNPJ                                               
+352;SIGNO                                                       
+355;01 - CPF/CNPJ                                               
+368;01 - CPF/CNPJ                                               
+368;Grau do Processo                                            
+368;Polo                                                        
+384;01 - CPF/CNPJ                                               
+385;01 - CPF/CNPJ                                               
+385;TELEFONE FIXO/CELULAR                                       
+386;01 - CPF/CNPJ                                               
+386;TELEFONE FIXO/CELULAR                                       
+400;01 - CPF/CNPJ                                               
+400;02 - NOME                                                   
+407;CEP                                                         
+407;MUNICIPIO                                                   
+415;RAZAO SOCIAL                                                
+421;03 - DATA DE NASCIMENTO                                     
+421;06 - EMAIL                                                  
+421;NOME:                                                       
+423;01 - CPF/CNPJ                                               
+423;CATEGORIA DO VEICULO                                        
+423;CHASSI                                                      
+423;DATA DO PAGAMENTO                                           
+423;PLACA                                                       
+423;RENAVAM                                                     
+424;01 - CPF/CNPJ                                               
+424;BOLETIM OCORRENCIA                                          
+424;CEP DA DELEGACIA                                            
+424;COBERTURA                                                   
+424;CPF DO BENIFICIÃRIO                                         
+424;CPF PROCURADOR                                              
+424;CRM MEDICO                                                  
+424;DADOS BANCÃRIOS (AGENCIA)                                   
+424;DADOS BANCÃRIOS (BANCO)                                     
+424;DADOS BANCÃRIOS (CONTA)                                     
+424;DATA DO ACIDENTE                                            
+424;LOCAL (A)                                                   
+424;LOCAL (B)                                                   
+424;LOCAL (C)                                                   
+424;NÃšMERO DO SINISTRO                                          
+424;PLACA                                                       
+424;UF MÃ‰DICO                                                   
+431;01 - CPF/CNPJ                                               
+432;01 - CPF/CNPJ                                               
+456;01 - CPF/CNPJ                                               
+456;06 - EMAIL                                                  
+457;01 - CPF/CNPJ                                               
+457;13 - C.E.P                                                  
+464;01 - CPF/CNPJ                                               
+497;01 - CPF/CNPJ                                               
+497;06 - EMAIL                                                  
+497;15 - CELULAR                                                
+497;17 - BANCO                                                  
+497;18 - AGENCIA                                                
+497;CONTA CORRENTE (COM DIGITO)                                 
+499;CHASSI                                                      
+499;PLACA                                                       
+507;01 - CPF/CNPJ                                               
+530;01 - CPF/CNPJ                                               
+530;NUMERO DO TITULO                                            
+530;TIPO DE TITULO                                              
+531;01 - CPF/CNPJ                                               
+531;NUMERO DO TITULO                                            
+531;TIPO DE TITULO                                              
+601;01 - CPF/CNPJ                                               
+601;02 - NOME                                                   
+601;1 - DATA INICIO NOTICIA                                     
+601;2 - DATA FINAL NOTICIA                                      
+601;NUMERO DE RESULTADOS                                        
+602;01 - CPF/CNPJ                                               
+602;02 - NOME                                                   
+602;1 - DATA INICIO NOTICIA                                     
+602;2 - DATA FINAL NOTICIA                                      
+602;NUMERO DE RESULTADOS                                        
+604;01 - CPF/CNPJ                                               
+605;01 - CPF/CNPJ                                               
+605;06 - EMAIL                                                  
+605;CHAVE PIX                                                   
+605;TELEFONE FIXO/CELULAR                                       
+606;01 - CPF/CNPJ                                               
+606;06 - EMAIL                                                  
+606;CHAVE PIX                                                   
+606;TELEFONE FIXO/CELULAR                                       
+607;01 - CPF/CNPJ                                               
+607;06 - EMAIL                                                  
+607;CHAVE PIX                                                   
+607;TELEFONE FIXO/CELULAR                                       
+611;01 - CPF/CNPJ                                               
+611;02 - NOME                                                   
+611;1 - DATA INICIO NOTICIA                                     
+611;2 - DATA FINAL NOTICIA                                      
+611;NUMERO DE RESULTADOS                                        
+620;13 - C.E.P                                                  
+621;01 - CPF/CNPJ                                               
+622;01 - CPF/CNPJ                                               
+623;01 - CPF/CNPJ                                               
+624;01 - CPF/CNPJ                                               
+661;01 - CPF/CNPJ                                               
+661;02 - NOME                                                   
+661;13 - C.E.P                                                  
+661;ESTADO (UF)                                                 
+661;MAE                                                         
+661;PAI                                                         
+661;TELEFONE FIXO/CELULAR                                       
+661;UF                                                          
+662;01 - CPF/CNPJ                                               
+662;02 - NOME                                                   
+662;ESTADO (UF)                                                 
+662;INSCRICAO ESTADUAL                                          
+662;PARTES                                                      
+662;TELEFONE FIXO/CELULAR                                       
+662;UF                                                          
+5013;01 - CPF/CNPJ                                               
+5013;RENAVAM                                                     
+5014;01 - CPF/CNPJ                                               
+5014;RENAVAM                                                     
+5016;01 - CPF/CNPJ                                               
+5016;NUMERO DE REGISTRO DA CNH                                   
+5016;NUMERO DE SEGURANCA DA CNH                                  
+5055;01 - CPF/CNPJ                                               
+5055;12 - ENDERECO UF                                            
+5069;01 - CPF/CNPJ                                               
+5121;01 - CPF/CNPJ                                               
+5122;01 - CPF/CNPJ                                               
+5123;01 - CPF/CNPJ                                               
+5124;01 - CPF/CNPJ                                               
+5125;01 - CPF/CNPJ                                               
+5126;01 - CPF/CNPJ                                               
+5127;01 - CPF/CNPJ                                               
+5130;01 - CPF/CNPJ                                               
+5132;01 - CPF/CNPJ                                               
+5133;01 - CPF/CNPJ                                               
+5134;01 - CPF/CNPJ                                               
+5135;01 - CPF/CNPJ                                               
+5136;01 - CPF/CNPJ                                               
+5137;01 - CPF/CNPJ                                               
+5138;01 - CPF/CNPJ                                               
+5139;01 - CPF/CNPJ                                               
+5140;01 - CPF/CNPJ                                               
+5141;01 - CPF/CNPJ                                               
+5145;01 - CPF/CNPJ                                               
+5146;01 - CPF/CNPJ                                               
+5147;01 - CPF/CNPJ                                               
+5148;01 - CPF/CNPJ                                               
+5149;01 - CPF/CNPJ                                               
+5150;01 - CPF/CNPJ                                               
+5156;01 - CPF/CNPJ                                               
+5160;01 - CPF/CNPJ                                               
+5161;01 - CPF/CNPJ                                               
+5162;01 - CPF/CNPJ                                               
+5163;01 - CPF/CNPJ                                               
+5192;CEP                                                         
+5192;Local                                                       
+5210;02 - NOME                                                   
+5210;03 - DATA DE NASCIMENTO                                     
+5215;01 - CPF/CNPJ                                               
+5217;01 - CPF/CNPJ                                               
+5217;02 - NOME                                                   
+5217;03 - DATA DE NASCIMENTO                                     
+5219;Imagem 2                                                    
+5219;SELECIONE O BANCO                                           
+5316;01 - CPF/CNPJ                                               
+5317;01 - CPF/CNPJ                                               
+5600;01 - CPF/CNPJ                                               
+5600;03 - DATA DE NASCIMENTO                                     
+5600;04 - SEXO                                                   
+5600;06 - EMAIL                                                  
+5600;15 - CELULAR                                                
+5600;MAE                                                         
+5600;NOME:                                                       
+5610;01 - CPF/CNPJ                                               
+5610;Imagem 1                                                    
+5610;Posicao Dedo Correspondente                                 
+5611;01 - CPF/CNPJ                                               
+6002;LOCAL (A)                                                   
+6011;02 - NOME                                                   
+6011;03 - DATA DE NASCIMENTO                                     
+6012;02 - NOME                                                   
+6012;03 - DATA DE NASCIMENTO                                     
+8000;01 - CPF/CNPJ                                               
+9312;01 - CPF/CNPJ                                               
+9313;01 - CPF/CNPJ                                               
+9319;01 - CPF/CNPJ                                               
+9349;01 - CPF/CNPJ                                               
+9351;01 - CPF/CNPJ                                               
+9466;01 - CPF/CNPJ                                               
+9609;01 - CPF/CNPJ                                               
+9997;01 - CPF/CNPJ                                               
+9997;02 - NOME                                                   
+9997;03 - DATA DE NASCIMENTO                                     
+9997;04 - SEXO                                                   
+9997;05 - GRAU DE INSTRUCAO                                      
+9997;06 - EMAIL                                                  
+9997;07 - ENDERECO                                               
+9997;08 - ENDERECO   NUMERO                                      
+9997;09 - ENDERECO  COMPLEMENTO                                  
+9997;10 - ENDERECO BAIRRO                                        
+9997;11 - ENDERECO CIDADE                                        
+9997;12 - ENDERECO UF                                            
+9997;13 - C.E.P                                                  
+9997;14 - TELEFONE                                               
+9998;01 - CPF/CNPJ                                               
+9998;15 - CELULAR                                                
+9998;16 - TELEFONE COMERCIAL                                     
+9998;17 - BANCO                                                  
+9998;18 - AGENCIA                                                
+9998;19 - OPERADORA CARTAO DE CREDITO                            
+9998;20 - RENDA MENSAL                                           
+9998;21 - CPF DOS RESIDENTES                                     
+9999;01 - CPF/CNPJ                                               
+85000;01 - CPF/CNPJ                                               
+95000;01 - CPF/CNPJ                                               
+95068;01 - CPF/CNPJ                                               
+95601;Imagem 1                                                    
+95601;Imagem 2                                                    
+95602;01 - CPF/CNPJ                                               
+95602;Imagem 1                                                    
+95609;01 - CPF/CNPJ                                               
+96015;01 - CPF/CNPJ                                               
+96016;01 - CPF/CNPJ                                               
+96019;01 - CPF/CNPJ                                               
+96024;01 - CPF/CNPJ                                               

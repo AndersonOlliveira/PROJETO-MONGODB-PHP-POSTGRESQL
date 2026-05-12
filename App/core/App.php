@@ -49,7 +49,9 @@ class App
         // $basePath =   'app-progestor-proscore.hostmundi.com/home/proscore/mvc/';
         // C:\xampp_backup\htdocs\projeto74\mvc
         // $basePath = 'projeto74/mvc';
-        $requestUri = str_replace($basePath, '/', $requestUri);
+        
+            
+        // $requestUri = str_replace($basePath, '/', $requestUri);
 
         $requestUri = rtrim($requestUri, '/');
 

@@ -62,11 +62,7 @@ class ListarController extends Controller
     ///pegos dentro da collection de paralizar
     $jobs_parados = $this->utilss->get_data_paralizar();
 
-    echo "<pre>";
-
-    print_r($jobs_parados);
-
-    die();
+ 
     if (isset($jobs_parados)) {
       $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
     }

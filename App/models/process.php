@@ -80,10 +80,12 @@ class process extends Model
 		}
 
 
-		// echo "<pre>";
-		// echo "MEUS PARAM MONTADO\n";
+		echo "<pre>";
+		echo "MEUS SQL MONTADO\n";
 
-		// print_r($sql);
+		print_r($sql);
+		echo "MEUS PARAM MONTADO\n";
+		print_r($params);
 
 
 		$results = $this->db->prepare($sql);
@@ -1291,6 +1293,265 @@ HAVING
 		return [
 			'erros' => empty($erros) ? [] : $erros,
 			'status' => empty($erros) ? 2 : 0,
+
+		];
+	}
+
+	public function insert_plugin($sql, $valores_para_bind)
+	{
+		try {
+
+
+			$result = $this->db->prepare($sql);
+			$result->execute($valores_para_bind);
+
+			return [
+				'success' => true,
+				'message' => 'Plugin inserido com sucesso'
+			];
+		} catch (\Exception $e) {
+			echo "ERRO NO INSERT: " . $e->getMessage() . "\n";
+			return [
+				'success' => false,
+				'error' => $e->getMessage()
+			];
+		}
+	}
+	public function get_lista_plugin()
+	{
+
+		try {
+
+			$sql = "";
+
+			$sql = "SELECT
+            DISTINCT cpovar, cpodsc, regcod
+            FROM
+            rdecns inner join 
+            rdecnsreg on rdecnsid = rdecnsregrdecns inner join 
+            regcpo on rdecnsregreg = regcporeg  inner join
+            cpo on cpoid = regcpocpo
+            inner join
+            reg on regid = rdecnsregreg 
+            WHERE rdecnsid not in ( SELECT numero_plugin from progestor.plugin_campos_input) order by regcod  LIMIT 5;";
+
+			$result = $this->db->prepare($sql);
+			$result->execute();
+
+			if ($result->rowCount() > 0) {
+
+				return $result->fetchAll(PDO::FETCH_ASSOC);
+			} else {
+
+				return false;
+			}
+		} catch (\Exception $e) {
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0
+
+		];
+	}
+	public function get_lista_plugin_with()
+	{
+
+		try {
+
+			$sql = "";
+
+			$sql = "WITH consulta_base AS (
+					SELECT DISTINCT regcod, cpodsc, cpovar
+					FROM rdecns 
+					INNER JOIN rdecnsreg ON rdecnsid = rdecnsregrdecns 
+					INNER JOIN regcpo ON rdecnsregreg = regcporeg  
+					INNER JOIN cpo    ON cpoid = regcpocpo
+					INNER JOIN reg    ON (regid = rdecnsregreg AND regcod NOT IN (SELECT numero_plugin FROM progestor.plugin_campos_input))
+									)
+					SELECT * 
+					FROM consulta_base
+					WHERE regcod IN (
+						SELECT regcod 
+						FROM consulta_base 
+						--WHERE regcod = '5603'
+						GROUP BY regcod 
+						HAVING COUNT(*) = 1
+					) 
+					ORDER BY regcod, cpodsc;";
+
+			$result = $this->db->prepare($sql);
+			$result->execute();
+
+			if ($result->rowCount() > 0) {
+
+				return $result->fetchAll(PDO::FETCH_ASSOC);
+			} else {
+
+				return false;
+			}
+		} catch (\Exception $e) {
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0
+
+		];
+	}
+	public function get_lista_plugin_description($cod)
+	{
+
+		try {
+
+			$sql = "";
+
+			$sql = "SELECT
+            DISTINCT cpovar, cpodsc, regcod
+            FROM
+            rdecns inner join 
+            rdecnsreg on rdecnsid = rdecnsregrdecns inner join 
+            regcpo on rdecnsregreg = regcporeg  inner join
+            cpo on cpoid = regcpocpo
+            inner join
+            reg on regid = rdecnsregreg 
+            WHERE rdecnsid = ?";
+
+			$result = $this->db->prepare($sql);
+			$result->execute([$cod]);
+
+			if ($result->rowCount() > 0) {
+
+				while ($row = $result->fetch((PDO::FETCH_ASSOC))) {
+
+					echo "<pre>";
+					echo "LINHA GERADA\n";
+
+					print_r($row);
+				}
+				// return $result->fetchAll(PDO::FETCH_ASSOC);
+			} else {
+
+				return false;
+			}
+		} catch (\Exception $e) {
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0
+
+		];
+	}
+	public function get_plugin_nome_puglin($cod)
+
+	{
+		echo "<pre>";
+		print_R("MEU CÓDIGO PARA VER SE EXISTE O PLUGIN \n" . $cod);
+
+		try {
+
+			$sql = "";
+
+			$sql = "SELECT EXISTS (SELECT 1 FROM progestor.plugin_campos_input WHERE numero_plugin = ?);";
+
+			$result = $this->db->prepare($sql);
+			$result->execute([$cod]);
+
+			// while ($results =  $result->fetchAll(PDO::FETCH_ASSOC)) {
+
+
+			// return $results['exists'] ? "Plugin já existe" : "Plugin não existe";
+
+			// }
+			return $result->fetch(PDO::FETCH_ASSOC)['exists'] ? true : "null";
+		} catch (\Exception $e) {
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0
+
+		];
+	}
+
+	public function get_lista_plugin_ativoss()
+	{
+
+		try {
+
+			$resultado = [];
+			$sql = "";
+
+			$sql = "SELECT 
+					DISTINCT rdecns.rdecnsid AS codigo_consulta,
+					rdecns.rdecnsdsc AS nome_consulta,
+					rdelja.rdeljaid AS loja_contrato,
+					rdelja.rdeljactr AS contratos
+				FROM rdecns
+				JOIN rdelja ON rdecns.rdecnsrde = rdelja.rdeljarde
+				JOIN rdeljacns ON rdeljacns.rdeljacnsrdelja = rdelja.rdeljaid 
+				AND rdeljacns.rdeljacnsrdecns = rdecns.rdecnsid
+				JOIN ctr ON rdelja.rdeljactr = ctr.ctrid
+				JOIN cli ON ctr.ctrcli = cli.cliid
+				WHERE cli.cliatv = 'S' LIMIT 1 ;";
+
+			$result = $this->db->prepare($sql);
+			$result->execute();
+
+			if ($result->rowCount() > 0) {
+
+				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+
+					echo "<pre>";
+					echo "MEUS CÓDIGOS AQUI \n";
+					print_r($row['codigo_consulta']);
+					$row['exists'] = self::get_plugin_nome_puglin($row['codigo_consulta']);
+
+					if ($row['exists'] == "null") {
+
+						$row['colunas'] = self::get_lista_plugin_description($row['codigo_consulta']);
+					}
+
+					$resultado[] = $row;
+				}
+
+				return $resultado;
+			} else {
+
+				return false;
+			}
+		} catch (\Exception $e) {
+
+			$erros[] = [
+				'msg' =>  $e->getMessage()
+			];
+		}
+
+
+		return [
+			'erros' => empty($erros) ? [] : $erros,
+			'status' => empty($erros) ? 2 : 0
 
 		];
 	}

@@ -18,6 +18,8 @@ class ProcessController extends Controller
     protected $BuscaValorLotePorConsulta;
     protected $CapturaRedeLojaDoContrato;
     protected $arquivos_json;
+    protected $utilis_processs_puglin;
+    protected $plugin;
 
     public function __construct()
     {
@@ -26,8 +28,9 @@ class ProcessController extends Controller
         $this->utilis_processs_teste = $this->Utilis('Arquivo_testes');
         // $this->utilis_processs_teste = $this->Utilis('Arquivo_testes_copys');
         $this->utilis_processs_new = $this->Utilis('new_arquivo');
+        $this->utilis_processs_puglin = $this->Utilis('puglin');
         $this->utilis_process_valida = $this->Utilis('ArquivoValida');
-        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTA_PREPAGO');
+        $this->plugin = $this->Utilis_arquivo('LISTA-PLUGINS-OBRIGATORIOS');
         // $this->utilis_processs_teste_arquivos = $this->Utilis_arquivo('teste-base');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTAS-testes');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CPF-VARIOS-CAMPOS- Copia');
@@ -398,5 +401,42 @@ class ProcessController extends Controller
         // }
         //     }
         // }
+    }
+
+
+    public function busca_puglin()
+    {
+
+        echo "ESTOU SAINDO AQUI  NESTA CHAMADA \n";
+
+        $pathFile = $this->plugin;
+
+        if (file_exists($pathFile)) {
+            echo "o arquivo existe";
+        }
+
+        // $contador = 0;
+        // print_r($pathFile);
+        // if (($handle = fopen($pathFile, "r")) !== false) {
+        //     while (($linha = fgets($handle)) !== false) {
+        //         echo $linha . "<br>";
+        //         if (trim($linha) == '') {
+        //             continue;
+        //         }
+        //         $contador++;
+        //     }
+        //     fclose($handle);
+        // }
+
+        // echo "minha quantidade de linhas enviadas" . $contador . " \n";
+
+        $this->utilis_processs_puglin->index_puglin($pathFile);
+    }
+    public function busca_puglin_ativos()
+    {
+
+        echo "ESTOU SAINDO AQUI  NESTA CHAMADA \n";
+
+        $this->utilis_processs_puglin->index_puglin_ativossss();
     }
 }

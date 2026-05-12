@@ -857,6 +857,8 @@ class Arquivos
 
 
 
+
+
 		foreach ($dadosP as $key => $values) {
 
 			if (isset($values->paralisado) && !isset($values->data_finalizacao)) {
@@ -864,6 +866,10 @@ class Arquivos
 				if ($values->id_processo) {
 					$prazoMaximos = $this->filtros->get_limit_day_contrato($values->contrato);
 					$prazoMaximo = 	2;
+
+					if (empty($values->data)) {
+						continue;
+					}
 
 					$data_paralisacao = new DateTime($values->data);
 
@@ -904,13 +910,16 @@ class Arquivos
 			} //final do if inicial
 
 			//FINALIZAR OS DADOS 
+
 			$pegarDadosfinalizar[] = $this->filtros->count_process_finalizado_paralizado($values->id_processo);
 		}
+
 
 		// echo "<pre>";
 		// echo "lista de dados paralizados\n";
 		// print_r($pegarDadosfinalizar);
 
+		// die();
 
 		$valorTotal_auxilar = 0;
 		//aqu vou trocar os status
@@ -923,7 +932,28 @@ class Arquivos
 				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($value['consultas'], $redeLoja['rede'], $value['total'], $value['contrato']);
 				$valorTotal_auxilar = +$valorLoteConsulta;
 
-				// $result_alter_ = $this->filtros->alter_valores_process_paralizar($value['processo_id'], $valorTotal_auxilar);
+				$result_alter_ = $this->filtros->alter_valores_process_paralizar($value['processo_id'], $valorTotal_auxilar);
+
+				$dados_atualizar = [
+					'id_processo' => (string)$value['processo_id'],
+					'processo_finalizado' => 'Jobs interrompidos pelo sistema pois o prazo de ' . $prazoMaximos  . ' dia foi ultrapassado na data de',
+					'data_finalizacao' =>  $hoje,
+					'valor_job' => 'valor atualizado do job  para ' . $valorTotal_auxilar
+				];
+
+
+				$retorno_up_mongo =  $this->utils->insert_all_paralizar(json_encode($dados_atualizar));
+
+				if ($retorno_up_mongo) {
+					echo "<pre>";
+					echo "SUCESSO !\n";
+
+					print_R($retorno_up_mongo);
+				} else {
+					echo "<pre>";
+					echo "INSUCESSO !\n";
+					print_R($retorno_up_mongo);
+				}
 
 
 				// if (isset($result_alter_)) {
@@ -938,36 +968,36 @@ class Arquivos
 		$quantidade_dados_paralizados_sucessos = [];
 
 
-		// echo "<pre>";
-		// echo "Segundo retorno do dados_localizado se tiver dados ou erro\n";
-		// print_r($dados_localizado);
+		echo "<pre>";
+		echo "Segundo retorno do dados_localizado se tiver dados ou erro\n";
+		print_r($dados_localizado);
 
 		// die();
 
 
 		foreach ($dados_localizado as $chave => $valores) {
 			// $qtLimit = 1;
-			// echo "<pre>";
-			// echo "Terceiro passo retorno do dados_localizado se tiver dados ou erro\n";
+			echo "<pre>";
+			echo "Terceiro passo retorno do dados_localizado se tiver dados ou erro\n";
 
 			$retorno_dados_paralizados = $this->filtros->list_processo($valores->id_processo, $qtLimit, true);
-			// echo "<pre>";
-			// echo "Quarto passo retorno do dados_localizado se tiver dados ou erro\n";
+			echo "<pre>";
+			echo "Quarto passo retorno do dados_localizado se tiver dados ou erro\n";
 
-			// var_dump($retorno_dados_paralizados);
+			var_dump($retorno_dados_paralizados);
 
 			$lista_dados_paralizados = $this->filtros->lista_data_paralisados($valores->id_processo);
 			//pego os processo que esta com o status 0 para trocar para 17
 
-			// echo "<pre>";
-			// echo "Quinto passo retorno do lista_dados_paralizados se tiver dados ou erro\n";
+			echo "<pre>";
+			echo "Quinto passo retorno do lista_dados_paralizados se tiver dados ou erro\n";
 
-			// var_dump($lista_dados_paralizados);
+			var_dump($lista_dados_paralizados);
 
 
 			if (isset($retorno_dados_paralizados) && !empty($retorno_dados_paralizados)) {
 
-				//	$re = self::get_dados_id($retorno_dados_paralizados);
+				self::get_dados_id($retorno_dados_paralizados);
 
 				$quantidade_dados_paralizados_sucessos[] = $this->filtros->count_process_finalizado_paralizado($valores->id_processo);
 
@@ -988,53 +1018,58 @@ class Arquivos
 		if (isset($quantidade_dados_paralizados_sucessos) && !empty($quantidade_dados_paralizados_sucessos)) {
 			$valorTotal = 0;
 
-			// echo "<pre>";
+			echo "<pre>";
 
-			// print_r('SAINDO DENTRO DO FOREACH');
+			print_r('SAINDO DENTRO DO FOREACH');
 
-			// var_dump($quantidade_dados_paralizados_sucessos);
+			var_dump($quantidade_dados_paralizados_sucessos);
+
+
 
 
 
 			foreach ($quantidade_dados_paralizados_sucessos as $valores_busca => $val) {
 
-				// echo "<pre>";
-				// echo "o que esta saindo aquui no vaal!!!\n";
+				echo "<pre>";
+				echo "o que esta saindo aquui no vaal!!!\n";
 
-				// print_r($val);
-				$redeLoja = $this->CapturaRedeLojaDoContrato->execute($val['contrato']);
-				list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total'], $val['contrato']);
-				$valorTotal = +$valorLoteConsulta;
-				if ($val['mensagem_alerta'] != 1) {
-					$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
-				} else if ($val['mensagem_alerta'] == "" || $val['mensagem_alerta'] == null) {
-					$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
+				print_r($val);
+
+				if ($val['total'] == $val['finalizados'] && ($val['mensagem_alerta'] === null || $val['mensagem_alerta'] === '')) {
+
+					$redeLoja = $this->CapturaRedeLojaDoContrato->execute($val['contrato']);
+					list($valorLoteConsulta, $retornoCalculo) = $this->BuscaValorLotePorConsulta->calcula($val['consultas'], $redeLoja['rede'], $val['total'], $val['contrato']);
+					$valorTotal = +$valorLoteConsulta;
+					if ($val['mensagem_alerta'] != 1) {
+						$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
+					} else if ($val['mensagem_alerta'] == "" || $val['mensagem_alerta'] == null) {
+						$result_alter = $this->filtros->alter_valores_process_paralizar($val['processo_id'], $valorTotal);
+					}
+
+
+					// if (isset($result_alter)) {
+
+					$dados_atualizar = [
+						'id_processo' => (string)$val['processo_id'],
+						'processo_finalizado' => 'Jobs interrompidos pelo sistema pois o prazo de ' . $prazoMaximos  . ' dia foi ultrapassado na data de',
+						'data_finalizacao' =>  $hoje,
+						'valor_job' => 'valor atualizado do job  para ' . $valorTotal
+					];
+
+
+					$retorno_up_mongo =  $this->utils->insert_all_paralizar(json_encode($dados_atualizar));
+
+					if ($retorno_up_mongo) {
+						echo "<pre>";
+						echo "SUCESSO !\n";
+
+						print_R($retorno_up_mongo);
+					} else {
+						echo "<pre>";
+						echo "INSUCESSOSUCESSO !\n";
+						print_R($retorno_up_mongo);
+					}
 				}
-
-
-				// if (isset($result_alter)) {
-
-				$dados_atualizar = [
-					'id_processo' => (string)$val['processo_id'],
-					'processo_finalizado' => 'Jobs interrompidos pelo sistema pois o prazo de ' . $prazoMaximos  . ' dia foi ultrapassado na data de',
-					'data_finalizacao' =>  $hoje,
-					'valor_job' => 'valor atualizado do job  para ' . $valorTotal
-				];
-
-
-				$retorno_up_mongo =  $this->utils->insert_all_paralizar(json_encode($dados_atualizar));
-
-				if ($retorno_up_mongo) {
-					echo "<pre>";
-					echo "SUCESSO !\n";
-
-					print_R($retorno_up_mongo);
-				} else {
-					echo "<pre>";
-					echo "INSUCESSOSUCESSO !\n";
-					print_R($retorno_up_mongo);
-				}
-				// }
 				// }
 			}
 		}
