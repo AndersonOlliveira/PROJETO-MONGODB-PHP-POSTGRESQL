@@ -246,16 +246,10 @@ class Crc_tratativas extends Model
             if ($dados) {
                 echo "<pre>";
                 echo "DADOS ENVIADOS\n";
-                // extract($dados);
+
+                self::insertMovimentacao(null, $dados);
 
 
-                var_dump($dados);
-                foreach ($dados as $items) {
-
-                    echo "<pre>";
-
-                    print_r($items);
-                }
                 // tratamento adicional se dados estiverem presentes
             }
 
@@ -266,8 +260,19 @@ class Crc_tratativas extends Model
         }
     }
 
-    public function insertMovimentacao($idCobranca)
+    public function insertMovimentacao($idCobranca, $dados = null)
     {
+        // var_dump($dados);
+
+        if (!empty($dados)) {
+
+            echo "<pre>";
+            extract($dados);
+            print_r("meu dados extraidos\n");
+            print_r($tipo_acoes);
+        }
+
+        // die();
 
         $sql = "INSERT INTO public.crc_tratativas_movimentacao(
                     crc_tratativas_crcid, crc_tratativa_tipo_id, crc_tipo_acoes_id, descricao_movimentacao, ctr_interno)
@@ -279,12 +284,11 @@ class Crc_tratativas extends Model
 
         try {
 
-            $crc_tratativa_tipo_id = isset($dados) ? $dados['tipo_trativa'] : 5;  // Ex: ID do WHATS na tabela 'crc_tratativa_tipo' // AGUARDAR INICIO 5
-            $crc_tipo_acoes_id = 5;     // Ex: ID do Pendente na tabela 'crc_tipo_acoes' // AGUARDAR INICIO5 
-
-
-            $descricao_movimentacao = 'AGUARDA INICIO';
-            $ctr_interno = 417039;
+            $crc_tratativa_tipo_id = isset($dados) ? !$status_tratativa : 5;  // Ex: ID do WHATS na tabela 'crc_tratativa_tipo' // AGUARDAR INICIO 5
+            $crc_tipo_acoes_id = isset($dados) ? !$tipo_acoes : 5;     // Ex: ID do Pendente na tabela 'crc_tipo_acoes' // AGUARDAR INICIO 5 
+            $descricao_movimentacao = isset($dados) ? !$descricao : 'AGUARDA INICIO';
+            $ctr_interno = isset($dados) ? !$tctrid : 417039;
+            $idCobranca = isset($dados) ? !$numeroCobranca : $idCobranca;
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':cobranca', $idCobranca);
@@ -293,14 +297,26 @@ class Crc_tratativas extends Model
             $stmt->bindParam(':descricao_movimentacao', $descricao_movimentacao);
             $stmt->bindParam(':ctr_interno', $ctr_interno);
 
+            echo "<pre>";
+            echo "DADOS TRATADOS E MONTADO NO SQL\n";
+
+            var_dump($stmt);
+
             $stmt->execute();
 
             // Recupera o ID gerado usando o FETCH do RETURNING (Postgres)
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
             $idTratativa = $resultado['id_crc_tratativas'];
+            
+            $cod_status = isset($dados) ? !$status_tratativa : 0;  //# dados;
 
-            $cod_status = 0; # -- Código interno do sistema para Pendente
-            $status_descricao = 'INFORMOU QUE NAO LEMBRA DESTA CONTA';
+            // echo "<pre>";
+
+            // var_dump($cod_status);
+            // die();
+            // $cod_status = 0; # -- Código interno do sistema para Pendente
+            $status_descricao = $descricao_movimentacao;
+            // $status_descricao = 'INFORMOU QUE NAO LEMBRA DESTA CONTA';
 
             $stmt = $this->db->prepare($sqlStatus);
             $stmt->bindParam(':crc_tratativas_id', $idTratativa);

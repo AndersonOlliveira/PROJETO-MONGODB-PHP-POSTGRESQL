@@ -73,11 +73,11 @@ class ApiControllerTratativas extends Controller
         $dados = json_decode($dados, true);
 
 
-        echo "<pre>";
-        echo "MEUS DADOS\n";
+        // echo "<pre>";
+        // echo "MEUS DADOS\n";
 
-        print_r($dados);
-        die();
+        // print_r($dados);
+        // die();
 
         $retorno_dados = $this->utilis_trativas->trata_dados_trativa($dados);
 

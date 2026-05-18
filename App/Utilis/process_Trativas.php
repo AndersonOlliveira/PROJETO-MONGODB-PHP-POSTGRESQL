@@ -94,6 +94,7 @@ class process_Trativas extends Controller
         echo "dados enviando via controller\n";
         // NULL POR CONTA QUE NÁO VOU ENVIAR O ID PARA CONSULTA
         $result_process = $this->utilis_pgadmin->verifry_cobraca(null, $dados);
-        print_r($dados);
+
+        // var_dump($tipo_acoes);
     }
 }
