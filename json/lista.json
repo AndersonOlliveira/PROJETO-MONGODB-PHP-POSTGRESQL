@@ -1,0 +1,15 @@
+[{
+    "tratativa": {
+        "1": "WhatsApp",
+        "2": "E-mail",
+        "3": "Ligação"
+    },
+
+    "status_tratativa": {
+        "0": "Pendente",
+        "1": "Em andamento",
+        "2": "Sem retorno",
+        "3": "Resolvido",
+        "4": "Cancelado"
+    }
+}]

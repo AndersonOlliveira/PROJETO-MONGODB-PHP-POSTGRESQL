@@ -96,6 +96,7 @@ class puglin extends Controller
 
 
         // die();
+        // LENDO O ARQUIVO 
         if (($handle = fopen($pathFile, "r")) !== false) {
             $headerSkipped = false;
             while (($linha = fgets($handle)) !== false) {

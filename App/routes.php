@@ -36,6 +36,23 @@ return [
     '/api/get_info_reprocess/{id}' => ['ApiController', 'info_reprocess'],
     '/api/get_info_paralizar/{id}' => ['ApiController', 'info_paralizar_die'],
     '/api/reprocess_jobs/{id}' => ['ApiController', 'gerar_novo_arquivo'],
+    //VIEW PARA ACESSO AOS DADOS
+
+    '/viewRelatorio' => ['RelatorioController', 'index_relatorio'],
+    '/api/Relatorio' => ['ApiControllerTratativas', 'tratar_Relatorio'],
+    //ROTA PARA PEGAR OS DADOS DAS TRATATIVS
+    '/api/getTratativas' => ['ApiControllerTratativas', 'get_tratativas'],
+    '/api/listRelatorio' => ['ApiControllerTratativas', 'tratativasRelatorio'],
+    '/api/insertTrativa' => ['ApiControllerTratativas', 'tratativaInsert', 'POST'],
+
+    //     $rotas["dados_finger_push"] = array(
+    //     "classe" => "ProgestorDocController",
+    //     "metodo" => "dados_finger",
+    //     "http_method" => "GET"
+    // );
+
+
+
     // '/api/reprocess_jobs/{id}' => ['ApiController', 'gerar_novo_arquivo'],
 
     // '/api/alter_status_die/{id}/{contrato}' => ['ApiController', 'push_status_die']

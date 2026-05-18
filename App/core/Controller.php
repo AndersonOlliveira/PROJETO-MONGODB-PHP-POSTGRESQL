@@ -79,6 +79,17 @@ class Controller
 
         return $file;
     }
+    public function Utilis_javaScript($nameArchiveJson)
+    {
+
+        $file = __DIR__ . "../views/scripts/{$nameArchiveJson}.js";
+
+        if (!file_exists($file)) {
+            throw new \Exception("Arquivo {$file} não encontrado! \n");
+        }
+
+        return $file;
+    }
 
     public function loadFrom($folder, $className)
     {
