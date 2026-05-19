@@ -117,4 +117,33 @@ class ApiControllerTratativas extends Controller
             }
         }
     }
+
+
+    public function list_dados_data(){
+        
+    header('Content-Type: application/json');
+    $dados = file_get_contents('php://input');
+        // PARA CONVERTER OS DADOS VINDO DE FORM DATA
+    $dados = json_decode($dados, true);
+    $retorno_dados = $this->utilis_trativas->seachDataAll($dados);
+
+    if($retorno_dados){
+        
+    if(isset($retorno_dados['msg'])){
+     echo json_encode(array(
+                'status' => 1,
+                'sucesso' => false,
+                'dados' => $retorno_dados
+            ));
+
+    }else{
+                echo json_encode(array(
+                'status' => 2,
+                'sucesso' => false,
+                'dados' => $retorno_dados
+            ));
+    }
+     
+        } 
+    }
 }

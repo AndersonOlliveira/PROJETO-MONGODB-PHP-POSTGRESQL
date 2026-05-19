@@ -96,5 +96,25 @@ class process_Trativas extends Controller
         $result_process = $this->utilis_pgadmin->verifry_cobraca(null, $dados);
 
         // var_dump($tipo_acoes);
+    } 
+    
+    
+    public function seachDataAll($dados)
+    {
+        
+    if(isset($dados['tdataInicio']) && isset($dados['tdataFim'])){
+            $tdataInicio =$dados['tdataInicio']; 
+            $tdataFim =$dados['tdataFim']; 
+            $result_process = $this->utilis_pgadmin->return_dados_data(null,$tdataInicio,$tdataFim);
+      
+            }else{
+                
+            $result_process = $this->utilis_pgadmin->return_dados_data($dados['mes'],null,null);    
+       }
+
+        if($result_process){
+
+          return $result_process;
+        }
     }
 }

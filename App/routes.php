@@ -44,6 +44,7 @@ return [
     '/api/getTratativas' => ['ApiControllerTratativas', 'get_tratativas'],
     '/api/listRelatorio' => ['ApiControllerTratativas', 'tratativasRelatorio'],
     '/api/insertTrativa' => ['ApiControllerTratativas', 'tratativaInsert', 'POST'],
+    '/api/searchData' => ['ApiControllerTratativas', 'list_dados_data', 'POST'],
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",
