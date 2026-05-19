@@ -40,7 +40,7 @@ return [
 
     '/viewRelatorio' => ['RelatorioController', 'index_relatorio'],
     '/api/Relatorio' => ['ApiControllerTratativas', 'tratar_Relatorio'],
-    //ROTA PARA PEGAR OS DADOS DAS TRATATIVS
+    //ROTA PARA PEGAR OS DADOS DAS TRATATIVAS
     '/api/getTratativas' => ['ApiControllerTratativas', 'get_tratativas'],
     '/api/listRelatorio' => ['ApiControllerTratativas', 'tratativasRelatorio'],
     '/api/insertTrativa' => ['ApiControllerTratativas', 'tratativaInsert', 'POST'],

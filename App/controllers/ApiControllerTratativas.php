@@ -95,11 +95,13 @@ class ApiControllerTratativas extends Controller
     public function tratar_Relatorio()
     {
 
-        $retorno = $this->utilis_pgadmin->getRelatorio();
+        $retorno = $this->utilis_pgadmin->getRelatorio_origim();
 
         // echo "<pre>";
 
         // print_r($retorno);
+
+        // die();
 
         foreach ($retorno as $key => $result) {
 

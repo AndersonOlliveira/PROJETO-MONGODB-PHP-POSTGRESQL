@@ -35,21 +35,21 @@ class Crc_tratativas extends Model
                 i AS cliid,
                 '(11) 9' || LPAD((i * 13)::text, 8, '0') AS clicobtel,
                 'Contato Financeiro ' || i AS clicomctt,
-                CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp, -- 10% suspensos
+                CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp,
                 'Empresa Cliente ' || i || ' LTDA' AS clinomraz,
-                (i % 3) + 1 AS cliperfilcobid -- Alterna entre os 3 perfis
+                (i % 3) + 1 AS cliperfilcobid
             FROM generate_series(1, 200) s(i)
         ),
         crc_ficticio AS (
             SELECT 
                 700906 + i AS crcid,
-                CAST('2026-05-01' AS DATE) + (i % 16) AS crcdatvct, -- Datas entre 01/05 e 16/05
+                CAST('2026-05-01' AS DATE) + (i % 16) AS crcdatvct,
                 'DOC-' || LPAD(i::text, 3, '0') AS crcdocger,
-                (i * 45.50) + 100.00 AS crcvlr, -- Valores acima de zero
-                i AS crccli, -- Vincula 1 para 1 com os clientes
-                1 AS crcfil, -- Filial 1 fixa para passar no filtro
-                'N' AS crcbxd, -- Não baixado
-                false AS crcprepago -- Não pré-pago
+                (i * 45.50) + 100.00 AS crcvlr,
+                i AS crccli,
+                1 AS crcfil,
+                'N' AS crcbxd,
+                false AS crcprepago
             FROM generate_series(1, 200) s(i)
         ),
         ven_ficticio AS (
@@ -63,7 +63,6 @@ class Crc_tratativas extends Model
             SELECT i AS venclicli, 2 AS vencliven FROM generate_series(1, 200) s(i) WHERE i % 4 = 0
         )
 
-        -- 2. Sua consulta original adaptada e corrigida
         SELECT  
             crc.crcid as N_Nro,               
             crc.crcdatvct as Vencimento,
@@ -93,7 +92,11 @@ class Crc_tratativas extends Model
         LEFT JOIN vencli_ficticio vencli ON vencli.venclicli = cli.cliid
         LEFT JOIN ven_ficticio ven ON vencli.vencliven = ven.venid 
         LEFT JOIN perfilcob_ficticio perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
-        INNER JOIN public.crc_tratativas_movimentacao real_mov ON real_mov.crc_tratativas_crcid = crc.crcid
+        INNER JOIN (
+            SELECT *,
+                ROW_NUMBER() OVER (PARTITION BY crc_tratativas_crcid ORDER BY id_crc_tratativas DESC) as rn_mov
+            FROM public.crc_tratativas_movimentacao
+        ) real_mov ON real_mov.crc_tratativas_crcid = crc.crcid AND real_mov.rn_mov = 1
         INNER JOIN public.crc_tratativa_tipo tipo ON tipo.id_crc_tratativa_tipo = real_mov.crc_tratativa_tipo_id
         INNER JOIN public.crc_tipo_acoes ac on ac.cod_acao = real_mov.crc_tipo_acoes_id
         INNER JOIN (
@@ -101,16 +104,15 @@ class Crc_tratativas extends Model
                 crc_tratativas_id,
                 cod_status,
                 data_cadastro as ultima_consulta,
-                ROW_NUMBER() OVER (PARTITION BY crc_tratativas_id ORDER BY data_cadastro DESC) as rn
+                ROW_NUMBER() OVER (PARTITION BY crc_tratativas_id ORDER BY data_cadastro DESC ) as rn 
             FROM 
                 public.crc_tratativas_status
-        ) st ON st.crc_tratativas_id = real_mov.id_crc_tratativas AND st.rn = 1 -- Filtra apenas a linha mais recente
+        ) st ON st.crc_tratativas_id = real_mov.id_crc_tratativas AND st.rn = 1
         WHERE 
             crc.crcfil = 1 AND
             upper(crc.crcbxd) = 'N' AND
             crc.crcvlr > 0.00 AND
-            crc.crcprepago = false
-            
+            crc.crcprepago = false 
         GROUP BY 
             crc.crcid, crc.crcdatvct, crc.crcdocger, crc.crcvlr, cli.clicobtel,
             cli.clicomctt, cli.clissp, cli.clinomraz, cli.cliid, perfilcob.perfilcobtipo,
@@ -127,7 +129,8 @@ class Crc_tratativas extends Model
             st.cod_status 
         ORDER BY 
             ultima_info DESC,
-            st.crc_tratativas_id DESC";
+            st.crc_tratativas_id DESC;";
+
         $sql = $this->db->prepare($sql);
         $sql->execute();
 
@@ -212,6 +215,42 @@ class Crc_tratativas extends Model
         $sql->execute();
 
         return $sql->fetchAll(PDO::FETCH_ASSOC);
+    } 
+    
+    
+    public function getRelatorio_origim()
+    {
+
+        //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
+
+        $sql = "SELECT  
+                crcid as N_Nro,
+                crcdatvct as Vencimento,
+                crcdocger as Doc_Ger,crcvlr as valor,
+                clicobtel as telefone,
+                clicomctt as Contato_financeiro,
+                upper(clissp) as Suspenso,
+                clinomraz as cliente,
+                cliid,
+                array_to_string(array_agg(cast(venean as text)),', ') as vendedor,
+                perfilcobtipo, 
+                crcprepago FROM 
+                cli INNER JOIN crc ON crccli = cliid 
+                LEFT JOIN vencli ON vencli.venclicli = cli.cliid
+                LEFT JOIN ven ON vencli.vencliven = ven.venid 
+                LEFT JOIN perfilcob ON perfilcobid = cliperfilcobid
+                where 
+                crcfil =  1 and
+                --crcdatvct between '2026-05-01' and  '2026-05-14-' AND
+                upper(crcbxd) = 'N' AND
+                crcvlr > '0.00' AND
+                crcprepago = false
+                group by crcid ,clicobtel,clicomctt,clissp,clinomraz,cliid,venean,perfilcobtipo,crcprepago
+                ORDER BY vencimento asc; ";
+        $sql = $this->db->prepare($sql);
+        $sql->execute();
+
+        return $sql->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function verifry_cobraca($idCobranca, $dados = null)
@@ -238,12 +277,12 @@ class Crc_tratativas extends Model
                 if (!$resultado) {
                     echo "VENHO AQUI?\n";
                     // registro não existe: criar movimentação pendente
-                    //c
+                      self::insertMovimentacao($idCobranca, null);
                     return false;
                 }
             }
 
-            if ($dados) {
+            if (isset($dados)) {
                 echo "<pre>";
                 echo "DADOS ENVIADOS\n";
 
@@ -262,17 +301,14 @@ class Crc_tratativas extends Model
 
     public function insertMovimentacao($idCobranca, $dados = null)
     {
-        // var_dump($dados);
-
+    
         if (!empty($dados)) {
-
-            echo "<pre>";
-            extract($dados);
-            print_r("meu dados extraidos\n");
-            print_r($tipo_acoes);
+            
+        extract($dados);
+            
         }
 
-        // die();
+      
 
         $sql = "INSERT INTO public.crc_tratativas_movimentacao(
                     crc_tratativas_crcid, crc_tratativa_tipo_id, crc_tipo_acoes_id, descricao_movimentacao, ctr_interno)
@@ -284,11 +320,13 @@ class Crc_tratativas extends Model
 
         try {
 
-            $crc_tratativa_tipo_id = isset($dados) ? !$status_tratativa : 5;  // Ex: ID do WHATS na tabela 'crc_tratativa_tipo' // AGUARDAR INICIO 5
-            $crc_tipo_acoes_id = isset($dados) ? !$tipo_acoes : 5;     // Ex: ID do Pendente na tabela 'crc_tipo_acoes' // AGUARDAR INICIO 5 
-            $descricao_movimentacao = isset($dados) ? !$descricao : 'AGUARDA INICIO';
-            $ctr_interno = isset($dados) ? !$tctrid : 417039;
-            $idCobranca = isset($dados) ? !$numeroCobranca : $idCobranca;
+            $crc_tratativa_tipo_id = isset($dados) && !empty($dados)  ? $status_tratativa : 5;  // Ex: ID do WHATS na tabela 'crc_tratativa_tipo' // AGUARDAR INICIO 5
+            $crc_tipo_acoes_id = isset($dados) && !empty($dados)  ? $tipo_acoes : 5;     // Ex: ID do Pendente na tabela 'crc_tipo_acoes' // AGUARDAR INICIO 5 
+            $descricao_movimentacao = isset($dados) && !empty($dados) ? $descricao : 'AGUARDA INICIO';
+            $ctr_interno = isset($dados) && !empty($dados) ? $tctrid : 417039;
+            $idCobranca = isset($dados) && !empty($dados)  ? $numeroCobranca : $idCobranca;
+
+
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':cobranca', $idCobranca);
@@ -308,15 +346,10 @@ class Crc_tratativas extends Model
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
             $idTratativa = $resultado['id_crc_tratativas'];
             
-            $cod_status = isset($dados) ? !$status_tratativa : 0;  //# dados;
+            $cod_status = isset($dados) && !empty($dados) ? $status_tratativa : 0;  //# dados;
 
-            // echo "<pre>";
 
-            // var_dump($cod_status);
-            // die();
-            // $cod_status = 0; # -- Código interno do sistema para Pendente
             $status_descricao = $descricao_movimentacao;
-            // $status_descricao = 'INFORMOU QUE NAO LEMBRA DESTA CONTA';
 
             $stmt = $this->db->prepare($sqlStatus);
             $stmt->bindParam(':crc_tratativas_id', $idTratativa);
