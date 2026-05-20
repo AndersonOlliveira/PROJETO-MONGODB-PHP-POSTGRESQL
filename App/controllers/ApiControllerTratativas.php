@@ -24,7 +24,6 @@ class ApiControllerTratativas extends Controller
         $this->utilis_pgadmin = new Crc_tratativas();
 
         //PAGINA DE TRATAMENTO DOS DADOS
-        // require_once __DIR__ . '/../models/Crc_tratativas.php';
         $this->utilis_trativas = $this->Utilis('process_Trativas');
     }
 
@@ -32,11 +31,11 @@ class ApiControllerTratativas extends Controller
     {
         header('Content-Type: application/json');
 
-        $retorno_dados = $this->utilis_pgadmin->get_lista_tratativas();
+
+        $retorno_dados = $this->utilis_pgadmin->listTipoContrato();
 
         if ($retorno_dados) {
-            // echo "<pre>";
-            // return 'informação salva com sucesso!';
+
             echo json_encode(array(
                 'status' => 2,
                 'sucesso' => true,
@@ -44,15 +43,62 @@ class ApiControllerTratativas extends Controller
             ));
         }
     }
+
+    public function nameResponsavel()
+    {
+        header('Content-Type: application/json');
+
+        $contrato = $_GET['contrato'];
+
+
+        $retorno_dados = $this->utilis_pgadmin->info_responsavel($contrato);
+
+        if ($retorno_dados) {
+
+            echo json_encode(array(
+                'status' => 2,
+                'sucesso' => true,
+                'dados' => $retorno_dados
+            ));
+        }
+    }
+
     public function tratativasRelatorio()
     {
         header('Content-Type: application/json');
 
-        $retorno_dados = $this->utilis_pgadmin->getRelatorio();
+
+        $dados = json_decode($_GET['convertidoJson'], true);
+
+        $retorno_dados = $this->utilis_trativas->seachDataAll($dados);
+
+        // $retorno_dados = $this->utilis_pgadmin->getRelatorio();
+        if (isset($retorno_dados['msg'])) {
+            echo json_encode(array(
+                'status' => 1,
+                'sucesso' => false,
+                'dados' => $retorno_dados
+            ));
+        } else {
+            echo json_encode(array(
+                'status' => 2,
+                'sucesso' => true,
+                'dados' => $retorno_dados
+            ));
+        }
+    }
+
+    public function RelatorioAcoes()
+    {
+
+
+        header('Content-Type: application/json');
+
+
+        $retorno_dados = $this->utilis_pgadmin->listTipoAcoes();
 
         if ($retorno_dados) {
-            // echo "<pre>";
-            // return 'informação salva com sucesso!';
+
             echo json_encode(array(
                 'status' => 2,
                 'sucesso' => true,
@@ -73,20 +119,30 @@ class ApiControllerTratativas extends Controller
         $dados = json_decode($dados, true);
 
 
-        // echo "<pre>";
-        // echo "MEUS DADOS\n";
+        // $retorno_campos  =  $this->utilis_trativas->validaCampos($dados);
 
-        // print_r($dados);
-        // die();
+        // if (isset($retorno_campos['error'])) {
+        //     echo json_encode(array(
+        //         'status' => 0,
+        //         'sucesso' => false,
+        //         'dados' => $retorno_campos
+        //     ));
+        //     die();
+        // }
 
         $retorno_dados = $this->utilis_trativas->trata_dados_trativa($dados);
 
-        // if ($retorno_dados) {
-        //     // echo "<pre>";
-        //     // return 'informação salva com sucesso!';
+        // if ($retorno_dados['status'] == 'success') {
+
         //     echo json_encode(array(
         //         'status' => 2,
         //         'sucesso' => true,
+        //         'dados' => $retorno_dados
+        //     ));
+        // } else {
+        //     echo json_encode(array(
+        //         'status' => 1,
+        //         'sucesso' => false,
         //         'dados' => $retorno_dados
         //     ));
         // }
@@ -97,53 +153,84 @@ class ApiControllerTratativas extends Controller
 
         $retorno = $this->utilis_pgadmin->getRelatorio_origim();
 
-        // echo "<pre>";
-
-        // print_r($retorno);
-
-        // die();
 
         foreach ($retorno as $key => $result) {
 
-            // echo '<pre>';
-            // print_r($result);
             if (isset($result['n_nro'])) {
-                // echo "<pre>";
-                // echo "ESTOU SAINDO DENTRO DA ROTA PARA A CONSULTA";
-
                 $processCobranca = $this->utilis_pgadmin->verifry_cobraca($result['n_nro']);
-
-                // echo "</pre>";
             }
         }
     }
 
 
-    public function list_dados_data(){
-        
-    header('Content-Type: application/json');
-    $dados = file_get_contents('php://input');
+    public function list_dados_data()
+    {
+
+        header('Content-Type: application/json');
+        $dados = file_get_contents('php://input');
         // PARA CONVERTER OS DADOS VINDO DE FORM DATA
-    $dados = json_decode($dados, true);
-    $retorno_dados = $this->utilis_trativas->seachDataAll($dados);
+        $dados = json_decode($dados, true);
+        $retorno_dados = $this->utilis_trativas->seachDataAll($dados);
 
-    if($retorno_dados){
-        
-    if(isset($retorno_dados['msg'])){
-     echo json_encode(array(
-                'status' => 1,
-                'sucesso' => false,
-                'dados' => $retorno_dados
-            ));
+        if ($retorno_dados) {
 
-    }else{
+            if (isset($retorno_dados['msg'])) {
                 echo json_encode(array(
-                'status' => 2,
-                'sucesso' => false,
-                'dados' => $retorno_dados
-            ));
+                    'status' => 1,
+                    'sucesso' => false,
+                    'dados' => $retorno_dados
+                ));
+            } else {
+                echo json_encode(array(
+                    'status' => 2,
+                    'sucesso' => false,
+                    'dados' => $retorno_dados
+                ));
+            }
+        }
     }
-     
-        } 
+
+    public function getHistorico()
+    {
+
+        header('Content-Type: application/json');
+        $dados = file_get_contents('php://input');
+        // PARA CONVERTER OS DADOS VINDO DE FORM DATA
+
+        $dados = json_decode($_GET['convertidoJson'], true);
+        // $dados = json_decode($dados, true);
+
+        $retorno_dados = $this->utilis_trativas->validaCamposPersolizado($dados, 'numeroCobranca');
+
+        if (isset($retorno_dados['error'])) {
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $retorno_dados['error']
+            ));
+            die();
+        }
+
+
+        //BUSCO OS DADOS POR NUMERO DA COBRANCA
+
+        $retorno_dados_historico = $this->utilis_pgadmin->getRelatorioAll($dados['numeroCobranca']);
+
+        if ($retorno_dados_historico) {
+
+            if (isset($retorno_dados_historico['msg'])) {
+                echo json_encode(array(
+                    'status' => 1,
+                    'sucesso' => false,
+                    'dados' => $retorno_dados_historico
+                ));
+            } else {
+                echo json_encode(array(
+                    'status' => 2,
+                    'sucesso' => true,
+                    'dados' => $retorno_dados_historico
+                ));
+            }
+        }
     }
 }

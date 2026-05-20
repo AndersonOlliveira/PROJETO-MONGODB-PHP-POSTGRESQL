@@ -90,31 +90,62 @@ class process_Trativas extends Controller
     public function trata_dados_trativa($dados)
     {
 
-        echo '<pre>';
-        echo "dados enviando via controller\n";
+
         // NULL POR CONTA QUE NÁO VOU ENVIAR O ID PARA CONSULTA
         $result_process = $this->utilis_pgadmin->verifry_cobraca(null, $dados);
 
-        // var_dump($tipo_acoes);
-    } 
-    
-    
+        return $result_process;
+    }
+
+
     public function seachDataAll($dados)
     {
-        
-    if(isset($dados['tdataInicio']) && isset($dados['tdataFim'])){
-            $tdataInicio =$dados['tdataInicio']; 
-            $tdataFim =$dados['tdataFim']; 
-            $result_process = $this->utilis_pgadmin->return_dados_data(null,$tdataInicio,$tdataFim);
-      
-            }else{
-                
-            $result_process = $this->utilis_pgadmin->return_dados_data($dados['mes'],null,null);    
-       }
 
-        if($result_process){
 
-          return $result_process;
+        if (!empty($dados['tdataInicio']) && !empty($dados['tdataFim'])) {
+            $tdataInicio = $dados['tdataInicio'];
+            $tdataFim = $dados['tdataFim'];
+            $result_process = $this->utilis_pgadmin->getRelatorio(null, $tdataInicio, $tdataFim);
+        } else {
+
+            $result_process = $this->utilis_pgadmin->getRelatorio($dados['mes'], null, null);
         }
+
+        if ($result_process) {
+
+            return $result_process;
+        }
+    }
+
+    public function validaCampos($dados)
+    {
+        $parametros = array("numeroCobranca", "tipo_trativa", "status_tratativa", "descricao", "tipo_acoes");
+
+        $parametros = $this->enconde->validarParametrosDados($dados, $parametros);
+
+        return $parametros;
+    }
+
+    public function validaCamposPersolizado($dados, $numeroCobraca)
+    {
+        $parametros = array($numeroCobraca);
+
+        $parametros = $this->enconde->validarParametrosDados($dados, $parametros);
+
+        return $parametros;
+    }
+
+    public function validarParametrosDadoss($parametros, $chaves)
+    {
+
+        foreach ($chaves as $chave) {
+            if (!array_key_exists($chave, $parametros)) {
+                return array("error" => "$chave nao foi informado!");
+            }
+
+            $parametros[$chave] = trim(strip_tags($parametros[$chave]));
+        }
+
+        return $parametros;
     }
 }

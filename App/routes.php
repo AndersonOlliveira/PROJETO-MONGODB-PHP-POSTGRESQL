@@ -41,9 +41,12 @@ return [
     '/viewRelatorio' => ['RelatorioController', 'index_relatorio'],
     '/api/Relatorio' => ['ApiControllerTratativas', 'tratar_Relatorio'],
     //ROTA PARA PEGAR OS DADOS DAS TRATATIVAS
-    '/api/getTratativas' => ['ApiControllerTratativas', 'get_tratativas'],
+    '/api/listaTipoContato' => ['ApiControllerTratativas', 'get_tratativas'],
     '/api/listRelatorio' => ['ApiControllerTratativas', 'tratativasRelatorio'],
+    '/api/listAcoes' => ['ApiControllerTratativas', 'RelatorioAcoes'],
+    '/api/listName' => ['ApiControllerTratativas', 'nameResponsavel'],
     '/api/insertTrativa' => ['ApiControllerTratativas', 'tratativaInsert', 'POST'],
+    '/api/getHistorico' => ['ApiControllerTratativas', 'getHistorico', 'GET'],
     '/api/searchData' => ['ApiControllerTratativas', 'list_dados_data', 'POST'],
 
     //     $rotas["dados_finger_push"] = array(

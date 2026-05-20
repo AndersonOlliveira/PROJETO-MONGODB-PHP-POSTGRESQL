@@ -15,10 +15,10 @@ class validaCampos
             return false;
         }
     }
-    
+
     public static function ValidadataCompleta($tdataInicio, $tdataFim)
     {
-     
+
         $validaInicio = DateTime::createFromFormat('Y-m-d', $tdataInicio);
         $validaFim = DateTime::createFromFormat('Y-m-d', $tdataFim);
 
@@ -26,7 +26,7 @@ class validaCampos
             $validaInicio && $validaInicio->format('Y-m-d') == $tdataInicio && !empty($tdataInicio) &&
             $validaFim && $validaFim->format('Y-m-d') == $tdataFim && !empty($tdataFim)
         ) {
-        
+
             return true;
         } else {
             return false;
@@ -34,7 +34,7 @@ class validaCampos
     }
 
     //funcao recorsiva, recebe processar e envia o retorno
-     private static function utf8ize($data)
+    private static function utf8ize($data)
     {
 
         if (is_array($data)) {
@@ -45,13 +45,31 @@ class validaCampos
             return trim(mb_convert_encoding($data, 'UTF-8', 'UTF-8'));
         }
         return $data;
-      
     }
-     public static function convertEncode($data)
+    public static function convertEncode($data)
     {
         $data_utf8 = self::utf8ize($data);
         return $data_utf8;
     }
 
-    }
 
+    public static function validarParametrosDados($parametros, $chaves)
+    {
+        $dadosError = [];
+
+        foreach ($chaves as $chave) {
+            if (!array_key_exists($chave, $parametros)) {
+                $dadosError[] = "$chave nao foi informado!";
+                continue;
+            }
+
+            $parametros[$chave] = trim(strip_tags((string)$parametros[$chave]));
+        }
+
+        if (!empty($dadosError)) {
+            return ['error' => $dadosError];
+        }
+
+        return $parametros;
+    }
+}

@@ -1,0 +1,1294 @@
+/* ================================================================
+       proGestor — Dashboard   
+    ================================================================ */
+
+:root {
+    --c-navy: #0f1f4b;
+    --c-blue: #1e3a8a;
+    --c-accent: #1d4ed8;
+    --c-bg: #f0f3f8;
+    --c-white: #ffffff;
+    --c-border: #e2e8f0;
+    --c-text: #1e293b;
+    --c-muted: #64748b;
+    --c-hover: #dbeafe;
+    --radius: 8px;
+    --shadow: 0 1px 10px rgba(15, 31, 75, .07);
+    --shadow-md: 0 4px 20px rgba(15, 31, 75, .12);
+    --font: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--c-bg) !important;
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--c-text);
+}
+
+.pg-dash-wrapper {
+    padding: 20px 24px 32px;
+}
+
+/* ================================================================
+       FILTRO DE PERÍODO
+    ================================================================ */
+.pg-filter-bar {
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.pg-filter-bar .filter-label {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--c-text);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pg-period-fields {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.pg-period-fields .period-sub-label {
+    font-size: .72rem;
+    color: var(--c-muted);
+    white-space: nowrap;
+}
+
+.pg-period-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 130px;
+    max-width: 180px;
+}
+
+.pg-period-input-wrap .form-control {
+    height: 32px;
+    background: #f8fafc;
+    border: 1px solid #c8d3e0;
+    font-size: .8rem;
+    border-radius: 5px;
+    padding: 4px 28px 4px 8px;
+    width: 100%;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.pg-period-input-wrap .form-control:focus {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 2px rgba(29, 78, 216, .12);
+    outline: none;
+}
+
+.pg-period-input-wrap i {
+    position: absolute;
+    right: 8px;
+    color: var(--c-muted);
+    font-size: .8rem;
+    pointer-events: none;
+}
+
+.pg-filter-bar .btn-buscar {
+    background: var(--c-blue);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: .78rem;
+    font-weight: 700;
+    padding: 6px 18px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+
+.pg-filter-bar .btn-buscar:hover {
+    background: var(--c-navy);
+}
+
+.pg-filter-bar .btn-limpar {
+    background: #e2e8f0;
+    color: var(--c-text);
+    border: none;
+    border-radius: 5px;
+    font-size: .78rem;
+    font-weight: 700;
+    padding: 6px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+
+.pg-filter-bar .btn-limpar:hover {
+    background: #cbd5e1;
+}
+
+.erroObs {
+    font-size: .7rem;
+    color: #dc2626;
+}
+
+/* ================================================================
+      SELECT ANO + MÉTRICAS
+    ================================================================ */
+.pg-year-metrics-card {
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.pg-year-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pg-year-row label {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--c-text);
+    white-space: nowrap;
+}
+
+#anoSelect {
+    border: 1px solid var(--c-border);
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: .78rem;
+    color: var(--c-text);
+    background: var(--c-white);
+    min-width: 100px;
+    max-width: 160px;
+    cursor: pointer;
+}
+
+/* métricas em grade: esquerda cinza + direita azul */
+.pg-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 4px;
+}
+
+.pg-metric-left {
+    background: #f8fafc;
+    border: 1px solid var(--c-border);
+    border-right: none;
+    border-radius: var(--radius) 0 0 0;
+    padding: 12px 16px;
+    font-size: .82rem;
+    color: var(--c-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.med {
+    /* display: flex; */
+    padding-top: 15px;
+}
+
+.pg-metric-right {
+    background: var(--c-blue);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: .78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    min-width: 220px;
+    border-radius: 0 var(--radius) 0 0;
+}
+
+/* border-radius dos 4 cantos */
+.pg-metric-left:nth-child(1) {
+    border-radius: var(--radius) 0 0 0;
+}
+
+.pg-metric-left:nth-child(3) {
+    border-radius: 0 0 0 var(--radius);
+    border-top: none;
+}
+
+.pg-metric-right:nth-child(2) {
+    border-radius: 0 var(--radius) 0 0;
+}
+
+.pg-metric-right:nth-child(4) {
+    border-radius: 0 0 var(--radius) 0;
+}
+
+.pg-metric-right span,
+.pg-metric-right p {
+    margin: 0;
+}
+
+/* ================================================================
+     ÚLTIMAS CONSULTAS (tabela com badge-ano)
+    ================================================================ */
+.pg-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--c-text);
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pg-section-title i {
+    color: var(--c-accent);
+    font-size: .85rem;
+}
+
+.pg-section-title .nome {
+    font-weight: 400;
+    color: var(--c-muted);
+    font-size: .88rem;
+}
+
+/* badge de ano — usado pelo JS */
+.badge-ano {
+    display: inline-block;
+    background: var(--c-navy);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 5px;
+    min-width: 48px;
+    text-align: center;
+}
+
+/* ── DataTables da tabela de consultas ──────────────────────── */
+#list_period_month_wrapper {
+    border-radius: var(--radius) !important;
+    font-size: 12px !important;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    color: #000;
+    border: 1px solid var(--c-border);
+    box-shadow: var(--shadow);
+    background: var(--c-white);
+}
+
+#list_period_month.dataTable {
+    border-collapse: collapse !important;
+    width: 80% !important;
+}
+
+#list_period_month.dataTable thead tr th {
+    background: var(--c-navy) !important;
+    color: #fff !important;
+    font-size: .75rem !important;
+    font-weight: 400 !important;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    padding: 10px 14px !important;
+    border: none !important;
+    white-space: normal;
+    text-align: left !important;
+}
+
+#list_period_month.dataTable tbody tr td {
+    background-color: #f8fafc !important;
+    color: var(--c-text) !important;
+    text-align: left !important;
+    padding: 10px 14px !important;
+    border-bottom: 1px solid var(--c-border) !important;
+    font-size: 12px !important;
+    vertical-align: middle;
+    word-break: break-word;
+}
+
+#list_period_month.dataTable tbody tr:nth-child(even) td {
+    background-color: #edf2f9 !important;
+}
+
+#list_period_month.dataTable tbody tr:hover td {
+    background-color: var(--c-hover) !important;
+    color: var(--c-text) !important;
+    font-size: 12px !important;
+}
+
+#list_period_month_info
+
+/* ── wrapper #teste legado ──────────────────────────────────── */
+#teste {
+    border: none !important;
+    background: transparent;
+}
+
+/* ================================================================
+        UTILIZAÇÃO DA PLATAFORMA (linechart + barChart)
+    ================================================================ */
+.pg-chart-card {
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    margin-top: 12px;
+}
+
+/* canvas — só altura, largura 100% é controlada pelo Chart.js responsive */
+.graficos {
+    width: 100% !important;
+    height: 300px !important;
+    max-height: 320px;
+    display: block;
+    background: #f8fafc;
+}
+
+/* ================================================================
+       TOOLBAR DATATABLES
+    ================================================================ */
+.dt-layout-row {
+    padding: 8px 12px;
+    background: var(--c-white);
+    border-bottom: 1px solid var(--c-border);
+    /* display: flex !important; */
+    align-items: center;
+}
+
+.dt-layout-row:last-child {
+    border-bottom: none;
+}
+
+.dt-layout-row .dt-layout-table {
+    background: transparent !important;
+}
+
+button.dt-button {
+    background: var(--c-blue) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 5px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 5px 14px !important;
+    transition: background .15s !important;
+    cursor: pointer;
+}
+
+button.dt-button:hover {
+    background: var(--c-navy) !important;
+}
+
+.dt-search input {
+    border: 1px solid var(--c-border) !important;
+    border-radius: 5px !important;
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+}
+
+.dt-length select,
+#dt-length-0 {
+    border: 1px solid var(--c-border) !important;
+    border-radius: 5px !important;
+    padding: 3px 6px !important;
+    font-size: 12px !important;
+}
+
+/* scrollbar */
+.dt-scroll-body::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #e8eef8;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--c-accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--c-navy);
+}
+
+/* ================================================================
+       SEM ACESSO
+    ================================================================ */
+.pg-no-access {
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    margin-top: 16px;
+    text-align: center;
+    color: var(--c-muted);
+}
+
+.pg-no-access i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* ================================================================
+       MODAL LOADING
+    ================================================================ */
+#modal_loading {
+    z-index: 9999 !important;
+}
+
+#modal_loading .modal-backdrop {
+    z-index: 9998 !important;
+}
+
+/* ── legado — mantidos por compatibilidade com CSS externo ─── */
+.imgProgestor {
+    padding: 20px 20px 0 20px;
+    width: 150px;
+}
+
+.h2Progestor {
+    padding-left: 20px;
+}
+
+.espaco {
+    height: 16px;
+}
+
+/* .barra-media referenciada no JS original (montarFormsFatura usa innerHTML)
+       mantida para não quebrar estilos injetados dinamicamente */
+.barra-media {
+    background: #f8fafc;
+    border: 1px solid var(--c-border);
+    border-radius: 6px 0 0 6px;
+    padding: 8px 14px;
+    font-size: .78rem;
+    color: var(--c-text);
+    text-align: left;
+}
+
+/* =============================================
+   MODAIS — estilo sistema
+   ============================================= */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(15, 31, 75, .18);
+    font-family: 'Inter', sans-serif;
+}
+
+.modal-header {
+    background: #00005F;
+    color: #ffffff;
+    border-radius: 10px 10px 0 0;
+    padding: 14px 20px;
+    border-bottom: none;
+}
+
+.modal-header .modal-title {
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: -.1px;
+}
+
+.modal-header .btn-close {
+    filter: invert(1) brightness(2);
+    opacity: .85;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 20px 24px;
+    font-size: .82rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 20px;
+    border-radius: 0 0 10px 10px;
+    background: #f8fafc;
+}
+
+.modal-footer .btn-primary {
+    background: #1e3a8a;
+    border: none;
+    border-radius: 5px;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 7px 24px;
+    transition: background .15s;
+}
+
+.modal-footer .btn-primary:hover {
+    background: #1e40af;
+}
+
+.modal-footer .btn-primary:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* modal-base-enviada — sucesso */
+#modal_base_enviada .modal-content {
+    border-top: 4px solid #16a34a;
+}
+
+#modal_base_enviada .modal-body h5 {
+    color: #16a34a;
+    font-weight: 700;
+    font-size: .9rem;
+    margin-bottom: 4px;
+}
+
+#modal_base_enviada .modal-body p {
+    color: #475569;
+    font-size: .8rem;
+    margin: 0;
+}
+
+/* modais de loading — sem header, centralizado */
+#modal_loading .modal-content,
+#modal_loading2 .modal-content {
+    border-top: 4px solid #1e3a8a;
+    text-align: center;
+}
+
+#modal_loading .modal-body p,
+#modal_loading2 .modal-body p {
+    font-size: .8rem;
+    color: #475569;
+    margin-top: -24px;
+}
+
+
+/* =============================================
+   ALERTS — estilo sistema
+   ============================================= */
+.swal-overlay {
+    background: rgba(15, 31, 75, 0.45);
+}
+
+.swal-modal {
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    border-top: none !important;
+    /* ← remove borda */
+    padding: 0;
+    box-shadow: 0 8px 32px rgba(15, 31, 75, .18);
+    width: 480px;
+    /* ← mais largo */
+    position: relative;
+    min-height: 100px;
+}
+
+.swal-icon {
+    border: none !important;
+    background: transparent;
+    margin: 0;
+    z-index: 2;
+}
+
+.swal-icon--warning,
+.swal-icon--success,
+.swal-icon--error {
+    border: none !important;
+}
+
+.swal-icon--warning__body,
+.swal-icon--warning__dot {
+    display: none;
+}
+
+/* wrapper que envolve título + conteúdo — empurra para direita do ícone */
+.swal-text,
+.swal-title,
+.swal-content {
+    margin-left: 82px;
+}
+
+.swal-title {
+    font-size: .9rem;
+    font-weight: 700;
+    /* ← negrito */
+    color: #1e293b;
+    text-align: left;
+    padding: 20px 20px 2px 0;
+    margin-left: 82px;
+}
+
+.swal-content {
+    font-size: .82rem;
+    font-weight: 400;
+    /* ← peso normal */
+    color: #475569;
+    text-align: left;
+    padding: 0 20px 8px 0;
+    /* ← menos espaço embaixo */
+    margin-left: 82px;
+    margin-top: 0;
+}
+
+.swal-content__div {
+    font-size: .82rem;
+    font-weight: 400;
+    color: #475569;
+}
+
+.swal-footer {
+    padding: 8px 20px 14px;
+    /* ← menos padding topo */
+    background: #ffffff;
+    border-top: none !important;
+    /* ← remove linha */
+    border-radius: 0 0 10px 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 0;
+}
+
+.swal-button {
+    border-radius: 5px;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 7px 22px;
+}
+
+.swal-button--confirm {
+    background: #1e3a8a;
+}
+
+.swal-button--confirm:hover {
+    background: #1e2d5a !important;
+}
+
+.swal-button--cancel {
+    background: #f1f5f9;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.swal-button--cancel:hover {
+    background: #e2e8f0 !important;
+}
+
+.swal-modal>* {
+    position: relative;
+    /* garante que filhos fiquem acima do ícone absoluto */
+    z-index: 1;
+}
+
+/* confirm */
+
+.swal-icon--success {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: absolute !important;
+    top: 20px !important;
+    left: 20px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+
+.swal-icon--success {
+    background: #4A7C2F !important;
+}
+
+.swal-icon--warning {
+    background: #E3595C !important;
+}
+
+/* Esconde TUDO que o SweetAlert gera dentro dos ícones */
+.swal-icon--success>* {
+    display: none !important;
+}
+
+/* Mata as animações dos pseudo-elementos do ícone success */
+.swal-icon--success::before,
+.swal-icon--success::after {
+    display: none !important;
+    content: none !important;
+    animation: none !important;
+}
+
+.swal-icon--success__hide-corners {
+    display: none !important;
+}
+
+/* As linhas animadas do checkmark nativo */
+.swal-icon--success__line {
+    display: none !important;
+    animation: none !important;
+}
+
+/* O anel animado */
+.swal-icon--success__ring {
+    display: none !important;
+    border: none !important;
+    background: transparent !important;
+    animation: none !important;
+}
+
+.swal-icon--success__hide-corners {
+    display: none !important;
+    background: transparent !important;
+}
+
+/* =============================================
+   CARD ULTUIMAS CONSUTLAS — estilo sistema
+   ============================================= */
+
+.pg-info-card {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid #f59e0b;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: .78rem;
+    color: #92400e;
+    line-height: 1.5;
+}
+
+.pg-info-card__icon {
+    color: #f59e0b;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.pg-info-card__body {
+    flex: 1;
+}
+
+.pg-info-card__body p {
+    margin: 0;
+}
+
+.card-ano-container {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 5px;
+    font-size: .82rem;
+}
+
+.ano-sidebar {
+    background: var(--c-blue);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: .78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    border-radius: 0 var(--radius) 0 0;
+}
+
+.metrics-content {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px;
+}
+
+.metric-item {
+    color: #444;
+}
+
+.metric-item strong {
+    color: #000;
+}
+
+/* =============================================
+   CARD TABELA CONSUTLAS — estilo sistema
+   ============================================= */
+.pg-table-section {
+    width: 100%;
+    overflow-x: visible !important;
+    min-width: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* wrapper DataTables gerado pelo plugin */
+#listagem_plugins_wrapper {
+    width: 100% !important;
+    font-size: 12px !important;
+    border-radius: 0 !important;
+    background: var(--c-white);
+    padding: 0;
+}
+
+/* scroll horizontal na área do wrapper */
+.dataTables_wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ---- scroll horizontal para a tabela (responsivo) --------- */
+.dt-scroll-body,
+#teste .col-sm-12 {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+#listagem_plugins.dataTable {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    min-width: 0px;
+    /* era 900px */
+    table-layout: auto;
+    /* era fixed — permite que colunas respirem */
+}
+
+/* ---- toolbar DataTables ----------------------------------- */
+.dt-layout-row {
+    padding: 10px 14px;
+    background: var(--c-white);
+    border-bottom: 1px solid var(--c-border);
+}
+
+.dt-layout-row:last-child {
+    border-bottom: none;
+}
+
+.dt-layout-row .dt-layout-table {
+    background: transparent !important;
+}
+
+.dt-layout-row:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+}
+
+.dt-layout-row:first-child .dt-layout-end {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+}
+
+/* garante que botão e search ficam na mesma linha */
+.dt-layout-row:first-child .dt-layout-end .dt-buttons,
+.dt-layout-row:first-child .dt-layout-end .dt-search {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* botão Download */
+button.dt-button {
+    background: #1e2d5a !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    font-family: 'Inter', sans-serif !important;
+    padding: 6px 16px !important;
+    transition: background .2s !important;
+    cursor: pointer;
+    letter-spacing: .2px;
+}
+
+button.dt-button:hover {
+    background: #162347 !important;
+}
+
+/* input search */
+.dt-search input {
+    border: 1px solid var(--c-border) !important;
+    border-radius: 6px !important;
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+    transition: border-color .15s;
+}
+
+.dt-search input:focus {
+    border-color: var(--c-accent) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(29, 78, 216, .1) !important;
+}
+
+/* select length */
+.dt-length select,
+#dt-length-0 {
+    border: 1px solid var(--c-border) !important;
+    border-radius: 6px !important;
+    padding: 4px 6px !important;
+    font-size: 12px !important;
+}
+
+/* ---- thead ------------------------------------------------ */
+#listagem_plugins.dataTable thead tr th {
+    background: var(--c-hover) !important;
+    /*color: #fff !important; */
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    padding: 8px 6px !important;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* ---- tbody ------------------------------------------------ */
+#listagem_plugins.dataTable tbody tr td {
+    background-color: var(--c-row-odd) !important;
+    color: var(--c-text) !important;
+    padding: 6px 6px !important;
+    border-bottom: 1px solid var(--c-border) !important;
+    border-top: none !important;
+    font-size: 12px !important;
+    vertical-align: middle;
+}
+
+#listagem_plugins.dataTable tbody tr:nth-child(even) td {
+    background-color: var(--c-row-evn) !important;
+}
+
+#listagem_plugins.dataTable tbody tr:hover td {
+    background-color: var(--c-hover) !important;
+}
+
+#listagem_plugins.dataTable tbody tr {
+    border: none !important;
+}
+
+#listagem_plugins.dataTable tbody td:nth-child(10) {
+    white-space: nowrap;
+    min-width: 90px;
+    max-width: 90px;
+}
+
+/* Data Upload e Data Finalização — quebra data / hora */
+#listagem_plugins.dataTable tbody td:nth-child(4),
+#listagem_plugins.dataTable tbody td:nth-child(8) {
+    white-space: normal !important;
+    min-width: 75px !important;
+    width: 75px !important;
+    line-height: 1.6;
+    font-size: 11px !important;
+}
+
+/* Badge de status menor */
+.statusC {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    gap: 3px !important;
+}
+
+.statusC .dot {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+.statusC .icon {
+    width: 11px !important;
+    height: 11px !important;
+}
+
+/* Badge compacto — só ícone, sem texto */
+.statusC.status-icon-only {
+    padding: 4px !important;
+    gap: 0 !important;
+    min-width: 24px;
+    justify-content: center;
+    cursor: default;
+}
+
+/* Reduz largura da coluna Status */
+#listagem_plugins.dataTable thead th:nth-child(9),
+#listagem_plugins.dataTable tbody td:nth-child(9) {
+    min-width: 36px !important;
+    width: 36px !important;
+    text-align: center;
+}
+
+td:nth-child(7),
+td:nth-child(11) {
+    max-width: 180px;
+    font-size: 11px;
+}
+
+
+/* ---- tabelas modais --------------------------------------- */
+#list_process_table.dataTable tbody tr td,
+#list_process_table_break.dataTable tbody tr td,
+#list_process_table_error.dataTable tbody tr td,
+#list_process_table_list_paralizar.dataTable tbody tr td {
+    background-color: #f8f9fb !important;
+    color: var(--c-text) !important;
+    font-size: 12px !important;
+    border-bottom: 1px solid var(--c-border) !important;
+}
+
+
+#list_process_table_break.dataTable tbody tr td.tr-erro {
+    background-color: #f5586a !important;
+    color: #fff !important;
+}
+
+#list_process_table_break.dataTable tbody tr,
+#list_process_table_error.dataTable tbody tr,
+#list_process_table_list_paralizar.dataTable tbody tr {
+    border: none !important;
+}
+
+#list_process_table.dataTable tbody tr:hover td,
+#list_process_table_break.dataTable tbody tr:hover td,
+#list_process_table_error.dataTable tbody tr:hover td {
+    background-color: #b5d0f8 !important;
+    color: var(--c-text) !important;
+}
+
+#list_process_table.dataTable tbody tr:nth-child(even) td,
+#list_process_table_error.dataTable tbody tr:nth-child(even) td,
+#list_process_table_list_paralizar.dataTable tbody tr:nth-child(even) td {
+    background-color: #eef0f4 !important;
+}
+
+#list_process_table thead th,
+#list_process_table_break thead th,
+#list_process_table_error thead th,
+#list_process_table_list_paralizar thead th {
+    background: var(--c-hover) !important;
+    color: var(--c-text) !important;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    padding: 9px 10px !important;
+    border: none !important;
+}
+
+#listagem_plugins.dataTable thead th,
+#listagem_plugins.dataTable tbody td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+#listagem_plugins.dataTable thead th
+
+/* ---- scrollbar -------------------------------------------- */
+.dt-scroll-body::-webkit-scrollbar,
+#teste .col-sm-12::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #e8eef8;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--c-accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--c-navy);
+}
+
+/* ---- checkbox --------------------------------------------- */
+.select-checkbox {
+    border-radius: 3px !important;
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+    border: 2px solid var(--c-accent) !important;
+    cursor: pointer;
+}
+
+/* ---- botões de ação na tabela ----------------------------- */
+.status-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 3px;
+    align-items: center;
+    min-width: unset;
+}
+
+.btn-action {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    flex-shrink: 0;
+    /* ← não encolhe quando a célula aperta */
+    transition: opacity .15s;
+}
+
+.btn-action:hover {
+    opacity: .8;
+    transform: scale(1.08);
+}
+
+.btn-play {
+    background: #3a9e6e;
+    color: #fff;
+}
+
+.btn-pause {
+    background: #d4743a;
+    color: #fff;
+}
+
+.btn-cancel {
+    background: #c94f4f;
+    color: #fff;
+}
+
+.btn-download {
+    background: var(--c-blue);
+    color: #fff;
+}
+
+.btn-error-list,
+.btn-paralizar-list {
+    background: #d4a93a;
+    color: #fff;
+}
+
+/* ---- status badges ---------------------------------------- */
+.statusC {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.statusC.concluido {
+    background: #e6f4ee;
+    color: #2e7d5a;
+}
+
+.statusC.cancelado {
+    background: #faeaea;
+    color: #a84040;
+}
+
+.statusC.processamento {
+    background: #fef7e4;
+    color: #7a5a20;
+}
+
+.statusC .dot {
+    width: 7px;
+    height: 7px;
+    background: currentColor;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.pg-enviar-wrapper {
+    position: static;
+    /* era fixed */
+    bottom: unset;
+    right: unset;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+    padding-right: 0;
+}
+
+.pg-file-section {
+    margin-bottom: 10px;
+}
+
+.pg-file-section .input-group {
+    border: 1px solid #c8d3e0;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 36px;
+}
+
+
+.pg-file-section .custom-file-label {
+    background-color: #1e3a8a;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: .78rem;
+    padding: 0 14px;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    height: 36px;
+    line-height: 36px;
+    transition: background .15s;
+}
+
+.pg-file-section .custom-file-label:hover {
+    background-color: #1e40af;
+}
+
+.pg-file-section .custom-file-label img {
+    filter: brightness(0) invert(1);
+    width: 14px;
+    height: 14px;
+}
+
+.pg-file-section #nome-arquivo {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: .78rem;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 36px;
+    line-height: 36px;
+}

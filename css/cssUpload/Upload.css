@@ -1,0 +1,590 @@
+ /* ── Reset base ── */
+ *,
+ *::before,
+ *::after {
+     box-sizing: border-box;
+ }
+
+ html,
+ body {
+     height: 100%;
+     overflow: hidden;
+     /* sem scroll na página inteira */
+ }
+
+ body {
+     font-family: 'Inter', sans-serif;
+     ;
+     font-size: 13px;
+     color: #1e293b;
+     background: #f0f4f8;
+     margin: 0;
+ }
+
+ /* =============================================
+   LAYOUT GERAL
+   ============================================= */
+
+ /* Container flex principal (sidebar + conteúdo) */
+ .container-fluid.p-0.d-flex {
+     height: 100vh;
+     overflow: hidden;
+ }
+
+ /* Área de conteúdo ao lado da sidebar */
+ .bg-light.flex-fill {
+     display: flex;
+     flex-direction: column;
+     height: 100vh;
+     overflow: hidden;
+     background: #f0f4f8 !important;
+ }
+
+ /* Wrapper da página */
+ .pg-content-wrapper {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     padding: 18px 24px 12px;
+     overflow: hidden;
+     gap: 10px;
+ }
+
+ /* Título da página */
+ .pg-page-title {
+     font-size: 1.3rem;
+     font-weight: 700;
+     margin: 16px 16px 16px 32px;
+     color: #0f172a;
+     letter-spacing: -0.2px;
+ }
+
+ /* =============================================
+   CARD PRINCIPAL
+   ============================================= */
+ .pg-upload-card {
+     background: #ffffff;
+     border: 1px solid #dde3ec;
+     border-radius: 8px;
+     padding: 20px 24px 20px;
+     flex-shrink: 0;
+ }
+
+ /* ── Arquivo CSV ── */
+ .pg-file-section {
+     margin-bottom: 10px;
+ }
+
+ .pg-file-section .input-group {
+     border: 1px solid #c8d3e0;
+     border-radius: 4px;
+     overflow: hidden;
+     height: 36px;
+ }
+
+ .pg-file-section .custom-file-label {
+     background-color: #1e3a8a;
+     color: #ffffff !important;
+     font-weight: 600;
+     font-size: .78rem;
+     padding: 0 14px;
+     border: none;
+     border-radius: 0;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     white-space: nowrap;
+     height: 36px;
+     line-height: 36px;
+     transition: background .15s;
+ }
+
+ .pg-file-section .custom-file-label:hover {
+     background-color: #1e40af;
+ }
+
+ .pg-file-section .custom-file-label img {
+     filter: brightness(0) invert(1);
+     width: 14px;
+     height: 14px;
+ }
+
+ .pg-file-section #nome-arquivo {
+     background: #f8fafc;
+     color: #64748b;
+     font-size: .78rem;
+     border: none;
+     border-radius: 0;
+     display: flex;
+     align-items: center;
+     padding: 0 12px;
+     height: 36px;
+     line-height: 36px;
+ }
+
+ /* ── Especificações ── */
+ .pg-specs {
+     background: #f8fafc;
+     border: none;
+     padding: 8px 14px;
+     padding: 10px 0 8px;
+     font-size: .75rem;
+     color: #475569;
+     border-radius: 0;
+     margin-bottom: 12px;
+ }
+
+ .pg-specs-title {
+     font-weight: 700;
+     font-size: .76rem;
+     color: #1e293b;
+     margin-bottom: 6px;
+ }
+
+ .pg-specs-grid {
+     display: grid;
+     grid-template-columns: repeat(3, 1fr);
+     gap: 2px 20px;
+ }
+
+ .pg-specs-grid p {
+     margin: 0;
+     line-height: 1.5;
+     font-size: .74rem;
+ }
+
+ .pg-specs-grid span.val-red {
+     color: #dc2626;
+     font-weight: 700;
+ }
+
+ .pg-specs-grid span.val-blue {
+     color: #2563eb;
+     font-weight: 700;
+ }
+
+ .pg-specs-grid span.val-warn {
+     color: #dc2626;
+     font-size: .72rem;
+ }
+
+ /* ── Separador ── */
+ .pg-divider {
+     border: none;
+     border-top: 1px solid #e2e8f0;
+     margin: 10px 0 8px;
+ }
+
+ /* ── Label de seção ── */
+ .pg-section-label {
+     font-size: .8rem;
+     font-weight: 700;
+     color: #1e293b;
+     margin-bottom: 6px;
+ }
+
+ /* ── Barra de pesquisa ── */
+ #barraDePesquisa {
+     border: 1px solid #c8d3e0 !important;
+     border-radius: 6px !important;
+     font-size: .82rem !important;
+     height: 38px !important;
+     padding: 0 14px !important;
+     margin-bottom: 6px !important;
+     color: #334155;
+     background: #f8fafc;
+     transition: border-color .15s;
+ }
+
+ #barraDePesquisa:focus {
+     border-color: #1e3a8a !important;
+     outline: none;
+     background: #fff;
+ }
+
+ /* ── Botão Consultar layout ── */
+ #btnConsultarHeaders {
+     background: #475569;
+     color: #ffffff;
+     border: none;
+     border-radius: 6px;
+     padding: 016px;
+     font-size: .78rem;
+     font-weight: 600;
+     cursor: pointer;
+     margin-bottom: 0px;
+     margin-right: 12px;
+     height: 34px;
+     line-height: 28px;
+     display: inline-flex;
+     align-items: center;
+     transition: background .15s;
+ }
+
+ #btnConsultarHeaders:disabled {
+     background: #94a3b8;
+     cursor: not-allowed;
+ }
+
+ #btnConsultarHeaders:not(:disabled):hover {
+     background: #334155;
+ }
+
+ /* ── Grid de checkboxes ── */
+ .consultas-container {
+     display: grid;
+     grid-template-columns: repeat(2, 1fr);
+     gap: 2px 16px;
+     max-height: 120px;
+     overflow-y: auto;
+     padding-right: 4px;
+ }
+
+ .consultas-container .form-check {
+     display: flex;
+     align-items: center;
+     padding: 1px 0;
+ }
+
+ .consultas-container label {
+     font-size: 11.5px;
+     margin-left: 4px;
+     color: #334155;
+     line-height: 1.3;
+     cursor: pointer;
+ }
+
+ /* ── Checkbox ── */
+ .form-check-input {
+     border-radius: 3px !important;
+     width: 15px !important;
+     height: 15px !important;
+     margin: 0 !important;
+     border: 2px solid #64748b !important;
+     flex-shrink: 0;
+     cursor: pointer;
+     accent-color: #1e3a8a;
+ }
+
+ input[type="checkbox"] {
+     width: 15px !important;
+     height: 15px !important;
+     border-radius: 3px !important;
+     accent-color: #1e3a8a;
+ }
+
+ /* ── Mensagem não encontrado ── */
+ #msg-nao-encontrado {
+     color: #dc2626;
+     font-size: .74rem;
+     margin-top: 4px;
+ }
+
+ /* =============================================
+   BOTÃO ENVIAR
+   ============================================= */
+ .pg-enviar-wrapper {
+     display: flex;
+     justify-content: flex-end;
+     flex-shrink: 0;
+ }
+
+ #bt_enviar_solicitacao {
+     border-radius: 4px !important;
+     border: 2px solid #1e3a8a !important;
+     color: #1e3a8a !important;
+     padding: 8px 40px !important;
+     font-weight: 700 !important;
+     font-size: .82rem !important;
+     letter-spacing: .5px;
+     transition: background .15s, color .15s;
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+ }
+
+ #bt_enviar_solicitacao:hover {
+     background: #1e3a8a !important;
+     color: #fff !important;
+ }
+
+ /* =============================================
+   CARDS DE ESTADO (controlados por JS)
+   ============================================= */
+ .form-control {
+     border-radius: 4px !important;
+     font-size: .8rem;
+ }
+
+ .card {
+     border-radius: 6px !important;
+ }
+
+ .consulta {
+     background: #f8fafc;
+     border-left: 4px solid #2563eb;
+     padding: 10px 14px;
+     margin-bottom: 8px;
+     border-radius: 0 4px 4px 0;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+ }
+
+ .ResumoCompra {
+     background: #fef2f2;
+     border-left: 4px solid #dc2626;
+     padding: 10px 14px;
+     margin-bottom: 8px;
+     border-radius: 0 4px 4px 0;
+ }
+
+ .ConsultarLayout {
+     background: #fefce8;
+     border-left: 4px solid #ca8a04;
+     padding: 10px 14px;
+     margin-bottom: 8px;
+     border-radius: 0 4px 4px 0;
+     margin-top: 10px;
+ }
+
+ .consulta.destaque {
+     border-left-color: #16a34a;
+     background: #f0fdf4;
+ }
+
+ .mensagem-texto {
+     margin: 0;
+     font-size: 12px;
+     color: #334155;
+     line-height: 1.5;
+ }
+
+ .consulta-info {
+     font-size: 12px;
+     color: #334155;
+     line-height: 1.5;
+ }
+
+ .consulta-obs {
+     font-size: 11px;
+     color: #64748b;
+     margin-top: 6px;
+ }
+
+ #header_consultation_comple {
+     font-size: 11px;
+     color: #0f172a;
+     font-weight: 700;
+ }
+
+ #header_consultation .alert {
+     margin-top: 8px;
+     font-size: 11px;
+ }
+
+ .info {
+     font-size: 11px;
+     color: #0f172a;
+     font-weight: 700;
+ }
+
+ /* =============================================
+   DATATABLES
+   ============================================= */
+ #tabela_consultas.dataTable thead tr {
+     color: #0f172a !important;
+     border: 1.5px solid #c7d7f7cc !important;
+     border-collapse: collapse !important;
+     font-size: 11px;
+ }
+
+ #tabela_consultas.dataTable tbody tr {
+     border: 1.5px solid #c7d7f7cc !important;
+     border-collapse: collapse !important;
+ }
+
+ #tabela_consultas.dataTable tbody tr td {
+     background-color: #dbeafe !important;
+     color: #1e293b !important;
+     font-size: 11px !important;
+     padding: 4px 8px !important;
+ }
+
+ #tabela_consultas.dataTable .data-dt-column {
+     background-color: #16a34a !important;
+     color: white !important;
+     font-size: 11px;
+ }
+
+ #tabela_consultas.dataTable tbody tr:hover td {
+     background-color: #bfdbfe !important;
+     color: #0f172a !important;
+ }
+
+ /* =============================================
+   SCROLLBARS
+   ============================================= */
+ ::-webkit-scrollbar {
+     width: 6px;
+     height: 6px;
+ }
+
+ ::-webkit-scrollbar-track {
+     background: #e2e8f0;
+     border-radius: 3px;
+ }
+
+ ::-webkit-scrollbar-thumb {
+     background: #1e3a8a;
+     border-radius: 3px;
+ }
+
+ ::-webkit-scrollbar-thumb:hover {
+     background: #1e40af;
+ }
+
+ /* =============================================
+   MISC / LEGADO 
+   ============================================= */
+ .box-consulta {
+     margin-top: 8px;
+     font-family: 'Inter', sans-serif;
+     ;
+ }
+
+ .imgProgestor {
+     padding: 16px 16px 0;
+     width: 130px;
+ }
+
+ .h2Progestor {
+     padding-left: 16px;
+ }
+
+ /* custom-file-label legado — JS usa */
+ .custom-file-label {
+     background-color: #1e3a8a;
+     color: #fff;
+     border: none;
+     padding: 0 14px 0 36px;
+     font-weight: 700;
+     font-size: .78rem;
+     cursor: pointer;
+     background-repeat: no-repeat;
+     background-position: 12px center;
+     background-size: 16px;
+     display: flex;
+     align-items: center;
+     height: 36px;
+ }
+
+ .custom-file-label:hover {
+     background-color: #1e40af;
+ }
+
+ /* row mb-3 spacing reduction */
+ .row.mb-3 {
+     margin-bottom: .5rem !important;
+ }
+
+ .mt-4 {
+     margin-top: .75rem !important;
+ }
+
+ /* =============================================
+   MODAIS — estilo sistema
+   ============================================= */
+ .modal-content {
+     border: none;
+     border-radius: 10px;
+     box-shadow: 0 8px 32px rgba(15, 31, 75, .18);
+     font-family: 'Inter', sans-serif;
+ }
+
+ .modal-header {
+     background: #00005F;
+     color: #ffffff;
+     border-radius: 10px 10px 0 0;
+     padding: 14px 20px;
+     border-bottom: none;
+ }
+
+ .modal-header .modal-title {
+     font-size: .95rem;
+     font-weight: 700;
+     letter-spacing: -.1px;
+ }
+
+ .modal-header .btn-close {
+     filter: invert(1) brightness(2);
+     opacity: .85;
+ }
+
+ .modal-header .btn-close:hover {
+     opacity: 1;
+ }
+
+ .modal-body {
+     padding: 20px 24px;
+     font-size: .82rem;
+     color: #334155;
+     line-height: 1.6;
+ }
+
+ .modal-footer {
+     border-top: 1px solid #e2e8f0;
+     padding: 12px 20px;
+     border-radius: 0 0 10px 10px;
+     background: #f8fafc;
+ }
+
+ .modal-footer .btn-primary {
+     background: #1e3a8a;
+     border: none;
+     border-radius: 5px;
+     font-size: .8rem;
+     font-weight: 700;
+     padding: 7px 24px;
+     transition: background .15s;
+ }
+
+ .modal-footer .btn-primary:hover {
+     background: #1e40af;
+ }
+
+ .modal-footer .btn-primary:disabled {
+     background: #94a3b8;
+     cursor: not-allowed;
+ }
+
+ /* modal-base-enviada — sucesso */
+ #modal_base_enviada .modal-content {
+     border-top: 4px solid #16a34a;
+ }
+
+ #modal_base_enviada .modal-body h5 {
+     color: #16a34a;
+     font-weight: 700;
+     font-size: .9rem;
+     margin-bottom: 4px;
+ }
+
+ #modal_base_enviada .modal-body p {
+     color: #475569;
+     font-size: .8rem;
+     margin: 0;
+ }
+
+ /* modais de loading — sem header, centralizado */
+ #modal_loading .modal-content,
+ #modal_loading2 .modal-content {
+     border-top: 4px solid #1e3a8a;
+     text-align: center;
+ }
+
+ #modal_loading .modal-body p,
+ #modal_loading2 .modal-body p {
+     font-size: .8rem;
+     color: #475569;
+     margin-top: -24px;
+ }

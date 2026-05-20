@@ -1,0 +1,601 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+html,
+body {
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-style: italic;
+    font-weight: bold;
+    color: #0056b3 !important;
+    font-size: 13px;
+}
+
+
+.imgProgestor {
+
+    padding: 20px 20px 0px 20px;
+    width: 150px;
+}
+
+.h2Progestor {
+    padding-left: 20px;
+}
+
+
+
+.gfg {
+    height: 50px;
+    width: 50px;
+
+}
+
+.mynav {
+    color: #fff;
+}
+
+.mynav li a {
+    color: #fff;
+    text-decoration: none;
+    width: 100%;
+    display: block;
+    border-radius: 5px;
+    padding: 8px 5px;
+}
+
+.mynav li a.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mynav li a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mynav li a i {
+    width: 25px;
+    text-align: center;
+}
+
+.notification-badge {
+    background-color: rgba(255, 255, 255, 0.7);
+    float: right;
+    color: #222;
+    font-size: 14px;
+    padding: 0px 8px;
+    border-radius: 2px;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.colorLeo {
+    color: blue;
+}
+
+.colorErro {
+    color: red;
+}
+
+.colorLeo2 {
+    color: rgb(43, 216, 43);
+}
+
+#filaJobs,
+#avancar2 {
+    display: none;
+}
+
+.scroll {
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+
+.barra-media {
+    border: 1px;
+    background-color: white;
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px
+}
+
+.d-flex-border {
+    border: 1px solid #dee2e6;
+    background-color: white;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.graficos {
+    border: 1px;
+    background-color: white;
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px;
+    width: 200px;
+    height: 100px;
+    padding: 10px 10px 10px 10px;
+}
+
+.tableJobs {
+    border: 1px;
+    background-color: white;
+    color: #010c0f;
+    text-align: left;
+    /* font-weight: bold; */
+    font-size: 12px;
+    /* width: 200px;
+        height: 100px; */
+    padding: 10px 10px 10px 10px;
+}
+
+.select-ano {
+    border: 1px solid resultColor !important;
+    background: resultColor !important;
+}
+
+.espaco {
+    margin-top: 20px;
+}
+
+.clear {
+    background: rgb(108, 180, 252) !important;
+    color: white;
+}
+
+/* para tela de export view  */
+progress[value] {
+    --progress-color: #0c0fcc;
+    /* cor para o fundo da animacao*/
+    --progress-bg: #8cb7e9;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    width: 250px;
+    height: 15px;
+    border: 2px solid;
+    background: var(--progress-bg);
+    overflow: hidden;
+}
+
+progress[value]::-webkit-progress-bar {
+    border-radius: 6px;
+    background: var(--progress-bg);
+}
+
+progress[value]::-webkit-progress-value {
+    border-radius: 6px;
+    background: var(--progress-color);
+    transition: width 1s ease;
+}
+
+progress[value]::-moz-progress-bar {
+    border-radius: 6px;
+    background: var(--progress-color);
+    transition: width 1s ease;
+}
+
+progress.processando {
+    --progress-color: #8cb7e9;
+    /* --progress-color: #fcc071; */
+    --progress-bg: #0c0fcc;
+    /* --progress-bg: #8f5902; */
+}
+
+progress.sucesso {
+    --progress-color: #10f523;
+    --progress-bg: #28a745;
+}
+
+progress.erro {
+    --progress-color: #dc3545;
+    --progress-bg: #dc3545;
+}
+
+.estiloPerc {
+    font-size: 10px;
+    color: black !important;
+}
+
+.status {
+    color: #31c6f7 !important
+}
+
+.textName {
+    text-align: center;
+    color: #31c6f7;
+
+}
+
+.select-status {
+    text-align: center !important;
+    color: #010c0f;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+
+    width: 40px !important;
+    height: 35px !important;
+    background: url('../img/filter2.png') no-repeat center center;
+    background-size: 18px !important;
+    padding: 0 !important;
+    text-indent: -9999px !important;
+    cursor: pointer !important;
+}
+
+.finished {
+    color: green !important;
+}
+
+.process {
+    color: orange !important;
+}
+
+.canceled {
+    color: red !important;
+}
+
+#filtro-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    /* justify-content: center !important;   */
+    /* para deixar o texto mas no meio comentado  */
+    align-items: flex-start !important;
+    gap: 15px !important;
+    /* padding: 20px !important; */
+    background: transparent !important;
+}
+
+.registerAll {
+    background: #fff;
+    border-radius: 6px !important;
+    padding: 15px;
+    margin-right: 5px !important;
+    width: 110px;
+    height: 110px;
+    background-color: white;
+    font-weight: 400 !important;
+    box-shadow: 0 10px 6px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #e0e0e0 !important;
+}
+
+.select-period {
+    /* background: #fff; */
+    border-radius: 1px !important;
+    padding: 12px 16px;
+    margin-right: 10px !important;
+    /* background-color: white; */
+    font-weight: 900 !important;
+    border: 1px solid #e0e0e0 !important;
+    cursor: pointer !important;
+    opacity: 1 !important
+}
+
+.list-jobs {
+    color: #00080aff !important;
+    font-weight: bold;
+}
+
+.tableJobs td {
+    padding: 8px;
+    font-weight: 400;
+    color: #8f8aab;
+    /* border: 1px solid #a8a3a3ff;  */
+
+}
+
+.statusC {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 21px;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    transition: background-color 0.3s !important;
+    text-decoration: none !important;
+}
+
+.statusC .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    display: inline-block;
+}
+
+/* Específico para concluído */
+.statusC.concluido {
+    background-color: #c8facc !important;
+    /* verde clarinho */
+    color: #0f5132 !important;
+    /* verde escuro para o texto */
+}
+
+.statusC .icon {
+    margin-right: 6px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Processando */
+.statusC.processamento {
+    /* background-color: #ffe9c6;
+    color: #b45f06; */
+    background-color: #99ccff;
+    color: #002752;
+}
+
+.statusC.cancelado {
+    background-color: #ffcacaff;
+    color: #ee0000ff;
+}
+
+.statusC.concluido .dot {
+    background-color: #28a745;
+}
+
+
+
+.dt-layout-row {
+    background-color: white !important;
+    font-weight: bold !important;
+}
+
+.dataTables_wrapper .bottom {
+    background-color: white !important;
+    font-weight: bold !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: .5rem !important;
+}
+
+/* dá espaço entre o length e a paginação */
+.dataTables_wrapper .dt-right {
+    display: flex !important;
+    gap: 1rem !important;
+    align-items: center !important;
+}
+
+.dt-inputs {
+    background: #fff;
+    border-radius: 6px !important;
+    padding: 12px 16px;
+    margin-right: 10px !important;
+    background-color: white;
+    font-weight: 900 !important;
+    box-shadow: 0 10px 6px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #e0e0e0 !important;
+}
+
+
+/* para  o menu superior */
+.menu-list .list-group-item {
+    border: none;
+    border-radius: 0;
+    color: #101316;
+    /* cinza */
+    font-weight: 500;
+    position: relative;
+    padding: .5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* underline animado */
+.menu-list .list-group-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #0d6efd;
+    /* azul bootstrap */
+    transition: width .3s ease;
+    border-radius: 2px;
+}
+
+.menu-list .list-group-item:hover {
+    color: #0d6efd;
+}
+
+.menu-list .list-group-item.active {
+    color: #0d6efd;
+    font-weight: bold;
+    background: transparent;
+    /* tira fundo azul padrão */
+}
+
+.menu-list .list-group-item.active::after {
+    width: 100%;
+}
+
+.imgSuperior {
+    width: 50px;
+    height: 50px;
+}
+
+/* para a tabela  */
+
+
+.dt-button {
+    cursor: pointer !important;
+    border: none !important;
+    padding: 7px 13px !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    transition: background-color 0.3s !important;
+    text-decoration: none !important;
+    /* color:  black !important; */
+}
+
+/* 🔵 Botão padrão / downloads */
+/* .dt-button.downloads {
+    background-color: #0d6efd !important;
+    color: white !important;
+} */
+
+.dt-button.ver-process {
+    background-color: #f5e8bd !important;
+    color: rgb(0, 0, 0) !important;
+    /* font-weight: bold; */
+}
+
+/* 🟡 Botão pausa / reprocessar */
+.dt-button.btn-pause {
+    background-color: #fdeba9 !important;
+    color: black !important;
+}
+
+.buttons-html5 {
+    background-color: rgb(9, 214, 77) !important;
+    color: rgb(19, 18, 18) !important;
+}
+
+.dt-button,
+.downloads:hover {
+    background-color: #0056b3;
+}
+
+.dt-search,
+.dt-paging {
+    float: right;
+    margin-bottom: 10px !important;
+}
+
+.dt-paging {
+
+    background-color: white;
+}
+
+/* botao do sweetAlert */
+.btn-confirmar {
+    background-color: #0d6efd;
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.btn-confirmar:hover {
+    background-color: #0d6efd;
+    color: white;
+
+}
+
+
+/* .btn-pause {
+    color: #0e0b00ff;
+    background-color: yellow;
+    border-radius: 10px;
+
+
+}
+
+.btn-pause:hover {
+    color: #0e0b00ff;
+    background-color: #faf605;
+    border-radius: 10px;
+
+}
+
+.btn-cancel {
+    color: #0e0b00ff;
+    background-color: #fa0505;
+    border-radius: 10px;
+}
+
+
+.btn-cancel:hover {
+    color: #0e0b00ff;
+    background-color: #fa0505;
+    border-radius: 10px;
+
+} */
+
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Pausar */
+.btn-pause {
+    background-color: #fdeba9;
+    color: #B58100;
+}
+
+.btn-pause:hover {
+    background-color: #FFE08A;
+    color: #8A5A00;
+}
+
+/* Cancelar */
+.btn-cancel {
+    background-color: #fcc7c7;
+    color: #C0392B;
+}
+
+.btn-error-list {
+    background-color: #f5f797;
+    color: #C0392B;
+}
+
+.btn-paralizar-list {
+    background-color: #5596f7;
+    color: #180807;
+}
+
+.btn-cancel:hover {
+    background-color: #F5B7B1;
+    color: #922B21;
+}
+
+/* Botão de play */
+.btn-play {
+    background-color: #99ccff;
+    color: #002752;
+}
+
+.btn-play:hover {
+    background-color: #99ccff;
+    color: #002752;
+}
+
+.btn-download {
+    /* background-color: #cce5ff;
+    color: #004085; */
+    background-color: #A9DFBF;
+    color: #011405;
+}
+
+.btn-download:hover {
+    /* background-color: #99ccff;
+    color: #002752; */
+    background-color: #A9DFBF;
+    color: #011405;
+}
