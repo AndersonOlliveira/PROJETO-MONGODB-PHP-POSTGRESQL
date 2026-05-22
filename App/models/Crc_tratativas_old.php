@@ -38,8 +38,6 @@ class Crc_tratativas extends Model
 
     public function listTipoContrato($cod = null)
     {
-
-
         $sql = "SELECT * FROM public.crc_tratativa_tipo where cod_tipo_tratativa not in (6) ";
 
 
@@ -107,7 +105,45 @@ class Crc_tratativas extends Model
 
         //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
 
-        $sql = "SELECT  
+        $sql = "WITH perfilcob_ficticio AS (
+            SELECT 1 AS perfilcobid, 'Boleto bancário' AS perfilcobtipo UNION ALL
+            SELECT 2, 'Cartão de Crédito' AS perfilcobtipo UNION ALL
+            SELECT 3, 'PIX Mensal' AS perfilcobtipo
+        ),
+        cli_ficticio AS (
+            SELECT 
+                i AS cliid,
+                '(11) 9' || LPAD((i * 13)::text, 8, '0') AS clicobtel,
+                'Contato Financeiro ' || i AS clicomctt,
+                CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp,
+                'Empresa Cliente ' || i || ' LTDA' AS clinomraz,
+                (i % 3) + 1 AS cliperfilcobid
+            FROM generate_series(1, 200) s(i)
+        ),
+        crc_ficticio AS (
+            SELECT 
+                700906 + i AS crcid,
+                CAST('2026-05-01' AS DATE) + (i % 16) AS crcdatvct,
+                'DOC-' || LPAD(i::text, 3, '0') AS crcdocger,
+                (i * 45.50) + 100.00 AS crcvlr,
+                i AS crccli,
+                1 AS crcfil,
+                'N' AS crcbxd,
+                false AS crcprepago
+            FROM generate_series(1, 200) s(i)
+        ),
+        ven_ficticio AS (
+            SELECT 1 AS venid, 'Carlos Vendedor' AS venean UNION ALL
+            SELECT 2, 'Roberto Comercial' AS venean UNION ALL
+            SELECT 3, 'Ana Consultora' AS venean
+        ),
+        vencli_ficticio AS (
+            SELECT i AS venclicli, (i % 3) + 1 AS vencliven FROM generate_series(1, 200) s(i)
+            UNION ALL
+            SELECT i AS venclicli, 2 AS vencliven FROM generate_series(1, 200) s(i) WHERE i % 4 = 0
+        )
+
+        SELECT  
             crc.crcid as N_Nro,               
             crc.crcdatvct as Vencimento,
             crc.crcdocger as Doc_Ger,
@@ -131,11 +167,11 @@ class Crc_tratativas extends Model
             st.ultima_consulta,
             st.cod_status 
         FROM 
-            cli cli 
-        INNER JOIN crc crc ON crc.crccli = cli.cliid 
-        LEFT JOIN vencli vencli ON vencli.venclicli = cli.cliid
-        LEFT JOIN ven ven ON vencli.vencliven = ven.venid 
-        LEFT JOIN perfilcob perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
+            cli_ficticio cli 
+        INNER JOIN crc_ficticio crc ON crc.crccli = cli.cliid 
+        LEFT JOIN vencli_ficticio vencli ON vencli.venclicli = cli.cliid
+        LEFT JOIN ven_ficticio ven ON vencli.vencliven = ven.venid 
+        LEFT JOIN perfilcob_ficticio perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
         INNER JOIN (
             SELECT *,
                 ROW_NUMBER() OVER (PARTITION BY crc_tratativas_crcid ORDER BY id_crc_tratativas DESC) as rn_mov
@@ -218,7 +254,7 @@ class Crc_tratativas extends Model
                 st.cod_status
                         ORDER BY 
                             ultima_info DESC,
-                st.crc_tratativas_id DESC";
+                st.crc_tratativas_id DESC limit 1";
 
         try {
 
@@ -236,7 +272,7 @@ class Crc_tratativas extends Model
 
                 foreach ($a as  $key => $items) {
 
-                    // $items['perfilcobtipo'] = self::removerAcentos($items['perfilcobtipo']);
+                    $a['perfilcobtipo'] = self::converterData($a['perfilcobtipo']);
 
                     if (isset($items['contratoresponsavel']) && !empty($items['contratoresponsavel'])) {
                         //PEGO O NOME DO USUARIOS RESPONSAVEL PELA INSERÇÃO DO DADO   
@@ -260,9 +296,48 @@ class Crc_tratativas extends Model
     public function getRelatorioAll($numeroCobranca)
     {
 
+
         //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
 
-        $sql = "SELECT  
+        $sql = "  WITH perfilcob_ficticio AS (
+            SELECT 1 AS perfilcobid, 'Boleto bancário' AS perfilcobtipo UNION ALL
+            SELECT 2, 'Cartão de Crédito' AS perfilcobtipo UNION ALL
+            SELECT 3, 'PIX Mensal' AS perfilcobtipo
+        ),
+        cli_ficticio AS (
+            SELECT 
+                i AS cliid,
+                '(11) 9' || LPAD((i * 13)::text, 8, '0') AS clicobtel,
+                'Contato Financeiro ' || i AS clicomctt,
+                CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp,
+                'Empresa Cliente ' || i || ' LTDA' AS clinomraz,
+                (i % 3) + 1 AS cliperfilcobid
+            FROM generate_series(1, 200) s(i)
+        ),
+        crc_ficticio AS (
+            SELECT 
+                700906 + i AS crcid,
+                CAST('2026-05-01' AS DATE) + (i % 16) AS crcdatvct,
+                'DOC-' || LPAD(i::text, 3, '0') AS crcdocger,
+                (i * 45.50) + 100.00 AS crcvlr,
+                i AS crccli,
+                1 AS crcfil,
+                'N' AS crcbxd,
+                false AS crcprepago
+            FROM generate_series(1, 200) s(i)
+        ),
+        ven_ficticio AS (
+            SELECT 1 AS venid, 'Carlos Vendedor' AS venean UNION ALL
+            SELECT 2, 'Roberto Comercial' AS venean UNION ALL
+            SELECT 3, 'Ana Consultora' AS venean
+        ),
+        vencli_ficticio AS (
+            SELECT i AS venclicli, (i % 3) + 1 AS vencliven FROM generate_series(1, 200) s(i)
+            UNION ALL
+            SELECT i AS venclicli, 2 AS vencliven FROM generate_series(1, 200) s(i) WHERE i % 4 = 0
+        )
+
+        SELECT  
             crc.crcid as N_Nro,               
             crc.crcdatvct as Vencimento,
             crc.crcdocger as Doc_Ger,
@@ -286,11 +361,11 @@ class Crc_tratativas extends Model
             st.ultima_consulta,
             st.cod_status 
         FROM 
-            cli cli 
-        INNER JOIN crc crc ON crc.crccli = cli.cliid 
-        LEFT JOIN vencli vencli ON vencli.venclicli = cli.cliid
-        LEFT JOIN ven ven ON vencli.vencliven = ven.venid 
-        LEFT JOIN perfilcob perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
+            cli_ficticio cli 
+        INNER JOIN crc_ficticio crc ON crc.crccli = cli.cliid 
+        LEFT JOIN vencli_ficticio vencli ON vencli.venclicli = cli.cliid
+        LEFT JOIN ven_ficticio ven ON vencli.vencliven = ven.venid 
+        LEFT JOIN perfilcob_ficticio perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
         INNER JOIN (
             SELECT *,
                 ROW_NUMBER() OVER (PARTITION BY crc_tratativas_crcid ORDER BY id_crc_tratativas DESC) as rn_mov
@@ -370,7 +445,45 @@ class Crc_tratativas extends Model
 
         //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
 
-        $sql = "SELECT  
+        $sql = "WITH perfilcob_ficticio AS (
+            SELECT 1 AS perfilcobid, 'Boleto bancário' AS perfilcobtipo UNION ALL
+            SELECT 2, 'Cartão de Crédito' AS perfilcobtipo UNION ALL
+            SELECT 3, 'PIX Mensal' AS perfilcobtipo
+        ),
+        cli_ficticio AS (
+            SELECT 
+                i AS cliid,
+                '(11) 9' || LPAD((i * 13)::text, 8, '0') AS clicobtel,
+                'Contato Financeiro ' || i AS clicomctt,
+                CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp,
+                'Empresa Cliente ' || i || ' LTDA' AS clinomraz,
+                (i % 3) + 1 AS cliperfilcobid
+            FROM generate_series(1, 200) s(i)
+        ),
+        crc_ficticio AS (
+            SELECT 
+                700906 + i AS crcid,
+                CAST('2026-05-01' AS DATE) + (i % 16) AS crcdatvct,
+                'DOC-' || LPAD(i::text, 3, '0') AS crcdocger,
+                (i * 45.50) + 100.00 AS crcvlr,
+                i AS crccli,
+                1 AS crcfil,
+                'N' AS crcbxd,
+                false AS crcprepago
+            FROM generate_series(1, 200) s(i)
+        ),
+        ven_ficticio AS (
+            SELECT 1 AS venid, 'Carlos Vendedor' AS venean UNION ALL
+            SELECT 2, 'Roberto Comercial' AS venean UNION ALL
+            SELECT 3, 'Ana Consultora' AS venean
+        ),
+        vencli_ficticio AS (
+            SELECT i AS venclicli, (i % 3) + 1 AS vencliven FROM generate_series(1, 200) s(i)
+            UNION ALL
+            SELECT i AS venclicli, 2 AS vencliven FROM generate_series(1, 200) s(i) WHERE i % 4 = 0
+        )
+
+        SELECT  
             crc.crcid as N_Nro,               
             crc.crcdatvct as Vencimento,
             crc.crcdocger as Doc_Ger,
@@ -394,11 +507,11 @@ class Crc_tratativas extends Model
             st.ultima_consulta,
             st.cod_status 
         FROM 
-                 cli cli 
-        INNER JOIN crc crc ON crc.crccli = cli.cliid 
-        LEFT JOIN vencli vencli ON vencli.venclicli = cli.cliid
-        LEFT JOIN ven ven ON vencli.vencliven = ven.venid 
-        LEFT JOIN perfilcob perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
+            cli_ficticio cli 
+        INNER JOIN crc_ficticio crc ON crc.crccli = cli.cliid 
+        LEFT JOIN vencli_ficticio vencli ON vencli.venclicli = cli.cliid
+        LEFT JOIN ven_ficticio ven ON vencli.vencliven = ven.venid 
+        LEFT JOIN perfilcob_ficticio perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
         INNER JOIN (
             SELECT *,
                 ROW_NUMBER() OVER (PARTITION BY crc_tratativas_crcid ORDER BY id_crc_tratativas DESC) as rn_mov
@@ -470,7 +583,49 @@ class Crc_tratativas extends Model
 
         //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
 
-        $sql = "SELECT  
+        $sql = "WITH perfilcob_ficticio AS (
+                    SELECT 1 AS perfilcobid, 'Boleto bancário' AS perfilcobtipo UNION ALL
+                    SELECT 2, 'Cartão de Crédito' AS perfilcobtipo UNION ALL
+                    SELECT 3, 'PIX Mensal' AS perfilcobtipo
+                ),
+                cli_ficticio AS (
+                    SELECT 
+                        i AS cliid,
+                        '(11) 9' || LPAD((i * 13)::text, 8, '0') AS clicobtel,
+                        'Contato Financeiro ' || i AS clicomctt,
+                        CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp, -- 10% suspensos
+                        'Empresa Cliente ' || i || ' LTDA' AS clinomraz,
+                        (i % 3) + 1 AS cliperfilcobid -- Alterna entre os 3 perfis
+                    FROM generate_series(1, 100) s(i)
+                ),
+                crc_ficticio AS (
+                    SELECT 
+                        -- 1000 + i AS crcid,
+                         700907  AS crcid,
+                        CAST('2026-05-01' AS DATE) + (i % 14) AS crcdatvct, -- Datas entre 01/05 e 14/05
+                        'DOC-' || LPAD(i::text, 3, '0') AS crcdocger,
+                        (i * 45.50) + 100.00 AS crcvlr, -- Valores acima de zero
+                        i AS crccli, -- Vincula 1 para 1 com os clientes
+                        1 AS crcfil, -- Filial 1 fixa para passar no filtro
+                        'N' AS crcbxd, -- Não baixado
+                        false AS crcprepago -- Não pré-pago
+                    FROM generate_series(1, 100) s(i)
+                ),
+                ven_ficticio AS (
+                    SELECT 1 AS venid, 'Carlos Vendedor' AS venean UNION ALL
+                    SELECT 2, 'Roberto Comercial' AS venean UNION ALL
+                    SELECT 3, 'Ana Consultora' AS venean
+                ),
+                vencli_ficticio AS (
+                    -- Vincula cada cliente a pelo menos 1 vendedor principal
+                    SELECT i AS venclicli, (i % 3) + 1 AS vencliven FROM generate_series(1, 100) s(i)
+                    UNION ALL
+                    -- Adiciona um segundo vendedor para alguns clientes (para testar o array_agg)
+                    SELECT i AS venclicli, 2 AS vencliven FROM generate_series(1, 100) s(i) WHERE i % 4 = 0
+                )
+
+                -- 2. Sua consulta original adaptada para ler as tabelas virtuais acima
+                SELECT  
                     crcid as N_Nro,
                     crcdatvct as Vencimento,
                     crcdocger as Doc_Ger,
@@ -484,11 +639,11 @@ class Crc_tratativas extends Model
                     perfilcobtipo, 
                     crcprepago
                 FROM 
-                     cli cli 
-        INNER JOIN crc crc ON crc.crccli = cli.cliid 
-        LEFT JOIN vencli vencli ON vencli.venclicli = cli.cliid
-        LEFT JOIN ven ven ON vencli.vencliven = ven.venid 
-        LEFT JOIN perfilcob perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
+                    cli_ficticio cli 
+                INNER JOIN crc_ficticio crc ON crccli = cliid 
+                LEFT JOIN vencli_ficticio vencli ON vencli.venclicli = cli.cliid
+                LEFT JOIN ven_ficticio ven ON vencli.vencliven = ven.venid 
+                LEFT JOIN perfilcob_ficticio perfilcob ON perfilcobid = cliperfilcobid
                 WHERE 
                     crcfil = 1 AND
                     upper(crcbxd) = 'N' AND
@@ -646,7 +801,7 @@ class Crc_tratativas extends Model
             $crc_tipo_acoes_id = isset($dados) && !empty($dados)  ? $tipo_acoes : 6;     // Ex: ID do Pendente na tabela 'crc_tipo_acoes' // AGUARDAR INICIO 5 
             $descricao_movimentacao = isset($dados) && !empty($dados) ? $descricao : 'AGUARDA INICIO';
             $ctr_interno = isset($dados) && !empty($dados) ? $tctrid : null;
-            $idCobranca = isset($dados) && !empty($dados) ? $numeroCobranca : $idCobranca;
+            $idCobranca = isset($dados) && !empty($dados)  ? $numeroCobranca : $idCobranca;
 
             $cliIds = self::getRelatorio_origim($idCobranca);
             $tpos =  self::tipo_tratativa(); //PEGO O TIOPO DA TRA
@@ -657,7 +812,7 @@ class Crc_tratativas extends Model
 
             $new_ocorrencia =  $this->ajustar->convertEncode('Foi inserido a movimentacao da cobrança ' . $idCobranca . ' com o  tipo ' . $new_tipo[0]['tipo_tratativa'] . ' com a ação ' . $new_acoes[0]['acao_descricao'] . ' com a seguinte observação ' . $descricao_movimentacao . ' inserido pelo o contrato ' . $ctr_interno);
 
-            $stmt = $conexaoBd->BD_COM->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':cobranca', $idCobranca);
             $stmt->bindParam(':crc_tratativa_tipo_id', $crc_tratativa_tipo_id);
             $stmt->bindParam(':crc_tipo_acoes_id', $crc_tipo_acoes_id);
@@ -675,7 +830,7 @@ class Crc_tratativas extends Model
 
             $status_descricao = $descricao_movimentacao;
 
-            $stmt = $conexaoBd->BD_COM->prepare($sqlStatus);
+            $stmt = $this->db->prepare($sqlStatus);
             $stmt->bindParam(':crc_tratativas_id', $idTratativa);
             $stmt->bindParam(':cod_status', $cod_status);
             $stmt->bindParam(':status_descricao', $status_descricao);
@@ -697,7 +852,6 @@ class Crc_tratativas extends Model
 
     public function registrarOcorrencia($cliId, $tpos, $descricao, $nome)
     {
-
         $sql = "INSERT INTO public.cliocr(
                      cliocrcli, cliocrtpo, cliocrant, cliocrrsp)
                     VALUES (:cliocrcli, :cliocrtpo, :cliocrant, :cliocrrsp);";
@@ -724,7 +878,6 @@ class Crc_tratativas extends Model
 
     public function tipo_tratativa()
     {
-
         $sql = "SELECT tpoid FROM public.tpo WHERE tpodsc = trim('TRATATIVA COBRANCA') ;";
 
         try {
@@ -736,6 +889,7 @@ class Crc_tratativas extends Model
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
+            self::manipuladorDeErros(11, 'Erro ao listar tipo de contrato: ' . $e->getMessage(), __FILE__, __LINE__);
             error_log('Erro ao listar tipo de contrato: ' . $e->getMessage());
             // return [];
         }
@@ -748,7 +902,45 @@ class Crc_tratativas extends Model
 
         //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
 
-        $sql = "SELECT  
+        $sql = "WITH perfilcob_ficticio AS (
+            SELECT 1 AS perfilcobid, 'Boleto bancário' AS perfilcobtipo UNION ALL
+            SELECT 2, 'Cartão de Crédito' AS perfilcobtipo UNION ALL
+            SELECT 3, 'PIX Mensal' AS perfilcobtipo
+        ),
+        cli_ficticio AS (
+            SELECT 
+                i AS cliid,
+                '(11) 9' || LPAD((i * 13)::text, 8, '0') AS clicobtel,
+                'Contato Financeiro ' || i AS clicomctt,
+                CASE WHEN i % 10 = 0 THEN 'S' ELSE 'N' END AS clissp,
+                'Empresa Cliente ' || i || ' LTDA' AS clinomraz,
+                (i % 3) + 1 AS cliperfilcobid
+            FROM generate_series(1, 200) s(i)
+        ),
+        crc_ficticio AS (
+            SELECT 
+                700906 + i AS crcid,
+                CAST('2026-05-01' AS DATE) + (i % 16) AS crcdatvct,
+                'DOC-' || LPAD(i::text, 3, '0') AS crcdocger,
+                (i * 45.50) + 100.00 AS crcvlr,
+                i AS crccli,
+                1 AS crcfil,
+                'N' AS crcbxd,
+                false AS crcprepago
+            FROM generate_series(1, 200) s(i)
+        ),
+        ven_ficticio AS (
+            SELECT 1 AS venid, 'Carlos Vendedor' AS venean UNION ALL
+            SELECT 2, 'Roberto Comercial' AS venean UNION ALL
+            SELECT 3, 'Ana Consultora' AS venean
+        ),
+        vencli_ficticio AS (
+            SELECT i AS venclicli, (i % 3) + 1 AS vencliven FROM generate_series(1, 200) s(i)
+            UNION ALL
+            SELECT i AS venclicli, 2 AS vencliven FROM generate_series(1, 200) s(i) WHERE i % 4 = 0
+        )
+
+        SELECT  
             crc.crcid as N_Nro,               
             crc.crcdatvct as Vencimento,
             crc.crcdocger as Doc_Ger,
@@ -772,7 +964,11 @@ class Crc_tratativas extends Model
             st.ultima_consulta,
             st.cod_status 
         FROM 
-        -- 2. Sua consulta original adaptada para ler as tabelas virtuais acima
+            cli_ficticio cli 
+        INNER JOIN crc_ficticio crc ON crc.crccli = cli.cliid 
+        LEFT JOIN vencli_ficticio vencli ON vencli.venclicli = cli.cliid
+        LEFT JOIN ven_ficticio ven ON vencli.vencliven = ven.venid 
+        LEFT JOIN perfilcob_ficticio perfilcob ON perfilcob.perfilcobid = cli.cliperfilcobid
         INNER JOIN (
             SELECT *,
                 ROW_NUMBER() OVER (PARTITION BY crc_tratativas_crcid ORDER BY id_crc_tratativas DESC) as rn_mov
@@ -849,7 +1045,8 @@ class Crc_tratativas extends Model
                             ultima_info DESC,
                 st.crc_tratativas_id DESC limit 1";
 
-            //
+
+
 
             $constul = $this->db->prepare($sql);
             foreach ($params as $key => $value) {
@@ -919,11 +1116,10 @@ class Crc_tratativas extends Model
         return false;
     }
 
+
     // BUSCAR SUSPENSA 
     public function list_supensao($dataIncial, $datafinal)
     {
-
-
 
         $sql = "";
         $sql = "SELECT  

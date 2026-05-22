@@ -1,0 +1,402 @@
+   /* Mantendo a mesma paleta de cores globais da index para consistência */
+   :root {
+       --azul: #1d4ed8;
+       --azul-hover: #1e40af;
+       --azul-light: #eff6ff;
+       --surface: #f0f2f7;
+       --card: #ffffff;
+       --border: #e2e6ed;
+       --text: #111827;
+       --muted: #6b7280;
+       --danger: #dc2626;
+       --danger-bg: #fee2e2;
+       --success-bg: #dcfce7;
+       --success-text: #166534;
+       --topbar-h: 56px;
+   }
+
+   *,
+   *::before,
+   *::after {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+   }
+
+   body {
+       font-family: 'IBM Plex Sans', sans-serif;
+       background: var(--surface);
+       color: var(--text);
+       overflow-x: hidden;
+   }
+
+   /* topbar */
+   .topbar {
+       position: sticky;
+       top: 0;
+       z-index: 200;
+       background: var(--card);
+       border-bottom: 1px solid var(--border);
+       height: var(--topbar-h);
+       display: flex;
+       align-items: center;
+       padding: 0 20px;
+       gap: 12px;
+       justify-content: space-between;
+       box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+   }
+
+   .topbar-brand {
+       display: flex;
+       align-items: center;
+       gap: 10px;
+   }
+
+   .topbar-brand .dot {
+       width: 8px;
+       height: 8px;
+       border-radius: 50%;
+       background: var(--danger);
+       /* Vermelho para indicar criticidade de suspensão */
+       flex-shrink: 0;
+   }
+
+   .topbar-brand h5 {
+       font-size: 14px;
+       font-weight: 600;
+       color: var(--text);
+   }
+
+   .topbar-brand small {
+       font-size: 11px;
+       color: var(--muted);
+       display: block;
+   }
+
+   .topbar-actions {
+       display: flex;
+       gap: 6px;
+   }
+
+   .btn-top {
+       font-size: 12px;
+       font-weight: 500;
+       padding: 5px 14px;
+       border-radius: 6px;
+       border: 1px solid var(--border);
+       background: transparent;
+       cursor: pointer;
+       color: var(--text);
+       transition: all .15s;
+   }
+
+   .btn-top:hover {
+       background: var(--surface);
+   }
+
+   .btn-top.primary {
+       background: var(--azul);
+       color: #fff;
+       border-color: var(--azul);
+   }
+
+   .btn-top.primary:hover {
+       background: var(--azul-hover);
+   }
+
+   .btn-top.danger {
+       border-color: #fca5a5;
+       color: var(--danger);
+   }
+
+   .btn-top.danger:hover {
+       background: #fef2f2;
+   }
+
+   /* filtros baseados estritamente na query do relatzsusp.chp */
+   .filterbar {
+       background: var(--card);
+       border-bottom: 1px solid var(--border);
+       padding: 10px 20px;
+       display: flex;
+       align-items: flex-end;
+       gap: 8px;
+       flex-wrap: wrap;
+   }
+
+   .fg {
+       display: flex;
+       flex-direction: column;
+       gap: 3px;
+   }
+
+   .fg label {
+       font-size: 10px;
+       font-weight: 600;
+       color: var(--muted);
+       text-transform: uppercase;
+       letter-spacing: .4px;
+   }
+
+   .fg input,
+   .fg select {
+       font-size: 12px;
+       padding: 5px 9px;
+       border: 1px solid var(--border);
+       border-radius: 6px;
+       background: var(--card);
+       color: var(--text);
+       height: 32px;
+   }
+
+   .fg input:focus,
+   .fg select:focus {
+       outline: none;
+       border-color: var(--azul);
+   }
+
+   .btn-buscar {
+       height: 32px;
+       padding: 0 16px;
+       background: var(--azul);
+       color: #fff;
+       border: none;
+       border-radius: 6px;
+       font-size: 12px;
+       font-weight: 600;
+       cursor: pointer;
+       display: flex;
+       align-items: center;
+       gap: 5px;
+       transition: background .15s;
+   }
+
+   .btn-buscar:hover {
+       background: var(--azul-hover);
+   }
+
+   .btn-csv {
+       height: 32px;
+       padding: 0 14px;
+       background: var(--card);
+       color: #166534;
+       border: 1px solid #bbf7d0;
+       border-radius: 6px;
+       font-size: 12px;
+       font-weight: 600;
+       font-family: 'IBM Plex Sans', sans-serif;
+       cursor: pointer;
+       display: flex;
+       align-items: center;
+       gap: 5px;
+       transition: all .15s;
+       white-space: nowrap;
+   }
+
+   .btn-csv:hover {
+       background: #f0fdf4;
+       border-color: #4ade80;
+   }
+
+   .btn-csv:active {
+       transform: scale(.97);
+   }
+
+   .btn-csv svg {
+       flex-shrink: 0;
+   }
+
+   /* layout */
+   .main-layout {
+       display: flex;
+       height: calc(100vh - var(--topbar-h) - 53px);
+       overflow: hidden;
+   }
+
+   .table-wrap {
+       flex: 1;
+       overflow-y: auto;
+       overflow-x: hidden;
+       display: flex;
+       flex-direction: column;
+   }
+
+   .table-inner {
+       padding: 12px 16px;
+       flex: 1;
+   }
+
+   .contagem {
+       font-size: 11px;
+       color: var(--muted);
+       margin-bottom: 8px;
+   }
+
+   table {
+       width: 100%;
+       border-collapse: collapse;
+       font-size: 12px;
+       table-layout: fixed;
+   }
+
+   /* Definição de larguras de colunas mapeadas do arquivo legando */
+   col.c-cliente {
+       width: 18%;
+   }
+
+   col.c-perfil {
+       width: 8%;
+   }
+
+   col.c-compra {
+       width: 8%;
+   }
+
+   col.c-nnro {
+       width: 8%;
+   }
+
+   col.c-venc {
+       width: 8%;
+   }
+
+   col.c-valor {
+       width: 9%;
+   }
+
+   col.c-docger {
+       width: 8%;
+   }
+
+   col.c-suspenso {
+       width: 8%;
+   }
+
+   col.c-contato {
+       width: 11%;
+   }
+
+   col.c-vendedor {
+       width: 11%;
+   }
+
+   col.c-acoes {
+       width: 5%;
+   }
+
+   thead th {
+       font-size: 11px;
+       font-weight: 600;
+       color: var(--azul);
+       border-bottom: 2px solid var(--azul);
+       padding: 8px 6px;
+       white-space: nowrap;
+       position: sticky;
+       top: 0;
+       background: var(--card);
+       z-index: 10;
+   }
+
+   tbody td {
+       padding: 7px 6px;
+       border-bottom: 1px solid var(--border);
+       overflow: hidden;
+       text-overflow: ellipsis;
+       white-space: nowrap;
+       vertical-align: middle;
+   }
+
+   tbody tr:hover {
+       background: #fdf8f8;
+       /* Tom levemente avermelhado no hover para indicar perigo/corte */
+   }
+
+   .valor-mono,
+   .nnro-mono {
+       font-family: 'IBM Plex Mono', monospace;
+       font-size: 11px;
+   }
+
+   /* Badges baseados no clissp original (SIM/NÃO) */
+   .badge-st {
+       display: inline-flex;
+       align-items: center;
+       gap: 4px;
+       padding: 3px 8px;
+       border-radius: 4px;
+       font-size: 10px;
+       font-weight: 600;
+   }
+
+   .st-suspenso-sim {
+       background: var(--danger-bg);
+       color: var(--danger);
+   }
+
+   .st-suspenso-nao {
+       background: var(--success-bg);
+       color: var(--success-text);
+   }
+
+   /* Resumo de totais no rodapé */
+   .resumo-bar {
+       padding: 12px 16px;
+       background: var(--card);
+       border-top: 1px solid var(--border);
+       font-size: 12px;
+       display: flex;
+       gap: 24px;
+       flex-shrink: 0;
+   }
+
+   .resumo-item {
+       display: flex;
+       gap: 6px;
+   }
+
+   .resumo-label {
+       color: var(--muted);
+   }
+
+   .resumo-val {
+       font-weight: 600;
+       font-family: 'IBM Plex Mono', monospace;
+   }
+
+   .btn-acao {
+       background: none;
+       border: none;
+       cursor: pointer;
+       padding: 4px;
+       color: var(--azul);
+       border-radius: 5px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+   }
+
+   .btn-acao:hover {
+       background: var(--azul-light);
+   }
+
+   .spinner {
+       display: inline-block;
+       width: 20px;
+       height: 20px;
+       border: 2px solid var(--border);
+       border-top-color: var(--azul);
+       border-radius: 50%;
+       animation: spin .7s linear infinite;
+       margin-right: 8px;
+       vertical-align: middle;
+   }
+
+   @keyframes spin {
+       to {
+           transform: rotate(360deg);
+       }
+   }
+
+   a {
+       text-decoration: none;
+   }

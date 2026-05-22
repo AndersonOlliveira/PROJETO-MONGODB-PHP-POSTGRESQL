@@ -12,6 +12,7 @@ class ApiControllerTratativas extends Controller
     protected $Process_api;
     protected $utilis_pgadmin;
     protected $utilis_trativas;
+    protected $validaCampos;
 
 
     public function __construct()
@@ -25,8 +26,8 @@ class ApiControllerTratativas extends Controller
 
         //PAGINA DE TRATAMENTO DOS DADOS
         $this->utilis_trativas = $this->Utilis('process_Trativas');
+        $this->validaCampos = $this->Utilis('validaCampos');
     }
-
     public function get_tratativas()
     {
         header('Content-Type: application/json');
@@ -35,7 +36,7 @@ class ApiControllerTratativas extends Controller
         $retorno_dados = $this->utilis_pgadmin->listTipoContrato();
 
         if ($retorno_dados) {
-
+            $retorno_dados  = $this->validaCampos->convertEncode($retorno_dados);
             echo json_encode(array(
                 'status' => 2,
                 'sucesso' => true,
@@ -54,7 +55,7 @@ class ApiControllerTratativas extends Controller
         $retorno_dados = $this->utilis_pgadmin->info_responsavel($contrato);
 
         if ($retorno_dados) {
-
+            $retorno_dados  = $this->validaCampos->convertEncode($retorno_dados);
             echo json_encode(array(
                 'status' => 2,
                 'sucesso' => true,
@@ -71,6 +72,8 @@ class ApiControllerTratativas extends Controller
         $dados = json_decode($_GET['convertidoJson'], true);
 
         $retorno_dados = $this->utilis_trativas->seachDataAll($dados);
+        //chamo a funcao para popular a base
+        // self::tratar_Relatorio();
 
         // $retorno_dados = $this->utilis_pgadmin->getRelatorio();
         if (isset($retorno_dados['msg'])) {
@@ -80,6 +83,9 @@ class ApiControllerTratativas extends Controller
                 'dados' => $retorno_dados
             ));
         } else {
+
+            $retorno_dados  = $this->validaCampos->convertEncode($retorno_dados);
+
             echo json_encode(array(
                 'status' => 2,
                 'sucesso' => true,
@@ -98,6 +104,8 @@ class ApiControllerTratativas extends Controller
         $retorno_dados = $this->utilis_pgadmin->listTipoAcoes();
 
         if ($retorno_dados) {
+
+            $retorno_dados  = $this->validaCampos->convertEncode($retorno_dados);
 
             echo json_encode(array(
                 'status' => 2,
@@ -119,33 +127,33 @@ class ApiControllerTratativas extends Controller
         $dados = json_decode($dados, true);
 
 
-        // $retorno_campos  =  $this->utilis_trativas->validaCampos($dados);
+        $retorno_campos  =  $this->utilis_trativas->validaCampos($dados);
 
-        // if (isset($retorno_campos['error'])) {
-        //     echo json_encode(array(
-        //         'status' => 0,
-        //         'sucesso' => false,
-        //         'dados' => $retorno_campos
-        //     ));
-        //     die();
-        // }
+        if (isset($retorno_campos['error'])) {
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $retorno_campos
+            ));
+            die();
+        }
 
         $retorno_dados = $this->utilis_trativas->trata_dados_trativa($dados);
 
-        // if ($retorno_dados['status'] == 'success') {
-
-        //     echo json_encode(array(
-        //         'status' => 2,
-        //         'sucesso' => true,
-        //         'dados' => $retorno_dados
-        //     ));
-        // } else {
-        //     echo json_encode(array(
-        //         'status' => 1,
-        //         'sucesso' => false,
-        //         'dados' => $retorno_dados
-        //     ));
-        // }
+        if ($retorno_dados['status'] == 'success') {
+            $retorno_dados  = $this->validaCampos->convertEncode($retorno_dados);
+            echo json_encode(array(
+                'status' => 2,
+                'sucesso' => true,
+                'dados' => $retorno_dados
+            ));
+        } else {
+            echo json_encode(array(
+                'status' => 1,
+                'sucesso' => false,
+                'dados' => $retorno_dados
+            ));
+        }
     }
 
     public function tratar_Relatorio()
@@ -181,6 +189,7 @@ class ApiControllerTratativas extends Controller
                     'dados' => $retorno_dados
                 ));
             } else {
+                $retorno_dados  = $this->validaCampos->convertEncode($retorno_dados);
                 echo json_encode(array(
                     'status' => 2,
                     'sucesso' => false,
@@ -225,10 +234,41 @@ class ApiControllerTratativas extends Controller
                     'dados' => $retorno_dados_historico
                 ));
             } else {
+                $retorno_dados_historico  = $this->validaCampos->convertEncode($retorno_dados_historico);
                 echo json_encode(array(
                     'status' => 2,
                     'sucesso' => true,
                     'dados' => $retorno_dados_historico
+                ));
+            }
+        }
+    }
+    public function supensao()
+    {
+        header('Content-Type: application/json');
+        $dados = file_get_contents('php://input');
+        // PARA CONVERTER OS DADOS VINDO DE FORM DATA
+
+        $dados = json_decode($_GET['convertidoJson'], true);
+
+        $retorno_suspensao = $this->utilis_pgadmin->list_supensao($dados['tdataInial'], $dados['tdfim']);
+
+        if ($retorno_suspensao) {
+
+            if (isset($retorno_dados_historico['msg'])) {
+                echo json_encode(array(
+                    'status' => 1,
+                    'sucesso' => false,
+                    'dados' => $retorno_suspensao
+                ));
+            } else {
+
+                $retorno_suspensao  = $this->validaCampos->convertEncode($retorno_suspensao);
+
+                echo json_encode(array(
+                    'status' => 2,
+                    'sucesso' => true,
+                    'dados' => $retorno_suspensao
                 ));
             }
         }

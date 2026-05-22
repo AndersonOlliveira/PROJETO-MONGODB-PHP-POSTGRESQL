@@ -39,6 +39,7 @@ return [
     //VIEW PARA ACESSO AOS DADOS
 
     '/viewRelatorio' => ['RelatorioController', 'index_relatorio'],
+    '/viewSups' => ['RelatorioController', 'index_supspensao'],
     '/api/Relatorio' => ['ApiControllerTratativas', 'tratar_Relatorio'],
     //ROTA PARA PEGAR OS DADOS DAS TRATATIVAS
     '/api/listaTipoContato' => ['ApiControllerTratativas', 'get_tratativas'],
@@ -48,6 +49,7 @@ return [
     '/api/insertTrativa' => ['ApiControllerTratativas', 'tratativaInsert', 'POST'],
     '/api/getHistorico' => ['ApiControllerTratativas', 'getHistorico', 'GET'],
     '/api/searchData' => ['ApiControllerTratativas', 'list_dados_data', 'POST'],
+    '/api/listSuspesao' => ['ApiControllerTratativas', 'supensao', 'GET'],
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",

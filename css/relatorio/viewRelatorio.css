@@ -9,6 +9,7 @@
       --border: #e2e6ed;
       --text: #111827;
       --muted: #6b7280;
+      --danger_al: #f0a0a0;
       --danger: #dc2626;
       --success-bg: #dcfce7;
       --success-text: #166534;
@@ -430,6 +431,11 @@
 
   .st-semretorno {
       background: var(--gray-bg);
+      color: var(--gray-text);
+  }
+
+  .st-cancelado {
+      background: var(--danger_al);
       color: var(--gray-text);
   }
 
@@ -917,4 +923,8 @@
   ::-webkit-scrollbar-thumb {
       background: #d1d5db;
       border-radius: 4px;
+  }
+
+  a {
+      text-decoration: none;
   }

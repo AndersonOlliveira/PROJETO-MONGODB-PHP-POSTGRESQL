@@ -17,4 +17,10 @@ class RelatorioController extends Controller
 
         return $this->view('view_relatorio');
     }
+
+    public function index_supspensao()
+    {
+
+        return $this->view('view_susp');
+    }
 }

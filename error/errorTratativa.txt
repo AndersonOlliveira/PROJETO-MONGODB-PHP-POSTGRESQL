@@ -1,0 +1,50 @@
+[2026-05-21 09:17:15] Nível: 10 | Erro: Foi inserido a movimentacao da cobrança 701076 com o  tipo LIGACAO com a ação CONFIRMAR PAGAMENTO com a seguinte observação CLIENTE QUE PENSE SE VAI PAGAR inserido pelo o contrato 417039 | Arquivo: crc_tratativa | Linha: 753
+[2026-05-21 09:20:58] Nível: 2 | Erro: mkdir(): File exists | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 19
+[2026-05-21 09:20:59] Nível: 11 | Erro: Foi inserido a movimentacao da cobrança 701076 com o  tipo LIGACAO com a ação CONFIRMAR PAGAMENTO com a seguinte observação CLIENTE QUE PENSE SE VAI PAGAR inserido pelo o contrato 417039 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 782
+[2026-05-21 09:23:04] Nível: 2 | Erro: mkdir(): File exists | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 19
+[2026-05-21 09:23:04] Nível: 2 | Erro: touch(): Unable to create file C:\xampp_backup\htdocs\projeto74\mvc../error/errorTratativa.txt because No such file or directory | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 23
+[2026-05-21 09:23:04] Nível: 2 | Erro: chmod(): No such file or directory | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 24
+[2026-05-21 09:23:06] Nível: 11 | Erro: Foi inserido a movimentacao da cobrança 701076 com o  tipo LIGACAO com a ação CONFIRMAR PAGAMENTO com a seguinte observação CLIENTE QUE PENSE SE VAI PAGAR inserido pelo o contrato 417039 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 787
+[2026-05-21 09:26:13] Nível: 11 | Erro: Foi inserido a movimentacao da cobrança 701076 com o  tipo LIGACAO com a ação CONFIRMAR PAGAMENTO com a seguinte observação CLIENTE QUE PENSE SE VAI PAGAR inserido pelo o contrato 417039 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 787
+[2026-05-21 09:30:13] Nível: 8 | Erro: Undefined variable: tpo | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 810
+[2026-05-21 09:30:13] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 810
+[2026-05-21 09:30:13] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 810
+[2026-05-21 09:30:13] Nível: 11 | Erro: Erro ao registrar ocorrência public.cliocr: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "cliocrtpo" of relation "cliocr" violates not-null constraint
+DETAIL:  Failing row contains (156888, 403797, null, 2026-05-21 09:30:13.147341, Foi inserido a movimentacao da cobrança 701076 com o  tipo LIGA..., INSERIDO SISTEMA                                            , 2026-05-21 09:30:13.147341, null, null, null, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 843
+[2026-05-21 09:43:59] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:43:59] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:44:16] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:45:06] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:45:06] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:46:07] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:46:08] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 668
+[2026-05-21 09:51:46] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 669
+[2026-05-21 09:52:03] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 669
+[2026-05-21 09:52:03] Nível: 8 | Erro: Undefined index: ctrapl | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 669
+[2026-05-21 10:25:37] Nível: 11 | Erro: Erro ao inserir movimentação  public.crc_tratativas_status public.crc_tratativas_movimentacao : SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "crc_tratativas_movimentacao" violates foreign key constraint "crc_tratativas_movimentacao_crc_tratativa_tipo_id_fkey"
+DETAIL:  Key (crc_tratativa_tipo_id)=(0) is not present in table "crc_tratativa_tipo". | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 838
+[2026-05-21 10:46:48] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 135
+[2026-05-21 16:15:04] Nível: 8 | Erro: Undefined index: listSuspensao | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 243
+[2026-05-21 16:15:04] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 245
+[2026-05-21 16:15:04] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 245
+[2026-05-21 16:18:35] Nível: 8 | Erro: Undefined index: listSuspensao | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 243
+[2026-05-21 16:18:35] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 245
+[2026-05-21 16:18:35] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 245
+[2026-05-21 16:32:57] Nível: 11 | Erro: Erro ao listar DADOS CONTRATO : SQLSTATE[HY093]: Invalid parameter number: :data_inicial | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 1252
+[2026-05-21 16:34:18] Nível: 11 | Erro: Erro ao listar DADOS CONTRATO : SQLSTATE[HY093]: Invalid parameter number: :data_inicial | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 1252
+[2026-05-21 16:35:47] Nível: 11 | Erro: Erro ao listar DADOS CONTRATO : SQLSTATE[HY093]: Invalid parameter number: :data_inicial | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 1252
+[2026-05-21 16:38:35] Nível: 11 | Erro: Erro ao listar DADOS CONTRATO : SQLSTATE[HY093]: Invalid parameter number: :data_inicial | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 1225
+[2026-05-21 16:39:19] Nível: 11 | Erro: Erro ao listar DADOS CONTRATO : SQLSTATE[HY093]: Invalid parameter number: :data_inicial | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 1228
+[2026-05-21 16:39:50] Nível: 11 | Erro: Erro ao listar DADOS CONTRATO : SQLSTATE[HY093]: Invalid parameter number: :data_inicial | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 1228
+[2026-05-22 09:11:33] Nível: 11 | Erro: Erro ao inserir movimentação  public.crc_tratativas_status public.crc_tratativas_movimentacao : SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type integer: "" | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 844
+[2026-05-22 11:33:04] Nível: 11 | Erro: Erro ao inserir movimentação  public.crc_tratativas_status public.crc_tratativas_movimentacao : SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "crc_tratativas_movimentacao" violates foreign key constraint "crc_tratativas_movimentacao_crc_tipo_acoes_id_fkey"
+DETAIL:  Key (crc_tipo_acoes_id)=(0) is not present in table "crc_tipo_acoes". | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 844
+[2026-05-22 15:34:02] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 42
+[2026-05-22 15:34:18] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 74
+[2026-05-22 15:34:33] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 106
+[2026-05-22 15:34:50] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 513
+[2026-05-22 15:35:06] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 42
+[2026-05-22 15:35:22] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 74
+[2026-05-22 15:35:37] Nível: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 106
+[2026-05-22 15:39:29] Nível: 8 | Erro: Undefined variable: conexaoBd | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 519
+[2026-05-22 15:39:29] Nível: 8 | Erro: Trying to get property 'BD_COM' of non-object | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 519

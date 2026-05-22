@@ -17,8 +17,10 @@
 
 <body>
 
+    <?php $tctrid = isset($_GET['tctrid']) ? $_GET['tctrid'] : 417039; ?>
+    <?php $tctraut = isset($_GET['tctraut']) ? $_GET['tctraut'] : 'a14beaccd7f530ea7e7c8847d35cd0af'; ?>
     <!-- ID VINDO DO BACKEND -->
-    <input type="hidden" id="d-id" value="417039">
+    <input type="hidden" id="d-id" value="<?= $tctrid ?>">
 
     <!-- topbar -->
     <div class="topbar">
@@ -29,10 +31,35 @@
                 <small>Parcelas pendentes ou vencidas com gestão de tratativas</small>
             </div>
         </div>
+
         <div class="topbar-actions">
-            <button class="btn-top primary">Menu de serviços</button>
-            <button class="btn-top">Início</button>
-            <button class="btn-top danger">Sair</button>
+
+            <a class="btn-top primary"
+                href="/srv/srvcns.chp?tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
+                title="Serviços">Menu de serviços
+            </a>
+
+
+            <a class="btn-top"
+                href="relatz.chp?r=viewSups&tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
+                title="Serviços">
+                Passíveis de suspensão
+            </a>
+
+
+            <a class="btn-top danger"
+                href="/srv/srvsai.chp?tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
+                title="Sair do sistema">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15.765" height="16" viewBox="0 0 15.765 16">
+                    <g id="Group" transform="translate(-1237 -36)">
+                        <path id="Vector" d="M.36.232A1,1,0,0,1,1.768.36l2.083,2.5A1,1,0,0,1,2.315,4.14L.232,1.64A1,1,0,0,1,.36.232Z" transform="translate(1248.667 40.5)" fill="#4b4b4b" fill-rule="evenodd" />
+                        <path id="Vector-2" d="M.36,4.286A1,1,0,0,1,.231,2.878L2.315.378a1,1,0,1,1,1.536,1.28l-2.083,2.5A1,1,0,0,1,.36,4.286Z" transform="translate(1248.667 42.982)" fill="#4b4b4b" fill-rule="evenodd" />
+                        <path id="Vector-3" d="M14.5,8a1,1,0,0,1-1,1H7A1,1,0,1,1,7,7h6.5a1,1,0,0,1,1,1ZM0,1A1,1,0,0,1,1,0h9a1,1,0,1,1,0,2H1A1,1,0,0,1,0,1ZM0,15a1,1,0,0,1,1-1h9a1,1,0,1,1,0,2H1a1,1,0,0,1-1-1Z" transform="translate(1237 36)" fill="#4b4b4b" fill-rule="evenodd" />
+                        <path id="Vector-4" d="M10,0a1,1,0,0,1,1,1V5A1,1,0,1,1,9,5V1a1,1,0,0,1,1-1Zm0,10a1,1,0,0,1,1,1v4a1,1,0,1,1-2,0V11a1,1,0,0,1,1-1ZM1,0A1,1,0,0,1,2,1V15a1,1,0,1,1-2,0V1A1,1,0,0,1,1,0Z" transform="translate(1237 36)" fill="#4b4b4b" fill-rule="evenodd" />
+                    </g>
+                </svg>
+                Sair
+            </a>
         </div>
     </div>
 
@@ -50,11 +77,11 @@
             <label>Status</label>
             <select id="f-status">
                 <option value="">Todos</option>
-                <option value="0">Pendente</option>
-                <option value="1">Em andamento</option>
-                <option value="2">Sem retorno</option>
-                <option value="3">Resolvido</option>
-                <option value="4">Cancelado</option>
+                <option value="1">Pendente</option>
+                <option value="2">Em andamento</option>
+                <option value="3">Sem retorno</option>
+                <option value="4">Resolvido</option>
+                <option value="5">Cancelado</option>
             </select>
         </div>
         <div class="fg">
@@ -70,6 +97,9 @@
             <label>Buscar</label>
             <input type="text" id="f-busca" placeholder="Cliente, parcela, doc...">
         </div>
+        <button class="btn-buscar" id="btn-limpar">
+            Limpar filtros
+        </button>
         <button class="btn-buscar" id="btn-buscar">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -95,6 +125,7 @@
         <!-- tabela -->
         <div class="table-wrap" id="table-wrap">
             <div class="table-inner">
+
                 <div class="contagem" id="contagem"></div>
                 <table id="table-relatorio">
                     <colgroup>
@@ -136,11 +167,34 @@
                     </tbody>
                 </table>
             </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-right gap-3 mb-2 border-bottom pb-2" style="font-size: 11px; color: var(--muted);">
+                <div id="contagem" class="m-0">Carregando contagem...</div>
+
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <div>
+                        <span>Total de Parcelas:</span>
+                        <strong class="text-dark" id="resumo-qtd-parcelas">0</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                        <span>Somatória Total:</span>
+                        <strong class="text-dark valor-mono" id="resumo-valor-total">R$ 0,00</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                        <span>Total Suspensos (Ativos):</span>
+                        <strong class="text-danger valor-mono" id="resumo-suspenso-sim">R$ 0,00</strong>
+                    </div>
+                    <div class="border-start ps-3">
+                        <span>Total Não Suspensos (Inativos):</span>
+                        <strong class="text-success valor-mono" id="resumo-suspenso-nao">R$ 0,00</strong>
+                    </div>
+                </div>
+            </div>
             <div class="paginacao" id="paginacao">
                 <span id="pag-info">—</span>
                 <div class="pg-btns" id="pg-btns"></div>
             </div>
         </div>
+
 
         <!-- drawer lateral: 3 abas — Nova tratativa | Histórico | Detalhes -->
         <div class="drawer" id="drawer">
@@ -200,11 +254,11 @@
                     <div class="form-group-d">
                         <label class="form-label-d">Status da tratativa</label>
                         <select class="form-control-d" id="d-status-tratativa">
-                            <option value="0">Pendente</option>
-                            <option value="1">Em andamento</option>
+                            <option value="1">Pendente</option>
+                            <option value="2">Em andamento</option>
                             <option value="3">Resolvido</option>
-                            <option value="2">Sem retorno</option>
-                            <option value="4">Cancelado</option>
+                            <option value="4">Sem retorno</option>
+                            <option value="5">Cancelado</option>
                         </select>
                     </div>
                     <div class="form-group-d">

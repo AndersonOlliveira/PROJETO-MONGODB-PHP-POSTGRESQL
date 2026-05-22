@@ -39,22 +39,41 @@
   }
 
   // cod_status numérico vindo do banco → CSS e texto
-  // 0=Pendente, 1=Em andamento, 2=Sem retorno, 3=Resolvido, 4=Cancelado
+  // vem da varialve cod_status
+  // 1=Pendente, 2=Em andamento, 3=Sem retorno, 4=Resolvido, 5=Cancelado
   const STATUS_CLASS = {
-      0: 'st-pendente',
-      1: 'st-andamento',
-      2: 'st-semretorno',
-      3: 'st-resolvido',
-      4: 'st-semretorno'
-  };
-  const STATUS_LABEL = {
-      0: 'Pendente',
-      1: 'Em andamento',
-      2: 'Sem retorno',
-      3: 'Resolvido',
-      4: 'Cancelado'
+      1: 'st-pendente',
+      2: 'st-andamento',
+      3: 'st-semretorno',
+      4: 'st-resolvido',
+      5: 'st-cancelado'
   };
 
+
+  const STATUS_LABEL = {
+      1: 'Pendente',
+      2: 'Em andamento',
+      3: 'Sem retorno',
+      4: 'Resolvido',
+      5: 'Cancelado'
+  };
+
+  const STATUS_LABEL_HISTORICO = {
+      1: 'Pendente',
+      2: 'Em andamento',
+      3: 'Sem retorno',
+      4: 'Resolvido',
+      5: 'Cancelado'
+  };
+
+  // emoji por tipo de contato
+  const TIPO_ICON_ID = {
+      1: '💬',
+      2: '📧',
+      3: '📞',
+      4: '🤝',
+      5: '📱'
+  };
   // emoji por tipo de contato
   const TIPO_ICON = {
       'WhatsApp': '💬',
@@ -63,6 +82,7 @@
       'Visita': '🤝',
       'SMS': '📱'
   };
+
 
 
   // ── ESTADO GLOBAL ─────────────────────────────────────────────
@@ -76,6 +96,14 @@
       abaAtiva: 'tratativa',
       historicos: {}, // cache por n_nro
   };
+
+
+
+  //vou pegar o click para atualizar a pagina com o dados novos
+  $('#btn-limpar').click(function () {
+      clearFiltro();
+      listArchivesMonth();
+  });
 
 
   // ── INICIALIZAÇÃO ─────────────────────────────────────────────
@@ -224,9 +252,22 @@
       toast(`${App.dadosFiltrados.length} registro(s) encontrado(s)`);
   }
 
+  function corrigirEncoding(texto) {
+      if (!texto) return '';
+      try {
+          // Converte a string quebrada em uma sequência de bytes (Windows-1252/ISO-8859-1)
+          const bytes = Uint8Array.from(texto, c => c.charCodeAt(0));
+          // Decodifica corretamente essa sequência usando UTF-8
+          return new TextDecoder('utf-8').decode(bytes);
+      } catch (e) {
+          // Se falhar por algum motivo, retorna o texto original para não quebrar a tela
+          return texto;
+      }
+  }
 
   // ── RENDERIZAÇÃO ──────────────────────────────────────────────
   function renderTabela() {
+      atualizarCardsResumo();
       const total = App.dadosFiltrados.length;
       const inicio = (App.paginaAtual - 1) * App.porPagina;
       const fim = Math.min(inicio + App.porPagina, total);
@@ -245,19 +286,25 @@
               const ativo = App.linhaSelecionada === String(r.n_nro) ? 'ativo' : '';
               const bClass = STATUS_CLASS[r.cod_status] || 'st-pendente';
               const bLabel = STATUS_LABEL[r.cod_status] || r.cod_status;
+              const newPerfil = r.perfilcobtipo;
+              const info_prePago = r.crcprepago;
 
+
+              const perfilCorrigido = newPerfil == 'P?S-PAGO' ? newPerfil.replace(/\?/g, "Ó") : corrigirEncoding(newPerfil);
+              const [infos, compraDeCreditos] = info_prePago ? ['PRÉ-PAGO', 'SIM'] : ['PÓS-PAGO', 'NÃO'];
               const concatDados =
                   tbody.append(`
                         <tr class="${ativo}" data-id="${r.n_nro}" onclick="selecionarLinha('${r.n_nro}')">
                             <td title="${r.cliente}"><strong>${r.cliente}</strong></td>
-                            <td>${r.perfil || '—'}</td>
-                            <td>${r.compra_credito || '—'}</td>
+                            <td>${infos || '—'}</td>
+                            <td>${compraDeCreditos || '—'}</td>
                             <td class="nnro-mono">${r.n_nro}</td>
                             <td>${formatarData(r.vencimento)}</td>
                             <td class="valor-mono">${formatarValor(r.valor)}</td>
                             <td>${r.doc_ger || '—'}</td>
                             <td class="${dias > 0 ? 'dias-atraso' : ''}">${dias}d</td>
                             <td title="${r.vendedor || ''}">${r.vendedor || '—'}</td>
+                          
                             <td class="col-ocultavel" title="${r.status  || ''} '-' ${r.ultima_consulta}" 
                               style="color:var(--muted);font-size:11px">
                               ${r.status  || ''} '-' ${r.ultima_consulta} 
@@ -276,6 +323,7 @@
       }
       renderPaginacao(total);
   }
+
 
   function renderPaginacao(total) {
       const totalPag = Math.max(1, Math.ceil(total / App.porPagina));
@@ -371,7 +419,7 @@
       const convertDados = {
           acao: 'getHistorico',
           numeroCobranca: id,
-          tctrid: $('#d-responsavel-id').val(),
+          tctrid: $('#d-id').val(),
       }
 
       const convertidoJson = JSON.stringify(convertDados);
@@ -384,6 +432,7 @@
           },
           dataType: 'json',
           success: function (resp) {
+
               App.historicos[id] = resp.sucesso ? (resp.dados || []) : [];
               renderHistorico(id);
           },
@@ -396,7 +445,10 @@
   }
 
   function renderHistorico(id) {
+
+
       const hist = App.historicos[id] || [];
+
       const lista = $('#historico-lista');
       lista.empty();
       if (hist.length === 0) {
@@ -404,38 +456,46 @@
           return;
       }
       hist.forEach(h => {
-
           const bClass = STATUS_CLASS[h.cod_acao] || 'st-pendente';
           const bLabel = STATUS_LABEL[h.status] || h.status;
           const icon = TIPO_ICON[h.tipo] || '📋';
 
-          const data = new Date(h.ultima_consulta);
+          let dataFormatada = h.ultima_consulta;
 
-          // 2. Configura a formatação para o padrão brasileiro
-          const formatador = new Intl.DateTimeFormat('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
-          });
+          if (!h.ultima_consulta) {
+              // Corrige formatos sem o 'T' (ex: "2026-05-21 14:30:00") que quebram em alguns navegadores
+              const dataTratada = String(h.ultima_consulta).replace(' ', 'T');
+              const dataObjeto = new Date(dataTratada);
 
-          //   cons
+              // Verifica se a conversão gerou uma data válida
+              if (!isNaN(dataObjeto.getTime())) {
+                  const formatador = new Intl.DateTimeFormat('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                  });
+                  dataFormatada = formatador.format(dataObjeto);
+              }
+          }
+
           lista.append(`
                     <div class="hist-item">
                         <div class="hist-meta">
-                            <span class="hist-data">Data/Hora:${formatador.format(data)}</span>
-                            <span class="badge-st ${bClass}" style="font-size:10px">${bLabel}</span>
+                            <span class="hist-data">Data/Hora:${dataFormatada}</span>
+                            <span class="badge-st ${bClass}" style="font-size:10px">${bLabel} </span>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px">
-                            <span class="hist-tipo">${icon} ${h.descricao_acao}</span>
-                            <span class="hist-resp">${h.res || ''}</span>
+                            <span class="hist-tipo">${icon} - ${h.descricao_acao || h.proxima_acao}</span>
+                            <span class="hist-resp">${h.res || h.responsavel}</span>
                         </div>
-                        <div class="hist-desc">${h.descricao_mov}</div>
+                        <div class="hist-desc">${h.descricao_mov || h.descricao}</div>
                         ${h.proxima_acao ? `<div style="font-size:11px;color:var(--azul);margin-top:4px">→ ${h.proxima_acao}</div>` : ''}
                     </div>`);
       });
+
   }
 
 
@@ -464,6 +524,8 @@
           status_tratativa: $('#d-status-tratativa').val(),
           descricao: descricao,
           tipo_acoes: $('#d-proxima-acao').val().trim(),
+          codStatus: $('#codStatus').val(),
+
       };
 
       const payloadtext = {
@@ -476,12 +538,10 @@
           descricao: descricao,
           tipo_acoes: $("#d-proxima-acao option:selected").text(),
       };
-
       //   console.log(payloadtext);
       //   return;
       const playloadJson = JSON.stringify(payload);
 
-      console.log('PlayLoad enviado para salvar tratativa', playloadJson);
 
       $('#btn-salvar-tratativa').prop('disabled', true).text('Salvando...');
 
@@ -518,7 +578,7 @@
       data,
       status
   ) {
-      if (tipo === '' || tipo === '0') {
+      if (tipo === '' || tipo === 1) {
           toast('Selecione o tipo de contato.', 'error');
           return false;
       }
@@ -539,7 +599,7 @@
           },
 
           success: function (resp) {
-              console.log('Resposta da api', resp);
+
               if (resp.status == 2) {
 
                   set_up_contact(resp.dados)
@@ -613,24 +673,29 @@
 
   }
   // atualiza memória local após salvar (sem reload da tabela inteira)
-  function _atualizarEstadoLocal(id, payload) {
-
-      console.log(payload, 'Playload enviado para atualizar o estado local');
+  function _atualizarEstadoLocal(id, payloadtext) {
+      const agora = new Date();
+      const dataHoraBR = new Intl.DateTimeFormat('pt-BR', {
+          dateStyle: 'short',
+          timeStyle: 'medium'
+      }).format(agora);
 
       delete App.historicos[id];
       App.historicos[id] = [{
-          tipo: payload.tipo_trativa,
-          responsavel: payload.responsavel || '—',
-          status: payload.status_tratativa,
-          descricao: payload.descricao,
-          proxima_acao: payload.tipo_acoes,
+          tipo: payloadtext.tipo_trativa,
+          responsavel: payloadtext.responsavel || $('#d-responsavel').val(),
+          status: payloadtext.status_tratativa,
+          descricao: payloadtext.descricao,
+          proxima_acao: payloadtext.tipo_acoes,
+          codStatus: payloadtext.codStatus,
+          ultima_consulta: dataHoraBR
       }];
       const reg = App.dados.find(r => String(r.n_nro) === String(id));
       if (reg) {
-          reg.cod_status = payload.status_tratativa;
+          reg.cod_status = payloadtext.status_tratativa;
           //   reg.descricao_mov = `${payload.data} ${payload.hora} · ${payload.tipo}`;
-          reg.descricao_mov = `${payload.tipo_trativa}`;
-          if (payload.tipo_acoes) reg.descricao_acao = payload.tipo_acoes;
+          reg.descricao_mov = `${payloadtext.tipo_trativa}`;
+          if (payloadtext.tipo_acoes) reg.descricao_acao = payloadtext.tipo_acoes;
       }
       $('#d-descricao').val('');
       $('#d-proxima-acao').val('');
@@ -799,4 +864,28 @@
               console.error('Erro:', error);
               throw error;
           });
+  }
+
+  function atualizarCardsResumo() {
+      let qtdParcelas = App.dadosFiltrados.length;
+      let valorTotal = 0;
+      let suspensoSim = 0;
+      let suspensoNao = 0;
+      App.dadosFiltrados.forEach(r => {
+          const valorFlutuante = parseFloat(r.valor || 0);
+          valorTotal += valorFlutuante;
+
+          // Verifica a suspensão (ajuste r.suspensa conforme o retorno real do seu JSON)
+          if (r.suspensa === 'SIM' || r.suspensa === 'S' || r.suspensa === 1) {
+              suspensoSim += valorFlutuante;
+          } else {
+              suspensoNao += valorFlutuante;
+          }
+      });
+
+      // Atualiza os elementos discretos na tela
+      $('#resumo-qtd-parcelas').text(qtdParcelas);
+      $('#resumo-valor-total').text(formatarValor(valorTotal));
+      $('#resumo-suspenso-sim').text(formatarValor(suspensoSim));
+      $('#resumo-suspenso-nao').text(formatarValor(suspensoNao));
   }
