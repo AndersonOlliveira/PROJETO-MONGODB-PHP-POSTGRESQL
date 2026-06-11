@@ -23,4 +23,18 @@ class RelatorioController extends Controller
 
         return $this->view('view_susp');
     }
+
+    public function index_conection()
+    {
+
+        $t = $this->Utilis('TesteConection');
+
+        if (is_string($t) && class_exists($t)) {
+            $t = new $t();
+        }
+
+        $dd = $t->conection();
+
+        return $this->view('view_conection');
+    }
 }

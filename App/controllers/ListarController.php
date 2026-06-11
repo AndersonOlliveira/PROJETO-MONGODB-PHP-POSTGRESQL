@@ -51,133 +51,132 @@ class ListarController extends Controller
     $push_dados_process_die = $return->get_info_status_process();
 
 
-    // if (isset($pegar_dados_parados)) {
-    //     $this->utils->get_dados_id($pegar_dados_parados);
-    // }
+    if (isset($pegar_dados_parados)) {
+      $this->utils->get_dados_id($pegar_dados_parados);
+    }
 
-    // if (isset($push_dados_process_die) && $push_dados_process_die) {
-    //   $this->utils->treat_dados_die($push_dados_process_die);
-    // }
+    if (isset($push_dados_process_die) && $push_dados_process_die) {
+      $this->utils->treat_dados_die($push_dados_process_die);
+    }
 
     ///pegos dentro da collection de paralizar
     $jobs_parados = $this->utilss->get_data_paralizar();
 
- 
+
     if (isset($jobs_parados)) {
       $retorno_processo = $this->utils->process_paralisar($jobs_parados, $qtLimit);
     }
 
 
 
-    // $pasta = $this->arquivos_json->env_json('path_arquivos_info');
+    $pasta = $this->arquivos_json->env_json('path_arquivos_info');
 
-    // if (isset($pasta)) {
-    //   //envio para a pasta de arquivos para processarl
-    //   $this->utils->open_json_dados($pasta);
-    // }
+    if (isset($pasta)) {
+      //envio para a pasta de arquivos para processarl
+      $this->utils->open_json_dados($pasta);
+    }
 
-    // echo "Minha pasta e: " . $pasta . "\n";
+    echo "Minha pasta e: " . $pasta . "\n";
 
-    // if (isset($return_valores)) {
-    //   $this->utils->contar_atualizar_valores($return_valores);
-    // }
+    if (isset($return_valores)) {
+      $this->utils->contar_atualizar_valores($return_valores);
+    }
 
-    // //finalizar jobs parados com o status 17 para gerarr o resultado 
-    // if (isset($dados_parar)) {
-    //   echo "chamei o parar";
-    //   $this->utils->process_finalizar_status_erros($dados_parar);
-    // }
-    // //vou percorrer para pegar o id e calcular o valorer correto;
+    //finalizar jobs parados com o status 17 para gerarr o resultado 
+    if (isset($dados_parar)) {
+      echo "chamei o parar";
+      $this->utils->process_finalizar_status_erros($dados_parar);
+    }
+    //vou percorrer para pegar o id e calcular o valorer correto;
 
-
-    // // # PEGO O QUE FOI FINALIZADO JÁ 
-    // $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
-
-
-    // $returns_alert = $return->list_processo_qta_process($qtLimit);
-
-    // $result_idProcess = array_values(
-    //   array_column(
-    //     array_filter($returns, fn($row) => !empty($row['processo_id'])),
-    //     'processo_id'
-    //   )
-    // );
+    // # PEGO O QUE FOI FINALIZADO JÁ 
+    $return_finish = $return->list_processo_modulo($idProcesso, $qtLimit);
 
 
-    // if (empty($returns)) {
-    //   echo "Nenhum dado encontrado!\n";
-    // }
+    $returns_alert = $return->list_processo_qta_process($qtLimit);
 
-    // if (empty($returns_alert)) {
-
-    //   echo "Nenhum dado encontrado\n";
-    // }
-
-
-    // if (empty($returns_modulos)) {
-
-    //   echo "Nenhum dado encontrado\n";
-    // }
+    $result_idProcess = array_values(
+      array_column(
+        array_filter($returns, fn($row) => !empty($row['processo_id'])),
+        'processo_id'
+      )
+    );
 
 
-    // $consult_modulos = [];
+    if (empty($returns)) {
+      echo "Nenhum dado encontrado!\n";
+    }
+
+    if (empty($returns_alert)) {
+
+      echo "Nenhum dado encontrado\n";
+    }
 
 
-    // if (!empty($return_finish)) {
+    if (empty($returns_modulos)) {
 
-    //   foreach ($return_finish as $key => $values_modulos) {
-
-
-    //     $dados = $return->push_value_modulo(
-    //       $values_modulos['rede'],
-    //       $values_modulos['codcns'],
-    //       $values_modulos['data_cadastro'],
-    //       $values_modulos['data_finalizacao'],
-    //       null
-    //     );
-
-    //     if (!empty($dados)) {
-
-    //       $consult_modulos[] = [
-    //         'dados' => $dados,
-    //       ];
-
-    //       $consult_modulos['processo_id'] = $values_modulos['processo_id'];
-    //       $consult_modulos['valor_original'] = $values_modulos['valor_total'];
-    //     }
-    //   }
-    // }
-
-    // if (isset($consult_modulos) && !empty($consult_modulos)) {
-    //   $this->utils->updados_modulos($consult_modulos);
-    // }
-
-    // $result_resposta = array_values(array_filter($returns_alert, function ($row) {
-    //   return !empty($row['info']);
-    // }));
-
-    // if (isset($result_resposta)) {
-    //   $list_dados = [];
-    //   foreach ($result_resposta as $key => $values) {
-
-    //     if ($values['qta_processar'] > 0) {
-
-    //       $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
-    //     } else {
+      echo "Nenhum dado encontrado\n";
+    }
 
 
-    //       $return->finish_process_die($values['processo_id']);
-    //     }
-    //   }
+    $consult_modulos = [];
 
-    //   echo "<pre>";
-    //   echo "minha variavel lista dados";
 
-    //   print_r($list_dados);
-    //   $re = $this->utils->get_dados_id($list_dados);
-    //   echo "estou saindo aqui";
-    //   return $this->view('listar');
-    // }
+    if (!empty($return_finish)) {
+
+      foreach ($return_finish as $key => $values_modulos) {
+
+
+        $dados = $return->push_value_modulo(
+          $values_modulos['rede'],
+          $values_modulos['codcns'],
+          $values_modulos['data_cadastro'],
+          $values_modulos['data_finalizacao'],
+          null
+        );
+
+        if (!empty($dados)) {
+
+          $consult_modulos[] = [
+            'dados' => $dados,
+          ];
+
+          $consult_modulos['processo_id'] = $values_modulos['processo_id'];
+          $consult_modulos['valor_original'] = $values_modulos['valor_total'];
+        }
+      }
+    }
+
+    if (isset($consult_modulos) && !empty($consult_modulos)) {
+      $this->utils->updados_modulos($consult_modulos);
+    }
+
+    $result_resposta = array_values(array_filter($returns_alert, function ($row) {
+      return !empty($row['info']);
+    }));
+
+    if (isset($result_resposta)) {
+      $list_dados = [];
+      foreach ($result_resposta as $key => $values) {
+
+        if ($values['qta_processar'] > 0) {
+
+          $list_dados = $return->list_processo_alert($values['processo_id'],  $values['qta_processar']);
+        } else {
+
+
+          $return->finish_process_die($values['processo_id']);
+        }
+      }
+
+      echo "<pre>";
+      echo "minha variavel lista dados";
+
+      print_r($list_dados);
+      $re = $this->utils->get_dados_id($list_dados);
+      echo "estou saindo aqui";
+      return $this->view('listar');
+    }
   }
   public function listar_old($idProcesso = null, $qtLimit = null)
   {

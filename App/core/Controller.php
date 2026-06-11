@@ -121,4 +121,5 @@ class Controller
         // Se houver falha, lida com o erro
         // die("Modelo MongoDB '{$modelName}' não encontrado ou não pôde ser carregado.");
     }
+    
 }

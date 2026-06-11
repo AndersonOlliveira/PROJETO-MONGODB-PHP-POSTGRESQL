@@ -30,21 +30,13 @@ class process extends Model
 		    progestor.transacao t INNER JOIN 
 			progestor.processo p ON p.processo_id = t.id_processo 
 		WHERE 
-
-		  --revovmento o 3 pois ele já e o resultado final, quando faz a busca dento do mongo ele não acha os dados e gera uma demora para concluir os dados
+		--revovmento o 3 pois ele já e o resultado final, quando faz a busca dento do mongo ele não acha os dados e gera uma demora para concluir os dados
 			t.status in (12) AND 
 			--p.contrato = 417039 AND
 			 p.finalizado = false AND
 			 p.error = false";
 
 
-		// echo "meu info enviado\n";
-
-		// var_dump($info);
-		// echo "vem vazio?\n";
-		// print_r(empty($info));
-
-		// var_dump($idProcesso);
 
 
 		$params = [];
@@ -57,20 +49,7 @@ class process extends Model
 		$sql .= " AND p.pause = ?";
 		$params[] = $info ? 1 : 0;;
 
-		// if ($info !== null) {
 
-		// 	echo "<pre>";
-		// 	echo "E DIFERENTE DE NULL\n";
-		// 	var_dump($info);
-		// 	$sql .= " AND p.pause = ?";
-		// 	$params[] = (bool) true;
-		// } else {
-		// 	echo "<pre>";
-		// 	echo "E NULL\n";
-		// 	var_dump($info);
-		// 	$sql .= " AND p.pause = ?";
-		// 	$params[] =  (bool)false;
-		// }
 
 		if ($qtLimit !== null) {
 			$qtLimit = (int)$qtLimit; // garante que é inteiro
@@ -80,17 +59,9 @@ class process extends Model
 		}
 
 
-		echo "<pre>";
-		echo "MEUS SQL MONTADO\n";
-
-		print_r($sql);
-		echo "MEUS PARAM MONTADO\n";
-		print_r($params);
-
 
 		$results = $this->db->prepare($sql);
 		$results->execute($params);
-		// $result = $this->db->query($sql);
 
 		return $results->fetchAll(PDO::FETCH_ASSOC);
 	}
@@ -149,12 +120,6 @@ class process extends Model
 		} else {
 			$sql .= " ORDER BY random() LIMIT 10;";
 		}
-
-
-		// echo "<pre>";
-		// echo "MEUS PARAM MONTADO\n";
-
-		// print_r($sql);
 
 
 		try {

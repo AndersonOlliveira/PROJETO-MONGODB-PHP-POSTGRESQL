@@ -44,7 +44,7 @@ class ProcessController extends Controller
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('new_lista_crm');
         // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('crm');
         $this->utilis_processs_teste_arquivos_json = $this->Utilis_arquivo_json('meu_arquivo');
-        // $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('CONSULTA-BASE');
+        $this->utilis_processs_teste_arquivos_ = $this->Utilis_arquivo('crm');
 
         require_once __DIR__ . '/../models/BuscaValorLotePorConsulta.php';
         $this->BuscaValorLotePorConsulta = new BuscaValorLotePorConsulta();
@@ -145,12 +145,14 @@ class ProcessController extends Controller
 
 
         // $consultas = 283091; #CONSULTA PARA QUE CONTEM BASE
-        $consultas = [271465]; #CONSULTA PARA CRM 
+        // $consultas = [283092, 265919]; #CONSULTA PARA CRM 
+        // $consultas = [265919, 283092];
         // $consultas = [263257]; #"<FONT COLOR=BLUE><B>02</B></FONT>. PROCADASTRO PLUS - PF    " da andrea
         // $consultas = 283111; #CONSULTA PARA CPF 
-        // $consultas = 262936;
+        // $consultas = [262936]; #CONSULTA PARA CRM 
+        $consultas = [276631]; #CONSULTA PARA CRM 
         // $consultas = [265919, 283092];
-        $contrato = 416992;
+        $contrato = 417039;
         $filename = 'CONSULTA_PREPAGO';
         $valortotal = 0;
         $tipo = 'cpnp';
@@ -162,9 +164,13 @@ class ProcessController extends Controller
         // $headers = 'tcpfcnpj,tdatnsc,tcep,tcelnum,tnumtel';
         // $headers = 'tcpfcnpj;tcep;tcelnum;tnumtel;tdatnsc';
         // $headers = 'tcpfcnpj;tnumtel;tcelnum'; # "<FONT COLOR=BLUE><B>02</B></FONT>. PROCADASTRO PLUS - PF    " da andrea
-        $headers = 'tcpfcnpj;tnumtel;tcelnum';
+        // $headers = 'tcpfcnpj;tnumtel;tcelnum';
         // $headers = 'tlidersinistroufmed,tpsqnom,tlidersinistrocrmmed';
-        // $headers = 'tdatabase;tcpfcnpj;tdatnsc';
+        // $headers = 'tcpfcnpj;tdatnsc;tcep;tcelnum;tnumtel';
+        // $headers = 'tlidersinistrocrmmed;tlidersinistroufmed;tpsqnom';
+        $headers = 'tcpfcnpj;tlidersinistroufmed;tpsqnom';
+
+
         $finger = '{"ip":"177.25.93.211","city":"Santos","region":"São Paulo","country":"BR","loc":"-23.9608,-46.3336","timezone":"America/Sao_Paulo"}';
 
 
@@ -179,9 +185,9 @@ class ProcessController extends Controller
 
         // $validateArquivo = $this->utilis_process_valida->ValidaFormat($pathFile);
 
-
+        $dateNow = date("Y-m-d H:i:s");
         echo "<pre>";
-        echo "ME RESULTADO\n";
+        echo "ME RESULTADO \n" . $dateNow;
 
         // print_R($validateArquivo);
 
@@ -189,7 +195,7 @@ class ProcessController extends Controller
         // print_R($consultasStr);
 
 
-        $dateNow = date("Y-m-d H:i:s");
+
         // echo "[$dateNow] --- NOVO PROCESSO: $pathFile, $consultas, $contrato, $filename \n";
 
         // require_once 'Arquivo_testes.php';

@@ -1,4 +1,9 @@
   // ── CONFIGURAÇÃO ──────────────────────────────────────────────
+
+  //   const {
+  //       forwardRef
+  //   } = require("react");
+
   // Mude só API_URL se o backend mudar de lugar
   const API_URL = '../index.php';
 
@@ -40,12 +45,13 @@
 
   // cod_status numérico vindo do banco → CSS e texto
   // vem da varialve cod_status
-  // 1=Pendente, 2=Em andamento, 3=Sem retorno, 4=Resolvido, 5=Cancelado
+  // 1=Pendente, 2=Em andamento, 4=Sem retorno, 3=Resolvido, 5=Cancelado
+
   const STATUS_CLASS = {
       1: 'st-pendente',
       2: 'st-andamento',
-      3: 'st-semretorno',
-      4: 'st-resolvido',
+      4: 'st-semretorno',
+      3: 'st-resolvido',
       5: 'st-cancelado'
   };
 
@@ -53,8 +59,8 @@
   const STATUS_LABEL = {
       1: 'Pendente',
       2: 'Em andamento',
-      3: 'Sem retorno',
-      4: 'Resolvido',
+      4: 'Sem retorno',
+      3: 'Resolvido',
       5: 'Cancelado'
   };
 
@@ -123,8 +129,33 @@
       $(document).on('click', '.drawer-tab', function () {
           mudarAba($(this).data('tab'));
       });
-      $('#btn-salvar-tratativa').on('click', salvarTratativa);
+      //   $('#btn-salvar-tratativa').on('click', salvarTratativa);
       $('#btn-csv').on('click', exportarCSV);
+  });
+
+  // ALTERADO PARA PEGAR O CLICK E FAZER AS VALIDADOCOES DENTRO
+  $(document).on('click', '#btn-salvar-tratativa', function () {
+
+      const erros = [
+          $('#d-tipo-contato').val(),
+          $('#d-status-tratativa').val(),
+          $('#d-proxima-acao').val()
+      ];
+
+      const infoErros = validarCamposTratativa(erros);
+
+      const descricao = $('#d-descricao').val().trim();
+      if (!descricao) {
+          toast('Preencha a descrição da tratativa.', 'error');
+          return;
+      }
+      // TUDO VALIDADO LIBERA PARA O BOTÃO PARA FAZER O INSERT
+      if (infoErros && descricao.length > 1) {
+
+          salvarTratativa();
+      }
+
+
   });
 
   function preencherDataHoje() {
@@ -498,6 +529,26 @@
 
   }
 
+  //   $('#btnSalvar').on('click', function () {
+
+  //       const btn = $(this);
+
+  //       btn.prop('disabled', true);
+
+  //       const validar = validarCamposTratativa(
+  //           $('#d-tipo-contato').val(),
+  //           $('#d-status-tratativa').val(),
+  //           $('#d-proxima-acao').val()
+  //       );
+
+  //       if (!validar) {
+  //           btn.prop('disabled', false);
+  //           return;
+  //       }
+
+  //       salvarTratativa();
+  //   });
+
 
   // ── SALVAR TRATATIVA ──────────────────────────────────────────
   // POST ?acao=salvarTratativa
@@ -506,12 +557,7 @@
   function salvarTratativa() {
       const id = App.linhaSelecionada;
       if (!id) return;
-      const descricao = $('#d-descricao').val().trim();
-      const valiadar = validarCamposTratativa($('#d-tipo-contato').val(), $('#d-status-tratativa').val(), $('#d-proxima-acao').val());
-      if (!descricao) {
-          toast('Preencha a descrição da tratativa.', 'error');
-          return;
-      }
+
 
       const payload = {
           acao: 'salvarTratativa',
@@ -522,10 +568,8 @@
           //   hora: $('#d-hora-tratativa').val(),
           tctrid: $("#d-responsavel-id").val(),
           status_tratativa: $('#d-status-tratativa').val(),
-          descricao: descricao,
-          tipo_acoes: $('#d-proxima-acao').val().trim(),
-          codStatus: $('#codStatus').val(),
-
+          descricao: $('#d-descricao').val().trim(),
+          tipo_acoes: $('#d-proxima-acao').val(),
       };
 
       const payloadtext = {
@@ -535,13 +579,12 @@
           numeroCobranca: id,
           tctrid: $("#d-responsavel-id").val(),
           status_tratativa: $("#d-status-tratativa option:selected").text(),
-          descricao: descricao,
+          descricao: $('#d-descricao').val().trim(),
           tipo_acoes: $("#d-proxima-acao option:selected").text(),
       };
-      //   console.log(payloadtext);
-      //   return;
-      const playloadJson = JSON.stringify(payload);
 
+
+      const playloadJson = JSON.stringify(payload);
 
       $('#btn-salvar-tratativa').prop('disabled', true).text('Salvando...');
 
@@ -556,7 +599,10 @@
                   toast('Tratativa salva com sucesso!', 'success');
               } else {
 
-                  toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
+                  //   toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
+                  var erros = JSON.stringify(resp.dados);
+
+                  toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
               }
           },
           error: function () {
@@ -578,10 +624,13 @@
       data,
       status
   ) {
-      if (tipo === '' || tipo === 1) {
-          toast('Selecione o tipo de contato.', 'error');
-          return false;
-      }
+
+      tipo.forEach((items) => {
+
+          if (items) {
+              console.log(items);
+          }
+      });
   }
 
 
@@ -672,33 +721,74 @@
       });
 
   }
+
+
+  function validarCamposTratativa(dados) {
+
+      const [tipoContato, statusTratativa, proximaAcao] = dados;
+
+
+      if (!tipoContato || tipoContato == 0) {
+          toast('Selecione o tipo de contato.', 'error');
+          $('#btn-salvar-tratativa').prop('disabled', false);
+          return false; // Para a função aqui
+      }
+
+      if (!statusTratativa || statusTratativa == 0) {
+          toast('Selecione o status da tratativa.', 'error');
+          $('#btn-salvar-tratativa').prop('disabled', false);
+          return false; // Para a função aqui
+      }
+
+      if (!proximaAcao || proximaAcao == 0) {
+
+          toast('Selecione a próxima ação.', 'error');
+          $('#btn-salvar-tratativa').prop('disabled', false);
+          return false; // Para a função aqui
+      }
+
+      return true; // Se passar por todos, os dados estão válidos
+  }
+
   // atualiza memória local após salvar (sem reload da tabela inteira)
   function _atualizarEstadoLocal(id, payloadtext) {
-      const agora = new Date();
-      const dataHoraBR = new Intl.DateTimeFormat('pt-BR', {
-          dateStyle: 'short',
-          timeStyle: 'medium'
-      }).format(agora);
 
-      delete App.historicos[id];
-      App.historicos[id] = [{
-          tipo: payloadtext.tipo_trativa,
-          responsavel: payloadtext.responsavel || $('#d-responsavel').val(),
-          status: payloadtext.status_tratativa,
-          descricao: payloadtext.descricao,
-          proxima_acao: payloadtext.tipo_acoes,
-          codStatus: payloadtext.codStatus,
-          ultima_consulta: dataHoraBR
-      }];
+      if (!App.historicos[id]) {
+          App.historicos[id] = [];
+      }
+
+      // Obter o nome do responsável para apresentacao em tela sem reload
+      const nomeResponsavel = $("#d-responsavel").val() || '—';
+
+
+      App.historicos[id].unshift({
+          tipo: payload.tipo_trativa,
+          responsavel: nomeResponsavel,
+          status: payload.status_tratativa,
+          descricao: payload.descricao,
+          proxima_acao: payload.tipo_acoes,
+          data_cadastro: new Date().toLocaleDateString('pt-BR')
+      });
+
+
       const reg = App.dados.find(r => String(r.n_nro) === String(id));
       if (reg) {
-          reg.cod_status = payloadtext.status_tratativa;
-          //   reg.descricao_mov = `${payload.data} ${payload.hora} · ${payload.tipo}`;
-          reg.descricao_mov = `${payloadtext.tipo_trativa}`;
-          if (payloadtext.tipo_acoes) reg.descricao_acao = payloadtext.tipo_acoes;
+
+          reg.cod_status = payload.status_tratativa;
+          reg.descricao_mov = `${payload.tipo_trativa}`;
+
+          if (payload.tipo_acoes) {
+              reg.descricao_acao = payload.tipo_acoes;
+          }
       }
+
+      // Limpa os campos do formulário para o próximo uso
+      $('#d-tipo-contato').val('0');
+      $('#d-status-tratativa').val('0');
+      $('#d-proxima-acao').val('0');
       $('#d-descricao').val('');
-      $('#d-proxima-acao').val('');
+
+      //  Atualiza a parte visual sem dar reload na página
       renderTabela();
       renderHistorico(id);
   }

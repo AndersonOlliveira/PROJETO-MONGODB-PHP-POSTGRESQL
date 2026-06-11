@@ -126,10 +126,25 @@ class ApiControllerTratativas extends Controller
         // PARA CONVERTER OS DADOS VINDO DE FORM DATA
         $dados = json_decode($dados, true);
 
-
+        $dados['tipo_acoes'] = 0;
+        //AQUI VERIFICA OS CAMPOS ENVIADOS SE ESTA CORRETO
         $retorno_campos  =  $this->utilis_trativas->validaCampos($dados);
+        //VERIFICA OS DADOS DENTRO DO CAMPOS
+        $retorno_verificacao_campos  =  $this->utilis_trativas->validaCampoDados($dados);
+
+        if (isset($retorno_verificacao_campos['error'])) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $retorno_verificacao_campos['error']
+            ));
+            die();
+        }
+
 
         if (isset($retorno_campos['error'])) {
+            header('Content-Type: application/json');
             echo json_encode(array(
                 'status' => 0,
                 'sucesso' => false,
@@ -137,6 +152,13 @@ class ApiControllerTratativas extends Controller
             ));
             die();
         }
+
+
+        echo "<pre>";
+        echo "PASSEI NAS VERIFICACOES";
+        print_r($dados);
+
+        die();
 
         $retorno_dados = $this->utilis_trativas->trata_dados_trativa($dados);
 

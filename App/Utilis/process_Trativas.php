@@ -125,6 +125,21 @@ class process_Trativas extends Controller
 
         return $parametros;
     }
+    public function validaCampoDados($dados)
+    {
+        $error = [];
+
+        foreach ($dados as $key => $values) {
+            $valorLimpo = is_string($values) ? trim($values) : $values;
+
+            if ($valorLimpo === '' || $valorLimpo === null || $valorLimpo === 0 || $valorLimpo === '0') {
+                $error['error'][$key] = 'Campo não pode ser vazio ou com o valor 0';
+            }
+        }
+
+
+        return $error;
+    }
 
     public function validaCamposPersolizado($dados, $numeroCobraca)
     {

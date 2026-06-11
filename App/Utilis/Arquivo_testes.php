@@ -152,7 +152,7 @@ class Arquivo_testes extends Controller
 
 
     public function validarLinhaNew(
-        array $associado,
+        array &$associado,
         int $idConsulta,
         array &$documentoInvalido,
         int $linha,
@@ -164,9 +164,14 @@ class Arquivo_testes extends Controller
         $linhaValida = true;
 
         // ===============================
-        // 1️⃣ VALIDAR CAMPOS OBRIGATÓRIOS
+        // VALIDAR CAMPOS OBRIGATÓRIOS
         // ===============================
         foreach ($obrigatoriosPorConsulta as $chaveObrigatoria) {
+
+            echo "<pre>";
+            echo "MINHA CHAVE\n";
+
+            var_dump($chaveObrigatoria);
 
             $chaveObrigatoria = trim($chaveObrigatoria);
 
@@ -189,7 +194,7 @@ class Arquivo_testes extends Controller
                     ];
                 } else {
                     $documentoInvalido[$chaveObrigatoria]['quantidade']++;
-                    $documentoInvalido[$chaveObrigatoria]['linha'][] = $linha;
+                    $documentoInvalido[$chaveObrigatoria]['linha'][$linha] = $linha;
                 }
             }
         }
@@ -199,36 +204,27 @@ class Arquivo_testes extends Controller
         // ===============================
         if (isset($associado['tcpfcnpj'])) {
 
-
-
             $docBruto = preg_replace("/\r|\n/", "", (string)$associado['tcpfcnpj']);
-
-
-
             $numero  = preg_replace("/\D/", "", $docBruto);
-            echo "<pre>";
-            echo "meu associado vindo aqui\n";
-
-            print_r($numero);
-
 
             if ($docBruto !== '') {
-
-
                 if (strlen($numero) === 11) {
 
                     if (!$this->validarDocumento($numero, 'cpf', $registrosValidos, $documentoInvalido)) {
                         $linhaValida = false;
+                        $associado['tcpfcnpj'] = '';
                     }
                 } elseif (strlen($numero) === 14) {
 
                     if (!$this->validarDocumento($numero, 'cnpj', $registrosValidos, $documentoInvalido)) {
                         $linhaValida = false;
+                        $associado['tcpfcnpj'] = '';
                     }
                 } else {
 
                     $linhaValida = false;
 
+                    $associado['tcpfcnpj'] = '';
                     if (!isset($documentoInvalido[$numero])) {
                         $documentoInvalido[$numero] = [
                             'documento'  => $numero,
@@ -241,6 +237,7 @@ class Arquivo_testes extends Controller
                     }
                 }
             } else {
+                $associado['tcpfcnpj'] = '';
                 if (!isset($documentoInvalido[$numero])) {
                     $documentoInvalido[$numero] = [
                         'documento'  => $numero,
@@ -254,6 +251,14 @@ class Arquivo_testes extends Controller
             }
         }
 
+        echo "<pre>";
+        echo "MEU ASSOCIADO LOGO A POS A VALIDACAO";
+
+        print_R($associado);
+        echo "<pre>";
+        echo "MEU ASSOCIADO LOGO A POS A documentoInvalido";
+        print_R($documentoInvalido);
+
         // ===============================
         //  VALIDAR LINHA COMPLETA 
         // ===============================
@@ -265,7 +270,10 @@ class Arquivo_testes extends Controller
 
         $somenteNumeros = preg_replace("/\D/", "", $coluna);
 
+        echo "<pre>";
+        echo "MEU ASSOCIADO LOGO A POS A coluna";
 
+        print_R($coluna);
 
 
         // ===============================
@@ -281,7 +289,7 @@ class Arquivo_testes extends Controller
         // $r = 0;
         // $contadorLinha = 0;
         // $dadosCtr = $this->CapturaRedeLojaDoContrato->execute($contrato);
-        $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_header_new($consultas, $headers);
+        $colunasEsperadas = $this->CapturaCamposConsultas->Consultation_new_header_validades($consultas, $headers);
         // $cabecalhos = [];
 
         $idConsultation = array_map('intval', $consultas);
@@ -293,11 +301,9 @@ class Arquivo_testes extends Controller
             : explode(',', $id_headres);
 
 
-        // $documentoInvalido = [];
-        // $registrosValidos = [];
-        // $registros = [];
         $fh = fopen($pathFile, "r");
-        $coluna_obrigatorio = $colunasEsperadas['campos'];
+        $coluna_obrigatorio = isset($colunasEsperadas['campos']) ? $colunasEsperadas['campos'] : []; # PARA QUANDO NÁO TIVER O CAMPO OBRIGATORIO
+
 
         foreach ($idsConsulta as $idConsulta) {
 
@@ -369,11 +375,6 @@ class Arquivo_testes extends Controller
 
             $contadorLinha++;
 
-            echo "<pre>";
-            echo "minhas linhas\n";
-
-            print_r($linha);
-
             $linha = preg_replace('/^\xEF\xBB\xBF/', '', $linha);
 
             if (trim($linha) == '') {
@@ -383,9 +384,12 @@ class Arquivo_testes extends Controller
             $colunas = str_getcsv($linha, ';');
 
             //  normaliza "vazio"
-            foreach ($colunas as &$valor) {
-                if (strtolower(trim($valor)) === 'vazio') {
-                    $valor = '';
+            foreach ($colunas as $i => $valor) {
+                if (strtolower(trim($valor)) == 'vazio') {
+                    // if (strtolower(trim($valor)) == 'null') {
+                    $colunas[$i] = 'REMOVER';
+                } else if (strtolower(trim($valor)) == '') {
+                    $colunas[$i] = 'REMOVER';
                 }
             }
 
@@ -396,15 +400,51 @@ class Arquivo_testes extends Controller
             if (!$associado) {
                 continue;
             }
+            if (empty($coluna_obrigatorio)) {
+
+                if (self::validarLinhaNew($associado, $idConsulta, $documentoInvalido, $contadorLinha, $coluna_obrigatorio, $registrosValidos, $colunasEsperadas)) {
+                    // continue;
+                }
+            }
+            echo "<pre>";
+            echo "MINHA VARIAVEL COM OS DADOS associado\n";
 
 
-            if (!self::validarLinhaNew($associado, $idConsulta, $documentoInvalido, $contadorLinha, $coluna_obrigatorio, $registrosValidos, $colunasEsperadas)) {
+            print_R($documentoInvalido);
+
+
+            echo "</pre>";
+
+            // die();
+
+            // $chave = array_search($documentoInvalido, $associado);
+            // $associado[$chave] = "morango";
+
+
+            // echo "<pre>";
+            // echo "MINHA VARIAVEL COM OS DADOS ALTERADOS\n";
+
+            // print_R($associado);
+
+
+            echo "</pre>";
+
+
+
+            $associadoLimpo = array_map(function ($valor) {
+                return $valor === 'REMOVER' ? '' : $valor;
+            }, $associado);
+            $temValor = array_filter($associadoLimpo, function ($valor) {
+                return $valor !== '';
+            });
+
+            if (empty($temValor)) {
                 continue;
             }
 
+            $registros[] = implode(';', array_values($associadoLimpo));
 
 
-            $registros[] = implode(';', array_values($associado));
 
             // foreach ($idConsulta as $idConsultas) {
             // $idConsulta = (int) trim($idConsulta);
@@ -460,56 +500,51 @@ class Arquivo_testes extends Controller
         // $totalvalidos = count($registrosValidos);
         $totalRegistros = count($registros);
 
-        // echo "<pre>";
-        // echo "MEU TOTAL DE ARQUIVOS A SER PROCESSADOS\n";
-
-        // // print_r($registros);
-        // print_r($registros);
-
-
-        // die();
-
-
         $confCns = $this->MontaJsonConfigEHeadersDaConsulta->execute($idConsulta);
-        $resultado = $this->CapturaCamposConsultas->heades($idConsulta);
+        // $resultado = $this->CapturaCamposConsultas->heades($idConsulta);
 
         $redeLoja = $this->CapturaRedeLojaDoContrato->execute($contrato);
         list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($idConsulta, $redeLoja['rede'], $totalRegistrosporArray, $contrato);
         /**VERSAÕ PRE PAGO */
         // list($valorLoteConsulta, $modulo) = $this->BuscaValorLotePorConsulta->calcula($idConsulta, $redeLoja['rede'], $totalRegistrosporArray, $contrato);
-        $retorno_saldo_disponivel = $this->capturaValorPrePago->valor($contrato);
+        // $retorno_saldo_disponivel = $this->capturaValorPrePago->valor($contrato);
 
-
-
-        echo "<pre>";
-        echo "MEU RESULTADO DO MODULO\n";
-
-        print_R($modulo);
-        print_R($retorno_saldo_disponivel->valor_unitario);
+        // print_R($retorno_saldo_disponivel->valor_unitario);
 
         $valorTotal += $valorLoteConsulta;
 
         echo "Quantide nova Atual : {$valorTotal}\n";
 
 
-        $cabe = $resultado[$idConsulta]['tes'];
-        $heders = $resultado[$idConsulta]['cpovars'];
-
-
-
-        if (isset($modulo['perfilcobtipo'])) {
-
-            $retorno_saldo_disponivel->valor_unitario = 17.00;
-
-            $status_alterado = $retorno_saldo_disponivel->valor_unitario > $valorLoteConsulta ? null : 18;
-        }
+        $cabe =  $colunasEsperadas['headersNew'][$idConsulta][$idConsulta]['tes'];
+        $heders =  $colunasEsperadas['headersNew'][$idConsulta][$idConsulta]['cpovars'];
 
 
 
         echo "<pre>";
-        echo "meus dados de alterado";
+        echo "cpovars \n";
+        print_r($heders);
 
-        var_dump($status_alterado);
+
+        echo "<pre>";
+        echo "tes \n";
+        print_r($cabe);
+
+
+
+        // if (isset($modulo['perfilcobtipo'])) {
+
+        //     $retorno_saldo_disponivel->valor_unitario = 17.00;
+
+        //     $status_alterado = $retorno_saldo_disponivel->valor_unitario > $valorLoteConsulta ? null : 18;
+        // }
+
+
+
+        // echo "<pre>";
+        // echo "meus dados de alterado";
+
+        // var_dump($status_alterado);
 
 
 
@@ -574,23 +609,16 @@ class Arquivo_testes extends Controller
             'quantidade_registros' => count($registros)
         ];
 
-        $this->modelMongo->prePaggoInfo(json_encode($jsonStatusPrepago), true);
+        // $this->modelMongo->prePaggoInfo(json_encode($jsonStatusPrepago), true);
 
-
-
-
-        echo "<pre>";
-
-        print_r($jsonStatusPrepago);
 
         $totalInseridos = 0;
         try {
 
             foreach ($registros as $registro) {
-
-                echo "<pre>";
-
                 $valores = array_map('trim', explode(';', $registro));
+
+
 
                 // corta ou ajusta conforme o header
                 $valores = array_slice($valores, 0, count($heders));
@@ -604,29 +632,21 @@ class Arquivo_testes extends Controller
                 // $valores = array_values($registroAssociado);  // ['89600000000', '01091995', ...]
                 // $payload = json_encode($registroAssociado, JSON_UNESCAPED_UNICODE);
 
-
                 $valores = array_map('trim', $valores);
                 // $valoresUnicos = array_unique($valores);
                 $payloads = implode(';', $valores);
-                // $payloads = str_replace(';', $valores);
 
-                // echo "<pre>";
-
-
-
-
-                // print_r($registroAssociado);
                 echo "<pre>";
-                echo "final\n";
+                echo "MEU FINAL AJUSTADO payloads\n";
 
                 print_r($payloads);
 
-                $status_inicial =  empty($status_alterado) ? $status_inicial : $status_alterado;
+                // $status_inicial =  empty($status_alterado) ? $status_inicial : $status_alterado;
 
-                echo "<pre>";
-                echo "status_inicial\n";
+                // echo "<pre>";
+                // echo "status_inicial\n";
 
-                print_r($status_inicial);
+                // print_r($status_inicial);
 
 
 

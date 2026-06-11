@@ -27,13 +27,27 @@ class Model
         $charset = getenv('DB_CHARSET') ?: 'utf8';
 
 
+        //VARIAVEL QUE DECODIFICA O HOST
+        gethostbyname($host);
+
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+
         try {
-            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;user=$user;password=$pass";
-            $this->db = new PDO($dsn);
+            // $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;user=$user;password=$pass";
+            $pdo = new PDO($dsn, $user, $pass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]);
+
+            $this->db = $pdo;
+
+            echo "<pre>";
+
+            print_r($this->db);
             // Conecta ao banco de dados
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // echo "Connected to PostgreSQL successfully!";
+            echo "Connected to PostgreSQL successfully!";
             // $this->db = new PDO($dsn, $user, $pass);
             // $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {

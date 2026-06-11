@@ -48,3 +48,12 @@ DETAIL:  Key (crc_tipo_acoes_id)=(0) is not present in table "crc_tipo_acoes". |
 [2026-05-22 15:35:37] NÃ­vel: 8 | Erro: Undefined property: Crc_tratativas::$conection | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 106
 [2026-05-22 15:39:29] NÃ­vel: 8 | Erro: Undefined variable: conexaoBd | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 519
 [2026-05-22 15:39:29] NÃ­vel: 8 | Erro: Trying to get property 'BD_COM' of non-object | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 519
+[2026-06-08 08:47:11] NÃ­vel: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[42P01]: Undefined table: 7 ERRO:  relação "public.crc_tratativa_tipo" não existe
+LINE 1: SELECT * FROM public.crc_tratativa_tipo where cod_tipo_trata...
+                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 66
+[2026-06-08 08:47:26] NÃ­vel: 10 | Erro: Erro na busca das aÃ§oes public.crc_tipo_acoes : SQLSTATE[42P01]: Undefined table: 7 ERRO:  relação "public.crc_tipo_acoes" não existe
+LINE 1: SELECT * FROM public.crc_tipo_acoes  where cod_acao not in (...
+                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 98
+[2026-06-08 08:47:41] NÃ­vel: 10 | Erro: Erro na busca do relatori: SQLSTATE[42P01]: Undefined table: 7 ERRO:  relação "public.crc_tratativas_movimentacao" não existe
+LINE 33:             FROM public.crc_tratativas_movimentacao
+                          ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 257

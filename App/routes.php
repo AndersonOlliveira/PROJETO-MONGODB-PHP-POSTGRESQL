@@ -51,6 +51,9 @@ return [
     '/api/searchData' => ['ApiControllerTratativas', 'list_dados_data', 'POST'],
     '/api/listSuspesao' => ['ApiControllerTratativas', 'supensao', 'GET'],
 
+    // Rota para teste de conexao
+    '/viewConection' => ['RelatorioController', 'index_conection']
+
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",
     //     "metodo" => "dados_finger",
