@@ -624,14 +624,32 @@
       data,
       status
   ) {
+      const [tipoContato, statusTratativa, proximaAcao] = dados;
 
-      tipo.forEach((items) => {
 
-          if (items) {
-              console.log(items);
-          }
-      });
+      if (!tipoContato || tipoContato == 0) {
+          toast('Selecione o tipo de contato.', 'error');
+          $('#btn-salvar-tratativa').prop('disabled', false);
+          return false; // Para a função aqui
+      }
+
+      if (!statusTratativa || statusTratativa == 0) {
+          toast('Selecione o status da tratativa.', 'error');
+          $('#btn-salvar-tratativa').prop('disabled', false);
+          return false; // Para a função aqui
+      }
+
+      if (!proximaAcao || proximaAcao == 0) {
+
+          toast('Selecione a próxima ação.', 'error');
+          $('#btn-salvar-tratativa').prop('disabled', false);
+          return false; // Para a função aqui
+      }
+
+      return true; // Se passar por todos, os dados estão válidos
   }
+
+
 
 
   //BUSCO DADOS PRA GERACAO DE OPTION TIPO CONTATO
@@ -673,6 +691,7 @@
               'Content-Type': 'application/json',
               'Accept': 'application/json'
           },
+
 
           success: function (resp) {
               console.log('Resposta da api', resp);

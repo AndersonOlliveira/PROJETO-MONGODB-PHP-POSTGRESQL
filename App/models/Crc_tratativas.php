@@ -38,19 +38,16 @@ class Crc_tratativas extends Model
 
     public function listTipoContrato($cod = null)
     {
-
-
-        $sql = "SELECT * FROM public.crc_tratativa_tipo where cod_tipo_tratativa not in (6) ";
-
-
         $parametro = [];
 
-        if ($cod) {
-            $sql .= " AND cod_tipo_tratativa = :cod_tipo_tratativa";
+        if ($cod !== null) {
+            $sql = "SELECT * FROM public.crc_tratativa_tipo WHERE cod_tipo_tratativa = :cod_tipo_tratativa";
             $parametro[':cod_tipo_tratativa'] = $cod;
+        } else {
+            $sql = "SELECT * FROM public.crc_tratativa_tipo WHERE cod_tipo_tratativa NOT IN (6)";
         }
 
-        $sql .= " order by tipo_tratativa asc;";
+        $sql .= " ORDER BY tipo_tratativa ASC;";
 
         try {
             $stmt = $this->db->prepare($sql);
@@ -73,16 +70,18 @@ class Crc_tratativas extends Model
     {
 
 
-        $sql = "SELECT * FROM public.crc_tipo_acoes  where cod_acao not in (6) ";
-        // $sql = $this->db->prepare($sql);
-
         $parametro = [];
-        if ($cod) {
-            $sql .= " AND cod_acao = :cod";
+
+        if ($cod !== null) {
+            // quando foi enviado um código, não aplica o filtro not in
+            $sql = "SELECT * FROM public.crc_tipo_acoes WHERE cod_acao = :cod";
             $parametro[':cod'] = $cod;
+        } else {
+            $sql = "SELECT * FROM public.crc_tipo_acoes WHERE cod_acao NOT IN (6)";
         }
 
         $sql .= " order by acao_descricao asc;";
+
         try {
             $stmt = $this->db->prepare($sql);
 
@@ -162,10 +161,6 @@ class Crc_tratativas extends Model
         $filtros = [];
         $params = [];
 
-        // if (!empty($numeroCobranca)) {
-        //     $filtros[] = " crc.crcid = :numeroCobranca";
-        //     $params[':numeroCobranca'] = $numeroCobranca;
-        // }
 
         // Cenário A: Filtro por período (Data Início e Fim)
         if (!empty($data_inicio) && !empty($data_fim)) {
@@ -528,7 +523,7 @@ class Crc_tratativas extends Model
     }
 
 
-    public function getRelatorio_origim($idCobranca = null)
+    public function getRelatorio_origim($idCobranca = null, $mes = null, $data_inicio = null, $data_fim = null)
     {
 
         //	-- 1. Criar dados virtuais em lote usando generate_series dentro das CTEs
@@ -551,12 +546,46 @@ class Crc_tratativas extends Model
                 LEFT JOIN perfilcob ON perfilcobid = cliperfilcobid
                 where 
                 crcfil =  1 and
-                --crcdatvct between '2026-05-01' and  '2026-05-14-' AND
                 upper(crcbxd) = 'N' AND
                 crcvlr > '0.00' AND
                 crcprepago = false ";
-
+        $filtros = [];
         $params = [];
+
+        if (!empty($data_inicio) && !empty($data_fim)) {
+
+            $filtros[] = " crc.crcdatvct::date BETWEEN :data_inicio AND :data_fim";
+            $data_inicio_obj = self::converterData($data_inicio);
+            $data_fim_obj = self::converterData($data_fim);
+
+            if ($data_inicio_obj && $data_fim_obj) {
+                $data_inicio = $data_inicio_obj->format('Y-m-d');
+                $data_fim = $data_fim_obj->format('Y-m-d');
+
+                $params[':data_inicio'] = $data_inicio;
+                $params[':data_fim'] = $data_fim;
+            } else {
+
+                return ['msg' => 'DATAS ENVIADAS NO FORMATO INVALIDO.'];
+            }
+        }
+        // Cenário B: Filtro por Mês/Ano (Caso não tenha o período completo)
+        elseif (!empty($mes)) {
+            $dados_mes = explode('/', $mes);
+            if (count($dados_mes) == 2) {
+
+                $filtros[] = " EXTRACT(MONTH FROM crc.crcdatvct) = :mes";
+                $filtros[] = " EXTRACT(YEAR FROM crc.crcdatvct) = :ano";
+                $params[':mes'] = (int)$dados_mes[0];
+                $params[':ano'] = (int)$dados_mes[1];
+            }
+        }
+        // Se houver filtros, aplica-os à consulta
+        if (!empty($filtros)) {
+            $sql .= " AND " . implode(" AND ", $filtros);
+        }
+
+
 
         if ($idCobranca) {
             $sql .= " AND crcid = :crcid";
@@ -566,6 +595,7 @@ class Crc_tratativas extends Model
         $sql .= "  group by crcid ,clicobtel,clicomctt,clissp,clinomraz,cliid,venean,perfilcobtipo,crcprepago
                 ORDER BY vencimento asc;";
 
+        //01/03 as 10/03  
 
         try {
             $sql = $this->db->prepare($sql);
@@ -584,6 +614,11 @@ class Crc_tratativas extends Model
 
     public function verifry_cobraca($idCobranca, $dados = null)
     {
+
+        echo "<pre>";
+        echo "ID ENVIADO PARA A CONSULTA\n";
+
+        print_R($idCobranca);
 
         $sql = "SELECT EXISTS(
                     SELECT 1
@@ -651,42 +686,68 @@ class Crc_tratativas extends Model
             $cliIds = self::getRelatorio_origim($idCobranca);
             $tpos =  self::tipo_tratativa(); //PEGO O TIOPO DA TRA
 
+
+            echo "<pre>";
+
+            print_R($cliIds);
+
+            echo "<pre>";
+            print_R("ID DA COBRACA ENVIADO");
+            echo "------- tpos\n";
+            print_R($tpos);
+
+            print_R("ID DA COBRACA ENVIADO");
+            echo "-------";
+
+            print_R($idCobranca);
+
+
+
             $new_tipo = self::listTipoContrato($crc_tratativa_tipo_id);
+
+            echo "-------";
+            print_R($new_tipo);
             $new_acoes = self::listTipoAcoes($crc_tipo_acoes_id);
+            echo "------- new_acoes \n";
+            print_R($new_acoes);
+
             $nome = empty($ctr_interno) ? "INSERIDO SISTEMA" :  $ctr_interno . " - " . self::info_responsavel($ctr_interno);
+            echo "------- nome \n";
+            print_R($nome);
+            $new_ocorrencia =  $this->ajustar->convertEncode('Foi inserido a movimentacao da cobrança ' . $idCobranca . ' com o tipo ' . $new_tipo[0]['tipo_tratativa'] . ' com a ação ' . $new_acoes[0]['acao_descricao'] . ' com a seguinte observação ' . $descricao_movimentacao . ' inserido pelo o contrato ' . $nome);
 
-            $new_ocorrencia =  $this->ajustar->convertEncode('Foi inserido a movimentacao da cobrança ' . $idCobranca . ' com o  tipo ' . $new_tipo[0]['tipo_tratativa'] . ' com a ação ' . $new_acoes[0]['acao_descricao'] . ' com a seguinte observação ' . $descricao_movimentacao . ' inserido pelo o contrato ' . $ctr_interno);
+            echo "-------";
+            print_R($new_ocorrencia);
+            // $stmt = $conexaoBd->BD_COM->prepare($sql);
+            // $stmt->bindParam(':cobranca', $idCobranca);
+            // $stmt->bindParam(':crc_tratativa_tipo_id', $crc_tratativa_tipo_id);
+            // $stmt->bindParam(':crc_tipo_acoes_id', $crc_tipo_acoes_id);
+            // $stmt->bindParam(':descricao_movimentacao', $descricao_movimentacao);
+            // $stmt->bindParam(':ctr_interno', $ctr_interno);
 
-            $stmt = $conexaoBd->BD_COM->prepare($sql);
-            $stmt->bindParam(':cobranca', $idCobranca);
-            $stmt->bindParam(':crc_tratativa_tipo_id', $crc_tratativa_tipo_id);
-            $stmt->bindParam(':crc_tipo_acoes_id', $crc_tipo_acoes_id);
-            $stmt->bindParam(':descricao_movimentacao', $descricao_movimentacao);
-            $stmt->bindParam(':ctr_interno', $ctr_interno);
-
-            $stmt->execute();
+            // $stmt->execute();
 
             // Recupera o ID gerado usando o FETCH do RETURNING (Postgres)
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            $idTratativa = $resultado['id_crc_tratativas'];
+            // $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            // $idTratativa = $resultado['id_crc_tratativas'];
 
             $cod_status = isset($dados) && !empty($dados) ? $status_tratativa : 1;  //# dados;
 
 
             $status_descricao = $descricao_movimentacao;
 
-            $stmt = $conexaoBd->BD_COM->prepare($sqlStatus);
-            $stmt->bindParam(':crc_tratativas_id', $idTratativa);
-            $stmt->bindParam(':cod_status', $cod_status);
-            $stmt->bindParam(':status_descricao', $status_descricao);
+            // $stmt = $conexaoBd->BD_COM->prepare($sqlStatus);
+            // $stmt->bindParam(':crc_tratativas_id', $idTratativa);
+            // $stmt->bindParam(':cod_status', $cod_status);
+            // $stmt->bindParam(':status_descricao', $status_descricao);
             // $stmt->execute();
 
-            if ($stmt->execute()) {
-                // Se a inserção do status for bem-sucedida, registra a ocorrência
-                self::registrarOcorrencia($cliIds[0]['cliid'], $tpos[0]['tpoid'], $new_ocorrencia, $nome);
+            // if ($stmt->execute()) {
+            //     // Se a inserção do status for bem-sucedida, registra a ocorrência
+            //     self::registrarOcorrencia($cliIds[0]['cliid'], $tpos[0]['tpoid'], $new_ocorrencia, $nome);
 
-                return ['status' => 'success', 'message' => 'Movimentação e Status inseridos com sucesso!'];
-            }
+            //     return ['status' => 'success', 'message' => 'Movimentação e Status inseridos com sucesso!'];
+            // }
         } catch (PDOException $e) {
             self::manipuladorDeErros(11, 'Erro ao inserir movimentação  public.crc_tratativas_status public.crc_tratativas_movimentacao : ' . $e->getMessage(), __FILE__, __LINE__);
 

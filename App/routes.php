@@ -52,7 +52,17 @@ return [
     '/api/listSuspesao' => ['ApiControllerTratativas', 'supensao', 'GET'],
 
     // Rota para teste de conexao
-    '/viewConection' => ['RelatorioController', 'index_conection']
+    '/viewConection' => ['RelatorioController', 'index_conection'],
+    '/viewIndicadores' => ['IndicadoresController', 'index_indicaores'],
+    '/api/CadIndicadores' => ['IndicadoresController', 'pushindicadores'],
+    '/api/Cadinformacoes' => ['IndicadoresController', 'push_informacoes'],
+    '/api/CadSolicitante' => ['IndicadoresController', 'vincular_solicitante'],
+    '/api/CadExecutor' => ['IndicadoresController', 'vincular_executor'],
+    '/api/CadJob' => ['IndicadoresController', 'cadatrar_job'],
+    '/api/ListJobs' => ['IndicadoresController', 'listaJobs'],
+    '/api/ListArea' => ['IndicadoresController', 'listArea'],
+    '/api/ListUserArea' => ['IndicadoresController', 'listUserArea'],
+    '/api/ListTipo' => ['IndicadoresController', 'listTipo']
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",

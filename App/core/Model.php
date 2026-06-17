@@ -41,13 +41,13 @@ class Model
 
             $this->db = $pdo;
 
-            echo "<pre>";
+            // echo "<pre>";
 
-            print_r($this->db);
+            // print_r($this->db);
             // Conecta ao banco de dados
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            echo "Connected to PostgreSQL successfully!";
+            // echo "Connected to PostgreSQL successfully!";
             // $this->db = new PDO($dsn, $user, $pass);
             // $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {

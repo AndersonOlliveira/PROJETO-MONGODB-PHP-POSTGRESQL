@@ -37,23 +37,32 @@ class Controller
     {
         //para windows
 
-        // echo "<pre>";
+        try {
+            // $file = __DIR__ . "../../Utilis/{$className}.php";
 
-        // print_R($className);
-        // $file = __DIR__ . "../../Utilis/{$className}.php";
-        $file = __DIR__ . "/../Utilis/{$className}.php";
-        //
-        if (!file_exists($file)) {
-            throw new \Exception("Arquivo {$file} não encontrado! \n");
+            $dir = 'Utilis';
+
+            $file = __DIR__ . "/../${dir}/{$className}.php";
+
+            if (!file_exists($file)) {
+                throw new \Exception("Arquivo {$file} não encontrado! \n");
+            } else {
+
+                $file = __DIR__ . "/../{$dir}/{$className}.php";
+            }
+            require_once $file;
+
+            $className = basename($className);
+
+            if (!class_exists($className)) {
+                throw new \Exception("Classe {$className} não encontrada dentro do arquivo! \n");
+            }
+
+            return new $className();
+            //tratamento da aparesentacao do erro
+        } catch (Exception $e) {
+            echo "FALHA EM LOCALIZAR O DADO INFORMADO " . $e->getMessage() . "\n";
         }
-
-        require_once $file;
-
-        if (!class_exists($className)) {
-            throw new \Exception("Classe {$className} não encontrada dentro do arquivo! \n");
-        }
-
-        return new $className();
     }
 
     public function Utilis_arquivo($nameArchive)
@@ -121,5 +130,4 @@ class Controller
         // Se houver falha, lida com o erro
         // die("Modelo MongoDB '{$modelName}' não encontrado ou não pôde ser carregado.");
     }
-    
 }

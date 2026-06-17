@@ -101,18 +101,52 @@ class process_Trativas extends Controller
     public function seachDataAll($dados)
     {
 
-
         if (!empty($dados['tdataInicio']) && !empty($dados['tdataFim'])) {
-            $tdataInicio = $dados['tdataInicio'];
-            $tdataFim = $dados['tdataFim'];
-            $result_process = $this->utilis_pgadmin->getRelatorio(null, $tdataInicio, $tdataFim);
+
+            $retorno = $this->utilis_pgadmin->getRelatorio_origim(
+                null,
+                null,
+                $dados['tdataInicio'],
+                $dados['tdataFim']
+            );
         } else {
 
-            $result_process = $this->utilis_pgadmin->getRelatorio($dados['mes'], null, null);
+            $retorno = $this->utilis_pgadmin->getRelatorio_origim(
+                null,
+                $dados['mes'],
+                null,
+                null
+            );
         }
 
-        if ($result_process) {
+        if (!empty($retorno)) {
 
+            foreach ($retorno as $result) {
+
+                if (!empty($result['n_nro'])) {
+                    $this->utilis_pgadmin->verifry_cobraca($result['n_nro']);
+                }
+            }
+        }
+
+        // Consulta final após possíveis inserções
+        if (!empty($dados['tdataInicio']) && !empty($dados['tdataFim'])) {
+
+            $result_process = $this->utilis_pgadmin->getRelatorio(
+                null,
+                $dados['tdataInicio'],
+                $dados['tdataFim']
+            );
+        } else {
+
+            $result_process = $this->utilis_pgadmin->getRelatorio(
+                $dados['mes'],
+                null,
+                null
+            );
+        }
+
+        if (!empty($result_process)) {
             return $result_process;
         }
     }

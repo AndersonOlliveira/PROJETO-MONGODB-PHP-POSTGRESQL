@@ -57,3 +57,142 @@ LINE 1: SELECT * FROM public.crc_tipo_acoes  where cod_acao not in (...
 [2026-06-08 08:47:41] Nível: 10 | Erro: Erro na busca do relatori: SQLSTATE[42P01]: Undefined table: 7 ERRO:  rela��o "public.crc_tratativas_movimentacao" n�o existe
 LINE 33:             FROM public.crc_tratativas_movimentacao
                           ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 257
+[2026-06-15 20:04:36] Nível: 8 | Erro: Undefined variable: retorno | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\process_Trativas.php | Linha: 122
+[2026-06-15 20:07:48] Nível: 8 | Erro: Undefined variable: retorno | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\process_Trativas.php | Linha: 122
+[2026-06-15 20:07:48] Nível: 8 | Erro: Undefined variable: result_process | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\process_Trativas.php | Linha: 134
+[2026-06-15 20:16:59] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:16:59] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:16:59] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:16:59] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:16:59] Nível: 8 | Erro: Undefined variable: conexaoBd | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 706
+[2026-06-15 20:16:59] Nível: 8 | Erro: Trying to get property 'BD_COM' of non-object | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 706
+[2026-06-15 20:19:11] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:19:11] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:19:11] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:19:11] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:19:11] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 707
+[2026-06-15 20:22:09] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 709
+[2026-06-15 20:22:09] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 709
+[2026-06-15 20:22:09] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 709
+[2026-06-15 20:22:09] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 709
+[2026-06-15 20:22:09] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 712
+[2026-06-15 20:23:46] Nível: 8 | Erro: Undefined variable: new_tipo | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 704
+[2026-06-15 20:23:47] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 711
+[2026-06-15 20:23:47] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 711
+[2026-06-15 20:23:47] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 711
+[2026-06-15 20:23:47] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 711
+[2026-06-15 20:23:47] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 714
+[2026-06-15 20:25:45] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 722
+[2026-06-15 20:25:45] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 722
+[2026-06-15 20:25:45] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 722
+[2026-06-15 20:25:45] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 722
+[2026-06-15 20:25:45] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 737
+[2026-06-15 20:25:45] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 737
+[2026-06-15 20:25:45] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 745
+[2026-06-15 20:31:21] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 724
+[2026-06-15 20:31:21] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 724
+[2026-06-15 20:31:21] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 739
+[2026-06-15 20:31:21] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 739
+[2026-06-15 20:31:21] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 747
+[2026-06-15 20:33:44] Nível: 8 | Erro: Undefined offset: 0 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 724
+[2026-06-15 20:33:44] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 724
+[2026-06-15 20:33:44] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 739
+[2026-06-15 20:33:44] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 739
+[2026-06-15 20:33:44] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 747
+[2026-06-15 20:37:34] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 64
+[2026-06-15 20:37:35] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 722
+[2026-06-15 20:37:35] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 722
+[2026-06-15 20:37:35] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 737
+[2026-06-15 20:37:35] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 737
+[2026-06-15 20:37:35] Nível: 8 | Erro: Undefined variable: stmt | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 745
+[2026-06-15 20:41:34] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:34] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:34] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:34] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:34] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:36] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:36] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:36] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:36] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:36] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:38] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:39] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:39] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:39] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:39] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:40] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:41] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:41] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:41] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:41] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:43] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:43] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:43] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:43] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:43] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:45] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:45] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:45] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:45] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:45] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:47] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:47] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:47] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:47] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:47] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:49] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:50] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:50] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:50] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:50] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:53] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:54] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:54] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:54] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:54] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:56] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:56] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:56] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:56] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:56] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:58] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:41:58] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:58] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:41:58] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:41:58] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:42:01] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:42:02] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:42:02] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:42:02] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:42:02] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:42:04] Nível: 10 | Erro: Erro na busca public.crc_tratativa_tipo: SQLSTATE[HY093]: Invalid parameter number: :cod_tipo_tratativa | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 68
+[2026-06-15 20:42:04] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:42:04] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 726
+[2026-06-15 20:42:04] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:42:04] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 741
+[2026-06-15 20:43:46] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:46] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:50] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:50] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:53] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:53] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:56] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:56] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:59] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:43:59] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:02] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:02] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:05] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:05] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:08] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:08] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:11] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:11] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:14] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:14] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:17] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:17] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:19] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:19] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:22] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-15 20:44:22] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736

@@ -154,12 +154,6 @@ class ApiControllerTratativas extends Controller
         }
 
 
-        echo "<pre>";
-        echo "PASSEI NAS VERIFICACOES";
-        print_r($dados);
-
-        die();
-
         $retorno_dados = $this->utilis_trativas->trata_dados_trativa($dados);
 
         if ($retorno_dados['status'] == 'success') {

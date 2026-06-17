@@ -1,0 +1,70 @@
+[2026-06-12 12:18:00] Nível: 0 | Erro: Teste | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 80
+[2026-06-15 08:58:14] Nível: 0 | Erro: Teste | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 84
+[2026-06-15 09:00:14] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at end of input
+LINE 2:             VALUES ($1,$2,$3)ON CONFLICT(n_area)
+                                                        ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 123
+[2026-06-15 09:05:28] Nível: 08P01 | Erro: SQLSTATE[08P01]: <<Unknown error>>: 7 ERROR:  bind message supplies 3 parameters, but prepared statement "pdo_stmt_00000001" requires 4 | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 126
+[2026-06-15 10:39:52] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :n_area_check | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 147
+[2026-06-15 10:40:07] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :n_area_check | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 147
+[2026-06-15 11:31:23] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobperfil" does not exist
+LINE 2:         (n_perfil, ctr_interno_cad, status)
+                           ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 145
+[2026-06-15 12:07:36] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "("
+LINE 2:         (, ctr_interno_cad, )
+                ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 145
+[2026-06-15 12:40:18] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "area_solicitante_id" of relation "executorareasolicitante" violates not-null constraint
+DETAIL:  Failing row contains (2, null, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 186
+[2026-06-15 12:40:29] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "area_solicitante_id" of relation "executorareasolicitante" violates not-null constraint
+DETAIL:  Failing row contains (3, null, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 186
+[2026-06-15 12:40:39] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "area_solicitante_id" of relation "executorareasolicitante" violates not-null constraint
+DETAIL:  Failing row contains (4, null, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 186
+[2026-06-15 12:45:02] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "area_solicitante_id" of relation "executorareasolicitante" violates not-null constraint
+DETAIL:  Failing row contains (5, null, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 186
+[2026-06-15 12:50:02] Nível: 22P02 | Erro: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type integer: "executor_id" | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 193
+[2026-06-15 13:03:06] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "id_job_executor" of relation "executorjobs" violates not-null constraint
+DETAIL:  Failing row contains (null, 2, 10). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 204
+[2026-06-15 13:11:55] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "id_job_executor" of relation "executorjobs" violates not-null constraint
+DETAIL:  Failing row contains (null, 2, 10). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 215
+[2026-06-16 11:10:12] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  INSERT has more target columns than expressions
+LINE 1: ...solicitacao, data_inicio, data_fim, titulo_email, detalhamen...
+                                                             ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 253
+[2026-06-16 11:11:02] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  INSERT has more target columns than expressions
+LINE 1: ...cao, titulo_email, detalhamento, ctr_interno_cad, data_cad_j...
+                                                             ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 253
+[2026-06-16 11:11:20] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "detalhamento" of relation "jobcadjobs" violates not-null constraint
+DETAIL:  Failing row contains (1, 7, 1, 1, EMPRESA FICTICIA, 1, 2, 2026-12-06 00:00:00, null, null, Criação de novo serviço interno, null, 417039, 2026-06-16 11:11:20.162417). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 253
+[2026-06-16 11:19:32] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "detalhamento" of relation "jobcadjobs" violates not-null constraint
+DETAIL:  Failing row contains (3, 7, 1, 1, EMPRESA FICTICIA, 1, 2, 2026-12-06 00:00:00, null, null, Criação de novo serviço interno, null, 417039, 2026-06-16 11:19:31.932015). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 255
+[2026-06-16 11:19:59] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "detalhamento" of relation "jobcadjobs" violates not-null constraint
+DETAIL:  Failing row contains (4, 7, 1, 1, EMPRESA FICTICIA, 1, 2, 2026-12-06 00:00:00, null, null, Criação de novo serviço interno, null, 417039, 2026-06-16 11:19:58.418689). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 255
+[2026-06-17 15:34:59] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "$4"
+LINE 6:                     $4
+                            ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 162
+[2026-06-17 15:36:28] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "$4"
+LINE 6:                     $4
+                            ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 162
+[2026-06-17 15:38:57] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "$4"
+LINE 7:                     $4
+                            ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 158
+[2026-06-17 15:41:51] Nível: 42701 | Erro: SQLSTATE[42701]: Duplicate column: 7 ERROR:  column "ctr_interno_cad" specified more than once
+LINE 2:             (n_nome_user, ctr_interno_cad, ctr_interno_cad, ...
+                                                   ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 158
+[2026-06-17 15:43:23] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 153
+[2026-06-17 15:43:47] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 153
+[2026-06-17 15:45:50] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 153
+[2026-06-17 15:51:36] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 161
+[2026-06-17 15:52:25] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 161
+[2026-06-17 15:53:42] Nível: 42701 | Erro: SQLSTATE[42701]: Duplicate column: 7 ERROR:  column "ctr_interno_cad" specified more than once
+LINE 2:             (n_nome_user, ctr_interno_cad, ctr_interno_cad, ...
+                                                   ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 171
+[2026-06-17 15:55:12] Nível: 22P02 | Erro: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type integer: "id_area" | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 172
+[2026-06-17 15:58:32] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "SELECT"
+LINE 6:                     SELECT
+                            ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 162
+[2026-06-17 16:01:05] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at end of input
+LINE 9:                     WHERE UPPER(n_area) = $4
+                                                    ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 160
+[2026-06-17 17:24:08] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "n_job" does not exist
+LINE 2:               id_job, n_job
+                              ^
+HINT:  Perhaps you meant to reference the column "jobtipo.id_job". | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 456
