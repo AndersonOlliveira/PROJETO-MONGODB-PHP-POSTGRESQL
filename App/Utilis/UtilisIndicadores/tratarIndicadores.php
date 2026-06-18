@@ -98,4 +98,24 @@ class tratarIndicadores extends Controller
 
         return $result_get_tipo;
     }
+
+    public function lista_status_jobs()
+    {
+        $result_get_status = $this->modelKpi->get_tipo_status();
+
+        return $result_get_status;
+    }
+    public function lista_perfil_jobs()
+    {
+        $result_get_perfil = $this->modelKpi->get_tipo_perfil();
+
+        return $result_get_perfil;
+    }
+
+    public function lista_clientes()
+    {
+        $result_get_cliente = $this->modelKpi->get_list_clients();
+
+        return $result_get_cliente;
+    }
 }

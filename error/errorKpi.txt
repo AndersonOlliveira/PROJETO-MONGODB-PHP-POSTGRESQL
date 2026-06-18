@@ -68,3 +68,7 @@ LINE 9:                     WHERE UPPER(n_area) = $4
 LINE 2:               id_job, n_job
                               ^
 HINT:  Perhaps you meant to reference the column "jobtipo.id_job". | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 456
+[2026-06-18 17:08:28] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "executante_id" of relation "jobcadjobs" violates not-null constraint
+DETAIL:  Failing row contains (5, null, 1, 234$NOGUEZ REPRESENTACAO COMERCIAL LTDA, 1, 2, 2026-06-17 00:00:00, null, null, TESTE,                                         It was a dark and stormy..., 417039, 2026-06-18 17:08:27.482874, 7, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 265
+[2026-06-18 18:09:12] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 668
+[2026-06-18 18:10:32] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 668

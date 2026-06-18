@@ -245,21 +245,27 @@ class Kpiindicadores extends Model
         $msg = [];
         $detalhamento =  !empty($dados['detalhamento']) ? $dados['detalhamento'] : null;
 
-        $sql = "INSERT INTO {$tabela} (executante_id, job_id, area_id, nome_cliente, status_id, perfil_id, data_solicitacao, titulo_email, detalhamento, ctr_interno_cad)
-        VALUES (:executante_id, :job_id, :area_id, :nome_cliente, :status_id, :perfil_id, :data_solicitacao, :titulo_email, :detalhamento, :ctr_interno_cad);";
+        $id_cliid = explode('$', $dados['n_cliente']);
+
+        $tratado  = $id_cliid[0] == 'novo' ? null : $id_cliid[0];
+
+        $sql = "INSERT INTO {$tabela} (solicitante_id, job_id, nome_cliente, status_id, perfil_id, data_solicitacao, titulo_email, detalhamento, ctr_interno_cad,cliid_id)
+        VALUES (:solicitante_id, :job_id,:nome_cliente, :status_id, :perfil_id, :data_solicitacao, :titulo_email, :detalhamento, :ctr_interno_cad,:cliid_id);";
+        // VALUES (:executante_id, :job_id, :area_id, :nome_cliente, :status_id, :perfil_id, :data_solicitacao, :titulo_email, :detalhamento, :ctr_interno_cad);";
 
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':executante_id', $dados['executor']);
+            $stmt->bindParam(':solicitante_id', $dados['id_solicitante']);
             $stmt->bindParam(':job_id', $dados['tipoJob']);
-            $stmt->bindParam(':area_id', $dados['area']);
-            $stmt->bindParam(':nome_cliente', $dados['n_cliente']);
+            // $stmt->bindParam(':area_id', $dados['area']);
+            $stmt->bindParam(':nome_cliente', $id_cliid[1]);
             $stmt->bindParam(':status_id', $dados['s_tatus']);
             $stmt->bindParam(':perfil_id', $dados['perfil']);
             $stmt->bindParam(':data_solicitacao', $dados['d_soliciticao']);
             $stmt->bindParam(':titulo_email', $dados['titulo_email']);
             $stmt->bindParam(':detalhamento', $detalhamento);
             $stmt->bindParam(':ctr_interno_cad', $dados['ctr']);
+            $stmt->bindParam(':cliid_id', $tratado);
 
             if ($stmt->execute()) {
 
@@ -279,6 +285,84 @@ class Kpiindicadores extends Model
         }
     }
     public function lista_jobs()
+    {
+        $error = [];
+        $msg = [];
+        $registros = [];
+
+
+        $sql = "WITH job_perfil as (
+                SELECT
+                        jperfil.n_perfil,
+                        jperfil.id_perfil
+                    FROM cadastro_job.jobperfil jperfil
+                ),
+                job_status AS (
+                    SELECT
+                        jstatus.n_status,
+                        jstatus.id_status
+                    FROM cadastro_job.jobstatus jstatus
+                )
+                SELECT
+
+                    cadjobs.solicitante_id,
+                    cadjobs.executante_id,
+                -- jbus.n_nome_user ,
+                    --ar.n_area as area_solicitante,
+                    tstatus.n_status,
+                    cadjobs.data_inicio,
+                    cadjobs.data_fim,
+                    cadjobs.titulo_email,
+                    cadjobs.detalhamento,
+                    cadjobs.data_cad_job,
+                    cadjobs.nome_cliente,
+                    cadjobs.data_solicitacao,
+                    
+                    perjobs.n_perfil
+
+                FROM cadastro_job.jobcadjobs cadjobs
+                INNER JOIN job_perfil perjobs
+                    ON perjobs.id_perfil = cadjobs.perfil_id
+                    INNER JOIN job_status tstatus
+                    ON tstatus.id_status = cadjobs.status_id;";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+
+                    $newDate = new DateTime($row['data_solicitacao']);
+                    $row['data_cad_job'] = $newDate->format('d-m-Y');
+
+                    $row['dados_solicitante'] =  self::users($row['solicitante_id']);
+                    $row['dados_executor'] =  self::users($row['executante_id']);
+
+                    $registros[] = $row;
+                }
+                return $registros;
+            } else {
+
+                return $error[] = ['error' => 'Dados Não localizados'];
+            }
+        } catch (PDOException $e) {
+
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Job, cod error: {$e->getCode()}"];
+        }
+    }
+    public function lista_jobs_old()
     {
         $error = [];
         $msg = [];
@@ -359,6 +443,7 @@ class Kpiindicadores extends Model
 
                     $newDate = new DateTime($row['data_cad_job']);
                     $row['data_cad_job'] = $newDate->format('d-m-Y');
+
                     $registros[] = $row;
                 }
                 return $registros;
@@ -414,6 +499,7 @@ class Kpiindicadores extends Model
     {
 
         $sql = "";
+        $error = [];
 
 
         $sql = "SELECT jbus.id as usuario_id,jbus.status as status_user, 
@@ -437,17 +523,19 @@ class Kpiindicadores extends Model
                 $e->getLine(),
                 $this->arquivoLog
             );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados area, cod error: {$e->getCode()}"];
         }
     }
     public function get_tipo_job()
     {
-
+        $error = [];
         $sql = "";
 
 
         $sql = "SELECT 
-              id_job, n_job
-              FROM cadastro_job.jobtipo";
+              id_job, n_tipo
+               FROM cadastro_job.jobtipo";
 
         try {
 
@@ -465,6 +553,134 @@ class Kpiindicadores extends Model
                 $e->getLine(),
                 $this->arquivoLog
             );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados area, cod error: {$e->getCode()}"];
+        }
+    }
+
+    public function get_tipo_perfil()
+    {
+        $error = [];
+        $sql = "";
+
+
+        $sql = "SELECT 
+              id_perfil, n_perfil
+            FROM cadastro_job.jobperfil;";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+
+            if ($stmt->execute()) {
+
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+        } catch (PDOException $e) {
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados area, cod error: {$e->getCode()}"];
+        }
+    }
+
+    public function get_tipo_status()
+    {
+        $error = [];
+        $sql = "";
+
+
+        $sql = "SELECT id_status , n_status 
+        FROM cadastro_job.jobstatus;";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+
+            if ($stmt->execute()) {
+
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+        } catch (PDOException $e) {
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados area, cod error: {$e->getCode()}"];
+        }
+    }
+
+    public function get_list_clients()
+    {
+
+        $sql = "";
+
+
+        $sql = "SELECT cliid,clinomraz FROM 
+                 cli, ctr 
+                 WHERE cliid = ctrcli AND cliatv = 'S' AND ctratv = 'S' AND ctrint = 'N'
+                 GROUP BY cliid,clinomraz";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+
+            if ($stmt->execute()) {
+
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+        } catch (PDOException $e) {
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Clientes, cod error: {$e->getCode()}"];
+        }
+    }
+
+    public function users($id)
+    {
+        $sql = "";
+
+        $sql = "SELECT jbarea.id_area,
+          jbarea.n_area, 
+          juser.n_nome_user
+	      FROM cadastro_job.jobusuarios juser
+	      INNER JOIN cadastro_job.jobarea jbarea on (jbarea.id_area = juser.id_area)
+          WHERE juser.id = :id";
+
+        $stmt = $this->db->prepare($sql);
+
+        try {
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+            return $stmt->fetch();
+        } catch (PDOException $e) {
+
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Clientes, cod error: {$e->getCode()}"];
         }
     }
 }

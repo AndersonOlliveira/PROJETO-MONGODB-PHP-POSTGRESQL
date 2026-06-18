@@ -12,6 +12,7 @@
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link href="../../css/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="../../css/flatpickr/flatpickr.min.css" rel="stylesheet">
+    <link href="../../css/select/select2.min.css" rel="stylesheet">
     <link href="../../css/Relatorio/viewindicadores.css?v= <?= time(); ?>" rel="stylesheet">
 </head>
 
@@ -180,10 +181,61 @@
                             </div>
                             <span>ao selecionaar o solicitante já tem o vinculo solicite a área</span>
                             <div class="mb-3">
-                                <label for="areaInput" class="form-label">Nome área</label>
-                                <input type="text" class="form-control" id="n_area" aria-describedby="area_help">
-                                <input type="hidden" class="form-control" id="data-tipo" value="0">
-                                <input type="hidden" value="area" id="d-area">
+                                <!-- <label for="areaInput" class="form-label">Selecione Cliente</label> -->
+                                <label for="cliente">Selecione Cliente</label>
+
+                                <input type="text" id="n_cliente" list="n_cliente" class="form-control" autocomplete="off">
+
+                                <datalist id="n_cliente"></datalist>
+
+                            </div>
+                            <label>
+                                <input type="checkbox" id="myCheckbox">
+                                Cliente Novo ou Teste
+                            </label>
+                            <input type="text" id="clientes_inputs" placeholder="Type here...">
+                            <div class="mb-3 form-check">
+                                <label class="form-check-label" for="exampleCheck1">Selecione Tipo Job:</label>
+                                <select class="form-control-d" id="d-tipo-job"></select>
+
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <label class="form-check-label" for="exampleCheck1">Selecione Tipo Status:</label>
+                                <select class="form-control-d" id="d-tipo-job-status"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <!-- <label for="areaInput" class="form-label">Selecione Cliente</label> -->
+                                <label for="cliente">Selecione Perfil do Job:</label>
+
+                                <input type="text" id="n_perfil" list="n_perfil" class="form-control" autocomplete="off">
+
+                                <datalist id="n_perfil"></datalist>
+
+                            </div>
+                            <div class="mb-3">
+                                <div class="fg">
+                                    <label>Data Solicitação</label>
+                                    <input type="date" id="range">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="fg">
+                                    <label>Informe o Titulo do e-mail</label>
+                                    <input type="text" id="titulo_email" placeholder="Type here...">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="fg">
+                                    <label>Detalahamento do e-mail</label>
+
+
+                                    <textarea id="detalhamento_email" name="story" rows="5" cols="33">
+                                        It was a dark and stormy night...</textarea>
+                                </div>
                             </div>
 
                             <button class="btn-salvar-area" id="btn-salvar-area">
@@ -195,6 +247,7 @@
                                 </svg>
                                 Salvar Solicitação
                             </button>
+                            <input type="hidden" class="form-control" id="data-tipo-cadastro" value="0">
                         </form>
                     </div>
                 </div>
@@ -291,7 +344,7 @@
                                 <th>Executor</th>
                                 <th>Perfil</th>
                                 <th>Status</th>
-                                <th>Data Cadastro</th>
+                                <th>Data Solicitação</th>
                                 <th>Data Início</th>
                                 <th>Data Fim</th>
                                 <th>Detalhamento</th>
@@ -489,6 +542,9 @@
 
 
         <script type="text/javascript" src="../../Scripts/jquery/jquery.min.js"></script>
+
+        <!-- SELECT BIBLIOTECA -->
+        <script type="text/javascript" src="../../Scripts/select/select2.min.js"></script>
         <!-- <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> -->
 
         <script src="../../../Scripts/jobsIndicadores.js?v=<?= time(); ?>"></script>

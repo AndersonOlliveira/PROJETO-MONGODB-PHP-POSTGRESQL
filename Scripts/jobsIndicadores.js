@@ -10,7 +10,11 @@ const App = {
     abaAtiva: 'tratativa',
     historicos: {}, // cache por n_nro
     crt: '',
-    status: true
+    status: true,
+    clientesSelecionado: '',
+    perfilSelecionado: '',
+    clienteTeste: 'novo',
+    tipo: 9
 };
 
 // ── INICIALIZAÇÃO ─────────────────────────────────────────────
@@ -29,6 +33,18 @@ $(document).ready(function () {
     //PENSAR EM CHAMAR NA HORA QUE TIVER O CLICK DENTRO DO CADASTRO
     //CHAMA FUNCAO PARA LISTA AS AREAS DISPONIVEIS
     get_lista_user_area();
+
+    //CHAMA FUNCAO PARA LISTA AS CLIENTES DISPONIVEIS
+    get_lista_cliente();
+
+    //CHAMA FUNCAO PARA LISTA DE TIPOS DISPONIVEIS
+    get_lista_tipo();
+
+    //CHAMA FUNCAO PARA LISTA DE STATUS DISPONIVEIS
+    get_lista_status();
+
+    //CHAMA FUNCAO PARA LISTA DE PERFIL P/JOB DISPONIVEIS
+    get_lista_perfil();
     //   buscar_Info_Responsavel_Logado();
 
     $('#btn-buscar').on('click', aplicarFiltros);
@@ -39,6 +55,10 @@ $(document).ready(function () {
     $(document).on('click', '.drawer-tab', function () {
         mudarAba($(this).data('tab'));
     });
+
+    //PADRAO O INPUT FICA ESCONDIDO 
+    $("#clientes_inputs").hide();
+
     //   $('#btn-salvar-tratativa').on('click', salvarTratativa);
     $('#btn-csv').on('click', exportarCSV);
 
@@ -583,10 +603,11 @@ function get_lista_user_area() {
     });
 }
 
-function get_lista_tipo() {
+
+function get_lista_status() {
 
     $.ajax({
-        url: '/api/ListUserArea',
+        url: '/api/ListStatus',
         type: 'GET',
         dataType: 'json',
         headers: {
@@ -598,7 +619,7 @@ function get_lista_tipo() {
         success: function (resp) {
 
             if (resp.status == 2) {
-                montar_selec_user_area(resp.dados)
+                montar_select_status(resp.dados)
             } else {
                 toast('Outro status:', resp.message, 'error');
             }
@@ -609,6 +630,279 @@ function get_lista_tipo() {
     });
 }
 
+
+function get_lista_perfil() {
+
+    $.ajax({
+        url: '/api/ListPerfil',
+        type: 'GET',
+        dataType: 'json',
+        success: function (resp) {
+
+            if (resp.status == 2) {
+
+                const dados = resp.dados.map(function (item) {
+                    return {
+                        id: item.id_perfil,
+                        text: item.n_perfil
+                    };
+                });
+
+                $('#n_perfil').select2({
+                    placeholder: 'Selecione um Perfil',
+                    data: dados
+                });
+
+            }
+
+        }
+    });
+}
+
+function get_lista_tipo() {
+
+    $.ajax({
+        url: '/api/ListTipo',
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+
+        success: function (resp) {
+
+            if (resp.status == 2) {
+
+                montar_selec_tipo(resp.dados)
+
+            } else {
+                toast('Outro status:', resp.message, 'error');
+            }
+        },
+        error: function (error) {
+            console.error('Erro na requisição:', error);
+        }
+    });
+}
+
+
+
+// LISTA DE CLIENTES
+function get_lista_cliente() {
+
+    $.ajax({
+        url: '/api/ListCliente',
+        type: 'GET',
+        dataType: 'json',
+        success: function (resp) {
+
+            if (resp.status == 2) {
+
+                const dados = resp.dados.map(function (item) {
+                    return {
+                        id: item.cliid,
+                        text: item.clinomraz
+                    };
+                });
+
+                $('#n_cliente').select2({
+                    placeholder: 'Selecione um cliente',
+                    data: dados
+                });
+
+            }
+
+        }
+    });
+
+}
+
+// PEGAR OS DADOS
+$('#n_cliente').on('select2:select', function (e) {
+    App.clientesSelecionado = e.params.data
+    const cliente = e.params.data;
+
+    console.log(cliente.id);
+    console.log(cliente.text);
+
+});
+
+$('#n_perfil').on('select2:select', function (e) {
+    const perId = e.params.data;
+    console.warn(perId.id);
+    App.perfilSelecionado = perId;
+});
+
+
+const checkbox = document.getElementById('myCheckbox');
+const input = document.getElementById('n_cliente');
+
+checkbox.addEventListener('change', function () {
+    input.disabled = checkbox.checked;
+    //SE MARCAR MOSTRO, CASO NÃO OCULTO
+    checkbox.checked ? $('#clientes_inputs').show() : $('#clientes_inputs').hide();
+    // $('#n_cliente').val(null).trigger('change');
+    // App.clientesSelecionado = null;
+});
+
+
+
+
+function tipos(tipos) {
+
+    var content = '';
+    // 0- araea,1-jobtipo,2-jobstatus,3-jobperfil,4-jobexecutor,5-jobsolicitante,10-jobusuarios
+    switch (tipos) {
+        case "usuarios":
+            content = 10;
+            break;
+
+        case "area":
+            content = 0;
+            break;
+
+        case "perfil":
+            content = 3;
+            break;
+        case "status":
+            content = 2;
+            break;
+        default:
+            content = null;
+    }
+
+    return content;
+}
+
+
+// CAPUTRA O FORM DO FORMULARIO DO CAD 
+$("#cad_job").submit(function (event) {
+    event.preventDefault();
+    console.log(App.perfilSelecionado, ' PERFIL SELECIONADO');
+    const clienteInput = $('#clientes_inputs').val() ? $('#clientes_inputs').val().trim() : '';
+    const selectPerfil = App.perfilSelecionado ? App.perfilSelecionado.id : '';
+    const usandoInput = checkbox.checked; // SE MARCA O CHECK EU PEGO DAQUI
+    let n_info_cliente = '';
+    let n_info_perfil = '';
+
+    console.log(selectPerfil, ' PERFIL SELECIONADO');
+
+    n_info_cliente = validarCliente(usandoInput, clienteInput);
+    // n_info_cliente = validarPerfil(clienteInput);
+
+
+    const listaCadastro = {
+        id_solicitante: $('#d-tipo-user-area-solicitante').val(),
+        n_cliente: n_info_cliente,
+        tipoJob: $('#d-tipo-job').val(),
+        perfil: selectPerfil,
+        s_tatus: $('#d-tipo-job-status').val(),
+        d_soliciticao: $('#range').val(),
+        titulo_email: $('#titulo_email').val(),
+        detalhamento: $('#detalhamento_email').val(),
+        ctr: $('#d-id').val(),
+        // tcrid falta
+        tipo: App.tipo
+
+    }
+
+
+    enviarSolicitacao(listaCadastro);
+
+});
+
+
+function enviarSolicitacao(listaCadastro) {
+    const playloadJson = JSON.stringify(listaCadastro);
+
+    $.ajax({
+        url: '/api/CadJob',
+        type: 'POST',
+        data: playloadJson,
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso) {
+                // _atualizarEstadoLocal(id, payloadtext);
+                // toast('Área salva com sucesso!', 'success');
+            } else {
+
+                //   toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
+                var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
+
+                toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
+            }
+        },
+        error: function () {
+            toast('Falha de conexão ao salvar. Tente novamente.', 'error');
+        },
+        complete: function () {
+            $('#btn-salvar-area').prop('disabled', false).html(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg> Salvar Área..`);
+        }
+    });
+
+}
+
+
+function validarCliente(usandoInput, clienteInput) {
+    let result = ''
+    if (usandoInput) {
+        if (!clienteInput) {
+            alert('Informe o cliente.');
+            return;
+        }
+        result = (App.clienteTeste ? App.clienteTeste + '$' : '') + clienteInput;
+    } else {
+        if (!App.clientesSelecionado || !App.clientesSelecionado.id) {
+            alert('Selecione um cliente.');
+            return;
+        }
+        result = App.clientesSelecionado.id + '$' + App.clientesSelecionado.text;
+    }
+
+    return result;
+}
+
+
+function validarPerfil(usandoInput, clienteInput) {
+    let result = ''
+    if (usandoInput) {
+        if (!clienteInput) {
+            alert('Informe o cliente.');
+            return;
+        }
+        result = (App.clienteTeste ? App.clienteTeste + '$' : '') + clienteInput;
+    } else {
+        if (!App.clientesSelecionado || !App.clientesSelecionado.id) {
+            alert('Selecione um cliente.');
+            return;
+        }
+        result = App.clientesSelecionado.id + '$' + App.clientesSelecionado.text;
+    }
+
+    return result;
+}
+
+
+
+
+function datePicker() {
+
+    flatpickr("#range", {
+        // mode: "multiple",
+        locale: "pt",
+        dateFormat: "Y-m-d",
+        maxDate: new Date().toISOString().split("T")[0],
+    });
+}
+
+// === AREA PARA MONTAR OS SELECT DINAMICOS  ========= ////
 //MONTO SELECT PARA A VICULAR A AREA A PESSOA
 function montar_select(dados) {
     const tipo_selects = document.getElementById('d-tipo-area');
@@ -646,28 +940,40 @@ function montar_selec_user_area(dados) {
 }
 
 
-function tipos(tipos) {
+//MONTO SELECT PARA CADASTRO DO TIPO VICULAR SOLICITANTE 
+function montar_selec_tipo(dados) {
+    const tipo_selects = document.getElementById('d-tipo-job');
+    tipo_selects.innerHTML = '';
+    const todosOption = document.createElement("option");
+    todosOption.value = "0";
+    todosOption.text = "Todos";
+    tipo_selects.appendChild(todosOption);
 
-    var content = '';
-    // 0- araea,1-jobtipo,2-jobstatus,3-jobperfil,4-jobexecutor,5-jobsolicitante,10-jobusuarios
-    switch (tipos) {
-        case "usuarios":
-            content = 10;
-            break;
-
-        case "area":
-            content = 0;
-            break;
-
-        case "perfil":
-            content = 3
-        case "status":
-            content = 2
-        default:
-            content = null;
-    }
-
-    return content;
-
+    dados.forEach((items) => {
+        const option = document.createElement("option");
+        option.value = items.id_job;
+        option.text = items.n_tipo;
+        tipo_selects.appendChild(option);
+    });
 
 }
+//MONTO SELECT PARA CADASTRO DO STATUS VICULAR SOLICITANTE 
+function montar_select_status(dados) {
+    const tipo_selects = document.getElementById('d-tipo-job-status');
+    tipo_selects.innerHTML = '';
+    const todosOption = document.createElement("option");
+    todosOption.value = "0";
+    todosOption.text = "Todos";
+    tipo_selects.appendChild(todosOption);
+
+    dados.forEach((items) => {
+        const option = document.createElement("option");
+        option.value = items.id_status;
+        option.text = items.n_status;
+        tipo_selects.appendChild(option);
+    });
+
+}
+
+
+// === FECHAMENTO PARA MONTAR OS SELECT DINAMICOS  ========= ////

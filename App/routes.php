@@ -62,7 +62,10 @@ return [
     '/api/ListJobs' => ['IndicadoresController', 'listaJobs'],
     '/api/ListArea' => ['IndicadoresController', 'listArea'],
     '/api/ListUserArea' => ['IndicadoresController', 'listUserArea'],
-    '/api/ListTipo' => ['IndicadoresController', 'listTipo']
+    '/api/ListTipo' => ['IndicadoresController', 'listTipo'],
+    '/api/ListStatus' => ['IndicadoresController', 'listStatus'],
+    '/api/ListPerfil' => ['IndicadoresController', 'listPerfil'],
+    '/api/ListCliente' => ['IndicadoresController', 'listCliente']
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",

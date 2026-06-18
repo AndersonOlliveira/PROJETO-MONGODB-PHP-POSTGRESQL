@@ -4,7 +4,7 @@
 
 class IndicadoresController extends Controller
 {
-    protected $utilis_processs_teste_arquivos_json;
+    // protected $utilis_processs_teste_arquivos_json;
     protected $process_dados;
     protected $validaCampos;
 
@@ -330,6 +330,61 @@ class IndicadoresController extends Controller
                 'status'  => 2,
                 'sucesso' => true,
                 'dados'   => $retorno_tipo
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function listStatus()
+    {
+
+        $retorno_status = $this->process_dados->lista_status_jobs();
+
+        if ($retorno_status) {
+            $retorno_status = $this->validaCampos->convertEncode($retorno_status);
+
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'dados'   => $retorno_status
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function listPerfil()
+    {
+
+        $retorno_perfil = $this->process_dados->lista_perfil_jobs();
+
+        if ($retorno_perfil) {
+            $retorno_perfil = $this->validaCampos->convertEncode($retorno_perfil);
+
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'dados'   => $retorno_perfil
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+
+    public function listCliente()
+    {
+
+        $retorno_lista_clientes = $this->process_dados->lista_clientes();
+
+        if ($retorno_lista_clientes) {
+            $retorno_lista_clientes = $this->validaCampos->convertEncode($retorno_lista_clientes);
+
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'dados'   => $retorno_lista_clientes
             ], JSON_UNESCAPED_UNICODE);
         }
     }

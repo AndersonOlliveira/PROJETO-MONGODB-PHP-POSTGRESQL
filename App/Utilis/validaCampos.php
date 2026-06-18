@@ -174,9 +174,8 @@ class validaCampos
             9 => [
                 'tabela' => 'cadastro_job.jobcadjobs',
                 'campos' => [
-                    'executor',
+                    'id_solicitante',
                     'tipoJob',
-                    'area',
                     'n_cliente',
                     's_tatus',
                     'perfil',
