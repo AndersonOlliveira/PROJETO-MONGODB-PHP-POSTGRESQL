@@ -1273,6 +1273,19 @@ $(document).ready(function () {
         console.log("ID Selecionado:", idSelecionado);
         console.log("Nome Selecionado:", nomeSelecionado);
         console.log("Nome tabela_row:", tabela_row);
+
+        const playload = {
+            tabela: tabela_row,
+            executante_id: idSelecionado,
+            tipo: 4,
+            crt: App.crt
+
+
+        }
+
+        console.log(playload);
+        UpDados(playload);
+
     });
 });
 
