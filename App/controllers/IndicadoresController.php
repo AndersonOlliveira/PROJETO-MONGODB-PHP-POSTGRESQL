@@ -218,6 +218,14 @@ class IndicadoresController extends Controller
                 'dados' => $retorno_validacao['error']
             ));
             die();
+        }else {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'status' => 1,
+                'sucesso' => true,
+                'mensagem' => $retorno_validacao['MSG']
+            ), 200);
+            die();
         }
 
 
@@ -227,7 +235,7 @@ class IndicadoresController extends Controller
         // echo "<pre>";
         // echo "SAIU AQUI NA TELA DE INDICADORES\n";
 
-        // print_r($retorno_utilis);
+        // // print_r($retorno_utilis);
         // if (isset($retorno_utilis) && isset($retorno_utilis['error'])) {
         //     header('Content-Type: application/json');
         //     echo json_encode(array(
@@ -237,15 +245,7 @@ class IndicadoresController extends Controller
         //         //'dados' => $retorno_validacao['error']
         //     ), 409);
         //     die();
-        // } else {
-        //     header('Content-Type: application/json');
-        //     echo json_encode(array(
-        //         'status' => 1,
-        //         'sucesso' => true,
-        //         'mensagem' => $retorno_utilis['MSG']
-        //     ), 200);
-        //     die();
-        // }
+        // } e
     }
 
     public function listaJobs()
@@ -387,5 +387,20 @@ class IndicadoresController extends Controller
                 'dados'   => $retorno_lista_clientes
             ], JSON_UNESCAPED_UNICODE);
         }
+    }
+
+    public function upDados()
+    {
+
+        header('Content-Type: application/json');
+        $dados = file_get_contents('php://input');
+
+        $dados = json_decode($dados, true);
+
+
+        echo "<pre>";
+
+        print_R($dados);
+        $retorno_lista_clientes = $this->process_dados->atualizar_dados($dados);
     }
 }

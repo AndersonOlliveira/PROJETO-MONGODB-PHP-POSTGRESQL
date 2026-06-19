@@ -237,6 +237,18 @@
 
   #dt-scroll-headInner {
       background-color: #1d4ed8 !important;
+      font-size: 40px !important;
+      /* TRAAMENTO NO SCROLL DA TABELA */
+  }
+
+  .infodiasdate {
+      color: var(--danger) !important;
+      font-size: 10px !important;
+
+  }
+
+  .dataTables_wrapper {
+      padding-bottom: 120px !important;
   }
 
   /* tabela */

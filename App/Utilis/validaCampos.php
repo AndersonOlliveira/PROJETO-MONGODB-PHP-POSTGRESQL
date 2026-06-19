@@ -42,7 +42,8 @@ class validaCampos
                 $data[$key] = self::utf8ize($value);
             }
         } elseif (is_string($data)) {
-            return trim(mb_convert_encoding($data, 'UTF-8', 'UTF-8'));
+            //'UTF-8, ISO-8859-1' 
+            return trim(mb_convert_encoding($data, 'UTF-8', 'UTF-8, ISO-8859-1'));
         }
         return $data;
     }
@@ -194,6 +195,46 @@ class validaCampos
                 ]
             ]
         ];
+        if (array_key_exists($tipo, $dados_tabela)) {
+            $config = $dados_tabela[$tipo];
+        } else {
+            return $error['error']  = ["error" => 'Tipo enviado não encontrado'];
+        }
+
+        return $config;
+    }
+
+    public function getDados_atualiza_jobs($tipo)
+    {
+        $error = [];
+        $dados_tabela = [
+            1 => [
+                'tabela' => 'cadastro_job.jobcadjobs',
+                'campos' => [
+                    'data_inicio'
+                ]
+            ],
+            2 => [
+                'tabela' => 'cadastro_job.jobcadjobs',
+                'campos' => [
+                    'data_fim'
+                ]
+            ],
+            3 => [
+                'tabela' => 'cadastro_job.jobcadjobs',
+                'campos' => [
+                    'status_id'
+                ]
+            ],
+            4 => [
+                'tabela' => 'cadastro_job.jobcadjobs',
+                'campos' => [
+                    'executante_id'
+                ]
+            ]
+        ];
+
+
         if (array_key_exists($tipo, $dados_tabela)) {
             $config = $dados_tabela[$tipo];
         } else {

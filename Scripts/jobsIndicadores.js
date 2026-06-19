@@ -88,6 +88,15 @@ function listArchivesJobs() {
                 App.dados = resp.dados;
                 App.dadosFiltrados = [...resp.dados];
 
+                App.dadosFiltrados = App.dadosFiltrados.map(item => ({
+                    ...item,
+                    solicitante: item.dados_solicitante?.n_nome_user ?? '-',
+                    area_solicitante: item.dados_solicitante?.n_area ?? '-',
+                    area_executor: item.dados_executor?.n_area ?? '-',
+                    n_executor: item.dados_executor?.n_nome_user ?? '-',
+
+                }));
+
                 console.log('ESTOU CHAMANDO OS DADOS \n');
                 console.log(App.dados);
                 renderTabela();
@@ -125,6 +134,7 @@ function renderTabela() {
     tabela_indicadores = $('#table-relatorio-indicadores').DataTable({
         destroy: true,
         processing: true,
+        // select: true,
         paging: true,
         scrollX: true,
         searching: true,
@@ -144,7 +154,12 @@ function renderTabela() {
 
         data: App.dadosFiltrados, //DADOS VINDO DA API
 
-        columns: [{
+        columns: [
+
+            {
+                data: 'id_cadjob',
+                defaultContent: '-'
+            }, {
                 data: 'titulo_email',
                 defaultContent: '-'
             },
@@ -154,14 +169,41 @@ function renderTabela() {
             },
             {
                 data: 'solicitante',
-                defaultContent: '-'
+                defaultContent: '-',
+
             },
             {
                 data: 'area_solicitante',
                 defaultContent: '-'
             },
             {
-                data: 'n_executor',
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    return `
+   <div class="dropdown dropdown-dinamico">
+        <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+            ${row.dados_executor.n_nome_user || 'Sem nome'}
+        </button>
+            <ul class="dropdown-menu p-2">
+              <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Executor</h6></li>
+            <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <div class="lista-executantes">
+                <li class="text-muted small px-2">Carregando...</li>
+            </div>
+        </ul>
+    </div>
+ 
+        `;
+                }
+            },
+
+
+            {
+                data: 'area_executor',
                 defaultContent: '-'
             },
             {
@@ -170,7 +212,7 @@ function renderTabela() {
             },
             {
                 data: 'n_status',
-                render: function (data) {
+                render: function (data, type, row) {
 
                     let classe = 'badge bg-secondary';
 
@@ -188,34 +230,49 @@ function renderTabela() {
                             break;
                     }
 
-                    return `<span class="${classe}">${data ?? '-'}</span>`;
+                    return `
+                     <div class="dropdown dropdown-dinamico-status">
+                      <button class="btn btn-sm btn-light ${classe}  dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+                         ${data ?? '-'}
+                    </button>
+                      <ul class="dropdown-menu p-2">
+                            <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+                            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Status</h6></li>
+                            <li><a class="dropdown-item items-status" href="#" data-id="0">Todos</a></li>
+                             <li><hr class="dropdown-divider"></li>
+                            <div class="lista-status">
+                                <li class="text-muted small px-2">Carregando...</li>
+                            </div>
+                        </ul>
+                    </div>`;
                 }
             },
             {
-                data: 'data_cad_job',
-                render: function (data) {
+                data: null,
+                render: function (data, type, row) {
+                    return renderData(data, type, row);
 
-                    if (!data) return '-';
+                    // if (!data) return '-';
 
-                    return data;
+                    // return data;
                 }
             },
             {
                 data: 'data_inicio',
-                render: function (data) {
+                render: function (data, type, row) {
+                    return renderDataIncio(data, type, row);
+                    // if (!data) return '-';
 
-                    if (!data) return '-';
-
-                    return data;
+                    // return data;
                 }
             },
             {
                 data: 'data_fim',
-                render: function (data) {
+                render: function (data, type, row) {
+                    return renderDataFim(data, type, row);
+                    // if (!data) return '-';
 
-                    if (!data) return '-';
-
-                    return data;
+                    // return data;
                 }
             },
             {
@@ -235,6 +292,13 @@ function renderTabela() {
                             <button type="button" class="custom-file-label btn-status-action" data-tipo="" data-dados-id=""> 
                             Cancelar
                             </button>
+                            </div>  
+                            
+                            
+                            <div class="p-2 pg-file-section">
+                            <button type="button" class="custom-file-label btn-status-action" data-tipo="" data-dados-id=""> 
+                            Detalhes
+                            </button>
                             </div> 
                         </div>`;
 
@@ -248,6 +312,65 @@ function renderTabela() {
     );
 }
 
+
+function renderRowSolicitante(row, type, data) {
+
+    console.log(row['dados_solicitante']);
+    $.each(row['dados_solicitante'], function (key, value) {
+        return key == 'n_nome_user' ?? value;
+
+    });
+
+
+}
+
+function renderData(row, type, data) {
+    let date = row['data_solicitacao'];
+    let infoDate = calcularDias(date);
+    let content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
+                    <span class="infodiasdate"> Solicitado a ${infoDate || ''}D</span>
+                </span>`;
+    if (!date) return '-';
+
+    return date + content;
+}
+
+
+function renderDataIncio(data, type, row) {
+    let content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
+                    <span class="infodiasdate"> Informe data de inicio</span>
+                </span>`;
+
+    let divDate = `<input type="date" class="form-control-d items-date d-data-inicio" data-id-tabela="${row['id_cadjob']}" >`;
+
+
+    let date = calcularDias(data);
+    let contentInfodias = `<span style="display:flex;flex-direction:column;line-height:1.10;">
+                    <span class="infodiasdate"> Iniciado a ${date}D </span>
+                </span>`;
+
+    if (!data) return divDate + content;
+
+    return data + contentInfodias;
+}
+
+function renderDataFim(data, type, row) {
+    let content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
+                    <span class="infodiasdate"> Informe data de termino</span>
+                </span>`;
+
+    let divDate = `<input type="date" class="form-control-d items-date d-data-fim" data-id-tabela="${row['id_cadjob']}" >`;
+
+
+    let date = calcularDias(data);
+    let contentInfodias = `<span style="display:flex;flex-direction:column;line-height:1.10;">
+                    <span class="infodiasdate"> Finaliza em  ${date}D </span>
+                </span>`;
+
+    if (!data) return divDate + content;
+
+    return data + contentInfodias;
+}
 
 
 
@@ -303,7 +426,12 @@ function aplicarFiltros() {
 
     App.paginaAtual = 1;
     renderTabela();
-    toast(`${App.dadosFiltrados.length} registro(s) encontrado(s)`);
+    toast(`
+    $ {
+        App.dadosFiltrados.length
+    }
+    registro(s) encontrado(s)
+    `);
 }
 
 
@@ -331,10 +459,13 @@ function exportarCSV() {
         r.descricao_acao || '',
     ]);
 
-    const escapar = v => {
-        const s = String(v);
-        return (s.includes(';') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s;
-    };
+    //     const escapar = v => {
+    //         const s = String(v);
+    //         return (s.includes(';') || s.includes('"') || s.includes('\n')) ? `
+    //     "${s.replace(/" / g, '""')
+    // }
+    // "` : s;
+    //     };
     const conteudo = [cabecalho, ...linhas].map(row => row.map(escapar).join(';')).join('\r\n');
 
     const blob = new Blob(['\uFEFF' + conteudo], {
@@ -356,7 +487,22 @@ function exportarCSV() {
 // ── UTILITÁRIOS ───────────────────────────────────────────────
 function calcularDias(vencimento) {
     if (!vencimento) return 0;
-    const venc = new Date(vencimento + 'T00:00:00');
+    const data = String(vencimento).trim();
+    let venc;
+
+    const isoMatch = data.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const brMatch = data.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/);
+
+    if (isoMatch) {
+        venc = new Date(`${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}T00:00:00`);
+    } else if (brMatch) {
+        venc = new Date(`${brMatch[3]}-${brMatch[2]}-${brMatch[1]}T00:00:00`);
+    } else {
+        venc = new Date(data);
+    }
+
+    if (Number.isNaN(venc.getTime())) return 0;
+
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     return Math.floor((hoje - venc) / 86400000);
@@ -484,6 +630,7 @@ function validarCamposInput(dados, tipo) {
 
 }
 
+
 // if (!campo || campo == 0) {
 //     toast(`Campo ${tipo} não pode ser vazio!.`, 'error');
 //     $('#btn-salvar-tratativa').prop('disabled', false);
@@ -550,6 +697,45 @@ function salvarDados(playload, botao) {
     });
 }
 
+// PARA SALVAMENTO ATUALIZAR OS DADOS 
+function UpDados(playload, botao) {
+
+    // $(`#btn-salvar-${botao}`).prop('disabled', true).text('Salvando...');
+
+    const playloadJson = JSON.stringify(playload);
+
+    $.ajax({
+        url: '/api/UpdadosJobs',
+        type: 'PUT',
+        data: playloadJson,
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso) {
+                // _atualizarEstadoLocal(id, payloadtext);
+                // toast('Área salva com sucesso!', 'success');
+            } else {
+
+                //   toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
+                var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
+
+                toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
+            }
+        },
+        error: function () {
+            toast('Falha de conexão ao salvar. Tente novamente.', 'error');
+        },
+        complete: function () {
+            $('#btn-salvar-area').prop('disabled', false).html(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg> Salvar Área..`);
+        }
+    });
+}
+
+
 //CHAMADA PARA A CRIACAO DO SELECT DA AREA
 function get_lista_area() {
 
@@ -593,6 +779,7 @@ function get_lista_user_area() {
 
             if (resp.status == 2) {
                 montar_selec_user_area(resp.dados)
+
             } else {
                 toast('Outro status:', resp.message, 'error');
             }
@@ -977,3 +1164,284 @@ function montar_select_status(dados) {
 
 
 // === FECHAMENTO PARA MONTAR OS SELECT DINAMICOS  ========= ////
+
+// === ABERTURA DO CÓDIGO PARA MONTAR OS SELECT DINAMICOS  E OPTIONS PRA SELECICONAR EXECUTANTE ========= ////
+function montar_lista_user_area_datatable(dados, containerElement) {
+    containerElement.innerHTML = '';
+    if (dados.length === 0) {
+        containerElement.innerHTML = '<li><span class="dropdown-item-text text-muted small">Nenhum encontrado</span></li>';
+        return;
+    }
+    dados.forEach((items) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a class="dropdown-item item-executante" href="#" data-id-user="${items.usuario_id}">${items.user_area}</a>`;
+        containerElement.appendChild(li);
+    });
+}
+
+// Função TD
+function redimensionarTdDropdown($divDropdown) {
+    var $td = $divDropdown.closest('td');
+    var $menu = $divDropdown.find('.dropdown-menu');
+
+    $td.css('position', 'relative');
+
+    var menuHeight = $menu.outerHeight();
+    var menuWidth = $menu.outerWidth();
+
+    // altura do botão para somar no cálculo real
+    var buttonHeight = $divDropdown.outerHeight() || 35;
+
+
+    var paddingBottomValue = Math.max(40, buttonHeight + menuHeight + 20) + 'px';
+    var paddingRightValue = Math.max(40, menuWidth + 20) + 'px';
+
+    $divDropdown.css({
+        'position': 'absolute',
+        'top': '5px',
+        'left': '5px'
+    });
+
+    $td.css({
+        'padding-top': '0px',
+        'padding-left': '0px',
+        'padding-bottom': paddingBottomValue,
+        'padding-right': paddingRightValue
+    });
+}
+
+$(document).ready(function () {
+
+    $(document).on('show.bs.dropdown', '.dropdown-dinamico', function () {
+        var $divDropdown = $(this);
+        var $containerLista = $divDropdown.find('.lista-executantes');
+
+        //Executa o cálculo inicial(para o estado atual / carregando)
+        setTimeout(function () {
+            redimensionarTdDropdown($divDropdown);
+        }, 10);
+
+
+        $.ajax({
+            url: '/api/ListUserArea',
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            success: function (resp) {
+                if (resp.status == 2) {
+
+                    montar_lista_user_area_datatable(resp.dados, $containerLista[0]);
+
+                    setTimeout(function () {
+                        redimensionarTdDropdown($divDropdown);
+                    }, 50); //Delay 
+                } else {
+                    toast('Outro status:', resp.message, 'error');
+                }
+            },
+            error: function (error) {
+                console.error('Erro na requisição:', error);
+                $containerLista.html('<li class="text-danger small px-2">Erro ao carregar</li>');
+                redimensionarTdDropdown($divDropdown);
+            }
+        });
+    });
+
+    // Evento ao fechar o dropdown
+    $(document).on('hide.bs.dropdown', '.dropdown-dinamico', function () {
+        var $td = $(this).closest('td');
+        $td.css({
+            'padding-top': '',
+            'padding-left': '',
+            'padding-bottom': '',
+            'padding-right': ''
+        });
+    });
+
+    //Evento para quando o usuário clicar em um nome da lista 
+    $(document).on('click', '.item-executor, .item-executante', function (e) {
+        e.preventDefault();
+        var $linkClicado = $(this);
+
+        var idSelecionado = $(this).data('id-user');
+        var nomeSelecionado = $(this).text();
+        var tabela_row = $linkClicado.closest('.dropdown-menu').find('.tabela-row').val();
+        console.log("ID Selecionado:", idSelecionado);
+        console.log("Nome Selecionado:", nomeSelecionado);
+        console.log("Nome tabela_row:", tabela_row);
+    });
+});
+
+
+
+// === ABERTURA DO CÓDIGO PARA MONTAR OS SELECT DINAMICOS  E OPTIONS PRA SELECICONAR STATUS ========= ////
+function montar_lista_user_status_datatable(dados, containerElement) {
+
+    containerElement.innerHTML = '';
+    if (dados.length === 0) {
+        containerElement.innerHTML = '<li><span class="dropdown-item-text text-muted small">Nenhum status encontrado</span></li>';
+        return;
+    }
+    dados.forEach((items) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a class="dropdown-item item-status" href="#" data-id-status="${items.id_status}">${items.n_status}</a>`;
+        containerElement.appendChild(li);
+    });
+}
+
+
+function redimensionarTdDropdown($divDropdown) {
+    var $td = $divDropdown.closest('td');
+    var $menu = $divDropdown.find('.dropdown-menu');
+
+    $td.css('position', 'relative');
+
+    var menuHeight = $menu.outerHeight();
+    var menuWidth = $menu.outerWidth();
+
+    var buttonHeight = $divDropdown.outerHeight() || 35;
+
+    var paddingBottomValue = Math.max(40, buttonHeight + menuHeight + 20) + 'px';
+    var paddingRightValue = Math.max(40, menuWidth + 20) + 'px';
+
+    $divDropdown.css({
+        'position': 'absolute',
+        'top': '5px',
+        'left': '5px'
+    });
+
+    $td.css({
+        'padding-top': '0px',
+        'padding-left': '0px',
+        'padding-bottom': paddingBottomValue,
+        'padding-right': paddingRightValue
+    });
+}
+
+$(document).ready(function () {
+
+    $(document).on('show.bs.dropdown', '.dropdown-dinamico-status', function () {
+        var $divDropdown = $(this);
+        var $containerLista = $divDropdown.find('.lista-status');
+
+
+        setTimeout(function () {
+            redimensionarTdDropdown($divDropdown);
+        }, 10);
+
+
+        $.ajax({
+            url: '/api/ListStatus',
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            success: function (resp) {
+                if (resp.status == 2) {
+
+                    montar_lista_user_status_datatable(resp.dados, $containerLista[0]);
+                    setTimeout(function () {
+                        redimensionarTdDropdown($divDropdown);
+                    }, 50);
+                } else {
+                    toast('Outro status:', resp.message, 'error');
+                }
+            },
+            error: function (error) {
+                console.error('Erro na requisição:', error);
+                $containerLista.html('<li class="text-danger small px-2">Erro ao carregar</li>');
+                redimensionarTdDropdown($divDropdown);
+            }
+        });
+    });
+
+    $(document).on('hide.bs.dropdown', '.dropdown-dinamico-status', function () {
+        var $td = $(this).closest('td');
+        $td.css({
+            'padding-top': '',
+            'padding-left': '',
+            'padding-bottom': '',
+            'padding-right': ''
+        });
+    });
+
+
+    $(document).on('click', '.items-status, .item-status', function (e) {
+        e.preventDefault();
+        var $linkClicado = $(this);
+        var idSelecionado = $(this).data('id-status');
+        var nomeSelecionado = $(this).text();
+        var tabela_row = $linkClicado.closest('.dropdown-menu').find('.tabela-row').val();
+        console.log("ID Selecionado:", idSelecionado);
+        console.log("Nome Selecionado:", nomeSelecionado);
+        console.log("Nome tabela_row:", tabela_row);
+
+        const playload = {
+            tabela: tabela_row,
+            status_id: idSelecionado,
+            tipo: 3,
+            crt: App.crt
+
+
+        }
+
+        console.log(playload);
+        UpDados(playload);
+
+    });
+});
+
+$(document).on('change', '.d-data-inicio', function (e) {
+
+    e.preventDefault();
+
+    var $input = $(this);
+    var idSelecionadoTabela = $input.data('id-tabela');
+    var dataSelecionada = $input.val();
+    console.log('TENHO O CLICK VINDO PARA PEGAR A DATA');
+    console.log("ID Selecionado:", idSelecionadoTabela);
+    console.log("Nome Selecionado:", dataSelecionada);
+
+    const playload = {
+        tabela: idSelecionadoTabela,
+        data_inicio: dataSelecionada,
+        tipo: 1,
+        crt: App.crt
+
+
+    }
+
+    console.log(playload);
+    UpDados(playload);
+
+});
+
+$(document).on('change', '.d-data-fim', function (e) {
+
+    e.preventDefault();
+
+    var $input = $(this);
+    var idSelecionadoTabela = $input.data('id-tabela');
+    var dataSelecionada = $input.val();
+    console.log('TENHO O CLICK VINDO PARA PEGAR A DATA FIM');
+    console.log("ID Selecionado:", idSelecionadoTabela);
+    console.log("Nome Selecionado:", dataSelecionada);
+
+    const playloads = {
+        tabela: idSelecionadoTabela,
+        data_fim: dataSelecionada,
+        tipo: 2,
+        crt: App.crt
+    }
+
+    console.log(playloads);
+    UpDados(playloads);
+
+});

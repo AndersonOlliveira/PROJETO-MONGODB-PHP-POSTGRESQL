@@ -269,7 +269,7 @@ class Kpiindicadores extends Model
 
             if ($stmt->execute()) {
 
-                return $stmt->rowCount() > 1 ? $msg[] = ["MSG" => "Sucesso em Cadastrar Job"] : $error[] = ["error" => "Falha ao inserir verifique campos enviados!"];
+                return $stmt->rowCount() > 0 ? $msg[] = ["MSG" => "Sucesso em Cadastrar Job"] : $error[] = ["error" => "Falha ao inserir verifique campos enviados!"];
             }
         } catch (PDOException $e) {
 
@@ -304,7 +304,7 @@ class Kpiindicadores extends Model
                     FROM cadastro_job.jobstatus jstatus
                 )
                 SELECT
-
+                    cadjobs.id_cadjob,  -- PRECISA ALTERAR O NOME DA COLUNA
                     cadjobs.solicitante_id,
                     cadjobs.executante_id,
                 -- jbus.n_nome_user ,
@@ -337,7 +337,10 @@ class Kpiindicadores extends Model
 
 
                     $newDate = new DateTime($row['data_solicitacao']);
-                    $row['data_cad_job'] = $newDate->format('d-m-Y');
+                    $newDateInicio = !empty($row['data_inicio']) ? new DateTime($row['data_inicio']) : $row['data_inicio'];
+                    $row['data_solicitacao'] = $newDate->format('d-m-Y');
+
+                    $row['data_inicio'] =  $newDateInicio != null ? $newDateInicio->format('d-m-Y') : $newDateInicio;
 
                     $row['dados_solicitante'] =  self::users($row['solicitante_id']);
                     $row['dados_executor'] =  self::users($row['executante_id']);
@@ -681,6 +684,139 @@ class Kpiindicadores extends Model
             );
 
             return $error[] = ['error' => "Falha em Solicitar os dados Clientes, cod error: {$e->getCode()}"];
+        }
+    }
+    public function get_jobs_inserts($id)
+    {
+
+        echo "<pre>";
+        echo "ENVIADO\n";
+
+        print_R($id);
+
+
+        $sql = "";
+
+        $sql = "SELECT * FROM cadastro_job.jobcadjobs jb WHERE jb.id_cadjob = :id";
+
+        $stmt = $this->db->prepare($sql);
+
+        try {
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Clientes, cod error: {$e->getCode()}"];
+        }
+    }
+
+
+    public function up_dados_jobs($dados, $config)
+    {
+        $sql = "";
+
+
+
+        //busco os dados da tabela pelo o id 
+
+        $busca_tabela = self::get_jobs_inserts($dados['tabela']);
+
+        echo "<pre>";
+        echo "vindo para atualizar\n";
+
+        print_R($busca_tabela);
+        try {
+
+            $this->db->beginTransaction();
+
+            $tabela =  $config['tabela'];
+
+            $sql = "UPDATE {$tabela} SET ";
+
+            $sets = [];
+            $params = [];
+
+            foreach ($config['campos'] as $campo) {
+                $sets[] = "$campo = :$campo";
+                $params[":$campo"] = $dados[$campo];
+            }
+
+            $sql .= implode(', ', $sets);
+            $sql .= " WHERE id_cadjob = :id_cadjob";
+
+            $params[':id_cadjob'] = $dados['tabela'];
+
+
+            $id_cadjob = isset($busca_tabela['id_cadjob']) ? $busca_tabela['id_cadjob'] : null;
+
+            if ($id_cadjob) {
+
+                $valores_insert[] = "({$id_cadjob}, "
+                    . (isset($busca_tabela['executante_id']) ? $busca_tabela['executante_id'] : "NULL") . ", 
+                    " . (isset($busca_tabela['job_id']) ? $busca_tabela['job_id'] : '') . ", 
+                    '" . (isset($busca_tabela['nome_cliente']) ? $busca_tabela['nome_cliente'] : '') . "', 
+                    " . (isset($busca_tabela['status_id']) ? $busca_tabela['status_id'] : '') . ",
+                    " . (isset($busca_tabela['perfil_id']) ? $busca_tabela['perfil_id'] : '') . ", 
+                    " . (isset($busca_tabela['data_solicitacao']) ? "'" . $busca_tabela['data_solicitacao'] . "'" : "NOW()") . ",
+                    " . (isset($busca_tabela['data_inicio']) ? "'" . $busca_tabela['data_inicio'] . "'" : "NULL") . ", 
+                    " . (isset($busca_tabela['data_fim']) ? "'" . $busca_tabela['data_fim'] . "'" : "NULL") . ", 
+                    '" . (isset($busca_tabela['titulo_email']) ? $busca_tabela['titulo_email'] : '') . "', 
+                    '" . (isset($busca_tabela['detalhamento']) ? $busca_tabela['detalhamento'] : '') . "',
+                    " . (isset($busca_tabela['ctr_interno_cad']) ? $busca_tabela['ctr_interno_cad'] : '') . ", 
+                    '" . (isset($busca_tabela['data_cad_job']) ? $busca_tabela['data_cad_job'] : '') . "',
+                    " . (isset($busca_tabela['solicitante_id']) ? $busca_tabela['solicitante_id'] : "NULL") . ", 
+                    " . (isset($busca_tabela['cliid_id']) ? $busca_tabela['cliid_id'] : "NULL") . ", 
+                    " . (isset($busca_tabela['alter_id']) ? $busca_tabela['alter_id'] : $dados["crt"]) . ")";
+            }
+
+            echo "<pre>";
+
+            print_R($valores_insert);
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+
+            echo "<pre>";
+
+            print_r($stmt->rowCount());
+
+            // Se atualizou, grava o histórico
+            if ($stmt->rowCount() > 0 && !empty($valores_insert)) {
+                $insertHistorico = "INSERT INTO cadastro_job.jobhistorico 
+                (cad_idjob, executante_id, job_id, nome_cliente, status_id, perfil_id, data_solicitacao, data_inicio, data_fim, titulo_emai, detalhamento, ctr_interno_cad, data_cad_job, solicitante_id, cliid_id, alter_id) VALUES ";
+                $stmt = $this->db->prepare($insertHistorico . implode(', ', $valores_insert));
+
+                $stmt->execute();
+            }
+
+            $this->db->commit();
+        } catch (PDOException $e) {
+
+        echo '<pre>';
+        print_r($e->getMessage());
+
+            $this->db->rollBack();
+
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em atualizar os dados , cod error: {$e->getCode()}"];
         }
     }
 }

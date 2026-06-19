@@ -65,7 +65,8 @@ return [
     '/api/ListTipo' => ['IndicadoresController', 'listTipo'],
     '/api/ListStatus' => ['IndicadoresController', 'listStatus'],
     '/api/ListPerfil' => ['IndicadoresController', 'listPerfil'],
-    '/api/ListCliente' => ['IndicadoresController', 'listCliente']
+    '/api/ListCliente' => ['IndicadoresController', 'listCliente'],
+    '/api/UpdadosJobs' => ['IndicadoresController', 'upDados']
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",

@@ -337,11 +337,13 @@
                         </colgroup>
                         <thead>
                             <tr>
+                                <th>id</th>
                                 <th>Título</th>
                                 <th>Cliente</th>
                                 <th>Solicitante</th>
                                 <th>Área</th>
                                 <th>Executor</th>
+                                <th>Área Executor</th>
                                 <th>Perfil</th>
                                 <th>Status</th>
                                 <th>Data Solicitação</th>

@@ -72,3 +72,37 @@ HINT:  Perhaps you meant to reference the column "jobtipo.id_job". | Arquivo: C:
 DETAIL:  Failing row contains (5, null, 1, 234$NOGUEZ REPRESENTACAO COMERCIAL LTDA, 1, 2, 2026-06-17 00:00:00, null, null, TESTE,                                         It was a dark and stormy..., 417039, 2026-06-18 17:08:27.482874, 7, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 265
 [2026-06-18 18:09:12] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 668
 [2026-06-18 18:10:32] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 668
+[2026-06-19 10:46:23] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column cadjobs.id_cadjob does not exist
+LINE 14:                     cadjobs.id_cadJob,
+                             ^
+HINT:  Perhaps you meant to reference the column "cadjobs.id_cadJob". | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 332
+[2026-06-19 10:52:24] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "'id_cadJob'"
+LINE 14:                     cadjobs.'id_cadJob',
+                                     ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 332
+[2026-06-19 10:53:52] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "`"
+LINE 14:                     cadjobs.`id_cadJob`,
+                                     ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 332
+[2026-06-19 14:47:29] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :id | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 695
+[2026-06-19 15:25:53] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at end of input
+LINE 2: ..., data_cad_hist, solicitante_id, cliid_id, alter_id) VALUES 
+                                                                       ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 794
+[2026-06-19 15:28:42] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at end of input
+LINE 2: ..., data_cad_hist, solicitante_id, cliid_id, alter_id) VALUES 
+                                                                       ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 794
+[2026-06-19 15:32:00] Nível: 22P02 | Erro: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type integer: ""
+LINE 1: ...te_id, cliid_id, alter_id) VALUES ('2', '7', '1', '', 'EMPRE...
+                                                             ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 773
+[2026-06-19 15:35:35] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  INSERT has more expressions than target columns
+LINE 1: ...039', '2026-06-16 11:12:39.700328', NOW(), '', '', '417039')
+                                                              ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 777
+[2026-06-19 15:44:05] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near ","
+LINE 1: ...fd', 417039, '2026-06-16 11:12:39.700328', NOW(), , , 417039...
+                                                             ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 777
+[2026-06-19 15:49:31] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near ","
+LINE 14:                         , 
+                                 ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 793
+[2026-06-19 15:55:00] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "data_inicio" of relation "jobhistorico" violates not-null constraint
+DETAIL:  Failing row contains (1, 2, 7, 1, EMPRESA FICTICIA, 1, 2, 2026-12-06, null, null, Criação de novo serviço interno, kfd, 417039, 2026-06-16 11:12:39.700328, 2026-06-19 15:54:58.890155, null, null, 417039). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 793
+[2026-06-19 16:55:18] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near ","
+LINE 2: ..._cad_job, solicitante_id, cliid_id, alter_id) VALUES (13, , 
+                                                                     ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 797

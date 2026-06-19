@@ -67,6 +67,8 @@ class tratarIndicadores extends Controller
             return $error;
         }
 
+        // $dadosCadastros = $this->functions->convertEncode($dadosCadastros);
+
         $result_insert = $this->modelKpi->cadastrar_jobs($dadosCadastros, $retorno_tabela);
 
         return $result_insert;
@@ -115,6 +117,18 @@ class tratarIndicadores extends Controller
     public function lista_clientes()
     {
         $result_get_cliente = $this->modelKpi->get_list_clients();
+
+        return $result_get_cliente;
+    }
+
+    public function atualizar_dados($dados)
+    {
+        $retorno_tabela = $this->functions->getDados_atualiza_jobs($dados['tipo']);
+
+        if (isset($retorno_tabela['error'])) {
+            return $retorno_tabela;
+        }
+        $result_get_cliente = $this->modelKpi->up_dados_jobs($dados, $retorno_tabela);
 
         return $result_get_cliente;
     }
