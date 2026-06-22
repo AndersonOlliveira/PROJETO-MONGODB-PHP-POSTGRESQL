@@ -61,6 +61,7 @@ return [
     '/api/CadJob' => ['IndicadoresController', 'cadatrar_job'],
     '/api/ListJobs' => ['IndicadoresController', 'listaJobs'],
     '/api/ListJobsHis' => ['IndicadoresController', 'listaJobHistorico'],
+    '/api/ListJobsHisObs' => ['IndicadoresController', 'listaJobHistoricoObs'],
     '/api/ListArea' => ['IndicadoresController', 'listArea'],
     '/api/ListUserArea' => ['IndicadoresController', 'listUserArea'],
     '/api/ListTipo' => ['IndicadoresController', 'listTipo'],

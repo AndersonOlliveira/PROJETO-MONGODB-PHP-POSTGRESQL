@@ -145,4 +145,16 @@ class tratarIndicadores extends Controller
 
         return $result_get_historico;
     }
+
+    public function list_historico_obs($tabela)
+    {
+        // $retorno_tabela = $this->functions->getDados_atualiza_jobs($dados['tipo']);
+
+        // if (isset($retorno_tabela['error'])) {
+        //     return $retorno_tabela;
+        // }
+        $result_get_historico = $this->modelKpi->lista_jobs_obs($tabela);
+
+        return $result_get_historico;
+    }
 }

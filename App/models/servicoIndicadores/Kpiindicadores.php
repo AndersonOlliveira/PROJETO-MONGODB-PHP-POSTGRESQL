@@ -488,6 +488,53 @@ class Kpiindicadores extends Model
             return $error[] = ['error' => "Falha em Solicitar os dados Job, cod error: {$e->getCode()}"];
         }
     }
+    public function lista_jobs_obs($idTabela)
+    {
+        $error = [];
+        $msg = [];
+        $registros = [];
+
+
+        $sql = "SELECT obs,data_cadastro,job_cad_id as tabela
+        FROM cadastro_job.jobobservacoes
+        WHERE job_cad_id = :id_busca";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(":id_busca", $idTabela, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+
+                    // $newDate = new DateTime($row['data_solicitacao']);
+                    $newDateInicio = !empty($row['data_cadastro']) ? new DateTime($row['data_cadastro']) : $row['data_cadastro'];
+                    // $row['data_solicitacao'] = $newDate->format('d-m-Y');
+
+                    $row['data_cadastro'] =  $newDateInicio != null ? $newDateInicio->format('d-m-Y') : $newDateInicio;
+                    $registros[] = $row;
+                }
+                return $registros;
+            } else {
+
+                return $error[] = ['error' => 'Dados Não localizados'];
+            }
+        } catch (PDOException $e) {
+
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Job, cod error: {$e->getCode()}"];
+        }
+    }
     public function lista_jobs_old()
     {
         $error = [];

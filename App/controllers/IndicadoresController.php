@@ -294,15 +294,44 @@ class IndicadoresController extends Controller
                 'sucesso' => false,
                 'dados'   => $retorno_dados
             ], JSON_UNESCAPED_UNICODE);
-        }
+        } else {
 
-        if ($retorno_dados) {
+
             $retorno_dados = $this->validaCampos->convertEncode($retorno_dados);
 
             header('Content-Type: application/json; charset=utf-8');
             http_response_code(200);
             echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'dados'   => $retorno_dados
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    }
+    public function listaJobHistoricoObs()
+    {
+        $retorno_dados = $this->process_dados->list_historico_obs($_REQUEST['tabela']);
+
+        if (isset($retorno_dados['error'])) {
+
+            $retorno_dados = $this->validaCampos->convertEncode($retorno_dados['error']);
+
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
                 'status'  => 0,
+                'sucesso' => false,
+                'dados'   => $retorno_dados
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+
+
+            $retorno_dados = $this->validaCampos->convertEncode($retorno_dados);
+
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
                 'sucesso' => true,
                 'dados'   => $retorno_dados
             ], JSON_UNESCAPED_UNICODE);

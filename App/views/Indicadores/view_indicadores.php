@@ -547,127 +547,99 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalDados">Lista de dados</h1>
-
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="">
-                        <div class="pg-dash-wrapper">
-                            <div class="pg-year-metrics-card">
-                                <div class="pg-table-section">
-                                    <div id="teste" class="row">
 
-                                        <div class="d-flex">
+                    <div class="pg-dash-wrapper">
+                        <div class="pg-year-metrics-card">
+                            <div class="pg-table-section">
+                                <div id="teste" class="row">
+                                    <div class="d-flex">
+
+                                        <!-- O container (Accordion) envolve os botões E os conteúdos collapse -->
+                                        <div id="acordionPai" class="d-flex w-100">
+
                                             <!-- Menu Lateral Principal -->
                                             <div class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
 
-                                                <!-- DIV PARA O PRMEIRO BOTÃO DE ADICIONAR INFORMACOES -->
+                                                <!-- Botão 1 -->
                                                 <div class="menu-item position-relative mb-2">
                                                     <a class="custom-file-label w-100 mb-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                                                         Observações
                                                     </a>
-                                                    <!-- <button class="btn btn-dark w-100 text-start dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-                                                        Menu 1
-                                                    </button> -->
-                                                    <!-- dropend faz o menu abrir para a direita -->
-                                                    <!-- <div class="dropdown-menu dropend position-absolute top-0 start-100 ms-2 p-3" style="min-width: 200px;">
-                                                        <a class="btn btn-primary w-100 mb-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                                            Link com href
-                                                        </a>
-                                                        <a class="dropdown-item" href="#">Link 1.2</a>
-                                                    </div> -->
-                                                </div> <!--FECHAMENTO DIV PARA O PRMEIRO BOTÃO DE ADICIONAR INFORMACOES -->
+                                                </div>
 
-                                                <!-- Item de Menu 2 -->
+                                                <!-- Botão 2 -->
+                                                <div class="menu-item position-relative mb-2">
+                                                    <a class="custom-file-label w-100 mb-2 btn-listar-historico-obs" data-bs-toggle="collapse" href="#collapseObservacoes" role="button" aria-expanded="false" aria-controls="collapseObservacoes">
+                                                        Listar Observações
+                                                    </a>
+                                                </div>
+
+                                                <!-- Botão 3 -->
                                                 <div class="menu-item position-relative mb-2">
                                                     <a class="custom-file-label w-100 mb-2 btn-listar-historico" data-bs-toggle="collapse" href="#collapseExampleAtualizacoes" role="button" aria-expanded="false" aria-controls="collapseExampleAtualizacoes">
                                                         Listar atualizações
                                                     </a>
                                                     <input type="hidden" id="d-id-tabela-historico" value="">
-                                                    <!-- <button class="btn btn-dark w-100 text-start dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        Listar atualizações
-                                                    </button> -->
-                                                    <!-- <div class="dropdown-menu position-absolute top-0 start-100 ms-2 p-2" style="min-width: 200px;">
-                                                        <a class="dropdown-item" href="#">Link 2.1</a>
-                                                        <a class="dropdown-item" href="#">Link 2.2</a>
-                                                    </div> -->
                                                 </div>
 
-                                            </div>
+                                            </div> <!-- /sidebar -->
 
-                                            <!-- Área de Conteúdo Principal-->
-                                            <div class="content flex-grow-1 p-10">
-                                                <!-- O conteúdo da sua página vai aqui -->
-                                                <div class="collapse" id="collapseExample">
+                                            <!-- Área de Conteúdo Principal -->
+                                            <div class="content flex-grow-1 p-3">
+                                                <div id="apresentar_msg">
+                                                    <div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">
+                                                        Selecione Alguma opção para ver os dados!
+                                                    </div>
+                                                </div>
+
+                                                <!-- Painel 1 -->
+                                                <div class="collapse" id="collapseExample" data-bs-parent="#acordionPai">
                                                     <div class="card card-body">
                                                         <form id="obs_job">
-
                                                             <textarea id="info_job" name="story" rows="5" cols="33" placeholder="Informe algum dados inportante sobre o o job ...."></textarea>
                                                             <input type="hidden" value="obs" id="d-obs">
                                                             <input type="hidden" value="" id="d-id-tabela">
                                                             <button class="btn-salvar-area" id="btn-salvar-usuarios">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                                                                    <polyline points="17 21 17 13 7 13 7 21" />
-                                                                    <polyline points="7 3 7 8 15 8" />
-                                                                </svg>
                                                                 Salvar tratativa
                                                             </button>
-                                                            <!-- <input type="hidden" value="usuarios" id="d-usuario"> -->
                                                         </form>
                                                     </div>
-                                                </div> <!--id="collapseExample" -->
-
-                                                <div class="collapse" id="collapseExampleAtualizacoes">
-                                                    <!-- <div class="card card-body"> -->
-
-                                                    <table id="table-relatorio-historico">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>id</th>
-                                                                <th>Título</th>
-                                                                <th>Cliente</th>
-                                                                <th>Solicitante</th>
-                                                                <th>Área</th>
-                                                                <th>Executor</th>
-                                                                <th>Área Executor</th>
-                                                                <th>Perfil</th>
-                                                                <th>Status</th>
-                                                                <th>Data Solicitação</th>
-                                                                <th>Data Início</th>
-                                                                <th>Data Fim</th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="corpo-tabela-indicadores-historico">
-                                                            <tr class="loading-row">
-
-                                                                <td colspan="14" class="text-center py-4">
-                                                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
-                                                                        <span class="visually-hidden">Carregando...</span>
-                                                                    </div>
-                                                                    <span class="text-muted">Carregando dados...</span>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-
-                                                    <!-- </div> -->
                                                 </div>
-                                            </div> <!-- d-flex -->
-                                        </div><!-- /teste -->
-                                    </div><!-- /pg-table-section -->
+
+                                                <!-- Painel 2: Listar Observações  -->
+                                                <div class="collapse" id="collapseObservacoes" data-bs-parent="#acordionPai">
+                                                    <div id="historico-lista-apresentar-observacoes" class="card card-body">
+                                                        Conteúdo da lista de observações aqui...
+                                                    </div>
+                                                </div>
+
+                                                <!-- Painel 3 -->
+                                                <div class="collapse" id="collapseExampleAtualizacoes" data-bs-parent="#acordionPai">
+                                                    <div id="historico-lista-apresentar" class="card card-body">
+                                                        Conteúdo do histórico de atualizações...
+                                                    </div>
+                                                </div>
+
+                                            </div> <!-- /content -->
+
+                                        </div> <!-- /ARCORDION-PAi -->
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
 
-                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
+
 
 
         <div class="toast-wrapper" id="toast-wrapper"></div>

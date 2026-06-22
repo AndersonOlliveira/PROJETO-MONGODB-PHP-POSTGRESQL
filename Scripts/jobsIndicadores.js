@@ -1,9 +1,11 @@
 // ── ESTADO GLOBAL ─────────────────────────────────────────────
 const App = {
     dados: [], // todos os registros da API
+    dadosObs: [], // todos os registros da API
     data_global_contratros: [],
     dadosFiltrados: [], // subconjunto após filtros
     dadosFiltradosHistorico: [], // subconjunto após filtros historico
+    dadosFiltradosHistoricoObs: [], // subconjunto após filtros OBS
     paginaAtual: 1,
     porPagina: 50,
     linhaSelecionada: null,
@@ -120,6 +122,13 @@ function listArchivesJobsHistorico(id) {
         App.dadosFiltradosHistorico = [];
     }
 
+    $('#historico-lista-apresentar').html(`
+        <div class="loading-row" style="text-align:center; padding:40px; color:var(--muted); font-size:14px;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 8px;"></span>
+            Carregando dados...
+        </div>
+    `);
+
     $.ajax({
         url: '/api/ListJobsHis',
         data: {
@@ -146,12 +155,84 @@ function listArchivesJobsHistorico(id) {
 
                 }));
 
-                console.log('ESTOU CHAMANDO OS DADOS \n');
+                console.log('ESTOU CHAMANDO OS DADOS PARA A API DE HISTORICO \n');
                 console.log(App.dados);
                 renderTabelaHistorico();
             } else {
                 // clearFiltro();
                 //RESPSTA ESTA DENTRO DE DADOS
+                $('#apresentar_msg').empty();
+                $('#historico-lista-apresentar').html(`
+                <div class="loading-row" style="text-align:center; padding:40px; color:var(--muted); font-size:14px;">
+                    <span style="margin-right: 8px;">${resp.dados}</span>
+                    
+                </div>
+    `);
+
+                mostrarErro(resp.dados.msg || 'Resposta inesperada do servidor.');
+            }
+        },
+        error: function (xhr) {
+            mostrarErro('Falha de conexão. (HTTP ' + xhr.status + ')');
+        }
+    });
+}
+
+function listArchivesJobsHistoricoObs(id) {
+    mostrarLoading();
+
+    if (App.dadosFiltradosHistoricoObs.length > 0) {
+        App.dadosFiltradosHistoricoObs = [];
+    }
+
+    $('#historico-lista-apresentar-observacoes').html(`
+        <div class="loading-row" style="text-align:center; padding:40px; color:var(--muted); font-size:14px;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 8px;"></span>
+            Carregando dados...
+        </div>`);
+
+    $.ajax({
+        url: '/api/ListJobsHisObs',
+        data: {
+            'tabela': id,
+        },
+        type: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso && Array.isArray(resp.dados)) {
+                App.dadosFiltradosHistoricoObs = [...resp.dados];
+
+
+
+                // App.dadosFiltradosHistoricoObs = App.dadosFiltradosHistoricoObs.map(item => ({
+                //     ...item,
+                //     solicitante: item.dados_solicitante?.n_nome_user ?? '-',
+                //     area_solicitante: item.dados_solicitante?.n_area ?? '-',
+                //     area_executor: item.dados_executor?.n_area ?? '-',
+                //     n_executor: item.dados_executor?.n_nome_user ?? '-',
+
+                // }));
+
+                console.log('ESTOU CHAMANDO OS DADOS PARA A API DE HISTORICO  OBS....\n');
+                // console.log(App.dadosObs);
+                renderTabelaHistoricoObs();
+
+            } else {
+                // clearFiltro();
+                //RESPSTA ESTA DENTRO DE DADOS
+                $('#apresentar_msg').empty();
+                $('#historico-lista-apresentar').html(`
+                <div class="loading-row" style="text-align:center; padding:40px; color:var(--muted); font-size:14px;">
+                    <span style="margin-right: 8px;">${resp.dados}</span>
+                    
+                </div>
+    `);
+
                 mostrarErro(resp.dados.msg || 'Resposta inesperada do servidor.');
             }
         },
@@ -365,158 +446,89 @@ function renderTabela() {
 
 // ── RENDERIZAÇÃO  HISTORICO──────────────────────────────────────────────
 function renderTabelaHistorico() {
-    // atualizarCardsResumoJobs();
+    console.log('ACESSANDO A ROTA');
 
-    if ($.fn.DataTable.isDataTable('#table-relatorio-historico')) {
-        $('#table-relatorio-historico').DataTable().clear().destroy();
+
+    const apresentar_lista = $('#historico-lista-apresentar');
+
+    apresentar_lista.empty();
+    $('#apresentar_msg').empty();
+
+
+    if (!App.dadosFiltradosHistorico || App.dadosFiltradosHistorico.length === 0) {
+        apresentar_lista.append(`<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">Nenhum histórico encontrado para esta parcela.</div>`);
+        return apresentar_lista;
     }
 
-    tabela_indicadores_historico = $('#table-relatorio-historico').DataTable({
-        destroy: true,
-        processing: true,
-        // select: true,
-        paging: true,
-        scrollX: true,
-        searching: true,
-        ordering: true,
-        responsive: false,
-        language: {
-            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            infoEmpty: "Nenhum registro encontrado",
-            lengthMenu: "Mostrar _MENU_ registros",
-            search: "Pesquisar:",
-            searchPlaceholder: "Digite para pesquisar...",
-            paginate: {
-                previous: "Anterior",
-                next: "Próximo"
-            }
-        },
 
-        data: App.dadosFiltradosHistorico, //DADOS VINDO DA API
+    App.dadosFiltradosHistorico.forEach(function (item) {
 
-        columns: [
 
-            {
-                data: 'id_cadjob',
-                defaultContent: '-'
-            }, {
-                data: 'titulo_email',
-                defaultContent: '-'
-            },
-            {
-                data: 'nome_cliente',
-                defaultContent: '-'
-            },
-            {
-                data: 'solicitante',
-                defaultContent: '-',
+        let classeBadge = 'bg-secondary';
+        if (item.n_status === 'FINALIZADO') classeBadge = 'bg-success';
+        if (item.n_status === 'EM ANDAMENTO') classeBadge = 'bg-primary';
+        if (item.n_status === 'PAUSADO') classeBadge = 'bg-warning text-dark';
 
-            },
-            {
-                data: 'area_solicitante',
-                defaultContent: '-'
-            },
-            {
-                data: null,
-                orderable: false,
-                searchable: false,
-                render: function (data, type, row) {
-                    return `
-   <div class="dropdown dropdown-dinamico">
-        <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
-            ${row.dados_executor.n_nome_user || 'Sem nome'}
-        </button>
-            <ul class="dropdown-menu p-2">
-              <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Executor</h6></li>
-            <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <div class="lista-executantes">
-                <li class="text-muted small px-2">Carregando...</li>
+        apresentar_lista.append(`
+            <div class="hist-item" style="border-left: 4px solid var(--primary); padding: 10px; margin-bottom: 10px; background: #f8f9fa; border-radius: 4px;">
+                <div class="hist-meta" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="hist-data" style="font-size:12px; font-weight:bold;">ID: ${item.cad_idjob} - ${item.titulo_email}</span>
+                    <span class="badge ${classeBadge}" style="font-size:10px; padding: 4px 8px;">${item.n_status ?? 'SEM STATUS'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:12px;">
+                    <span class="hist-tipo"><b>Cliente:</b> ${item.nome_cliente}</span>
+                    <span class="hist-resp"><b>Executor:</b> ${item.dados_executor?.n_nome_user || 'Sem nome'}</span>
+                </div>
+                <div class="hist-desc" style="font-size:11px; color:#555; margin-top:5px;">
+                    <b>Solicitante:</b> ${item.solicitante} (${item.area_solicitante})
+                </div>
             </div>
-        </ul>
-    </div>
- 
-        `;
-                }
-            },
-
-
-            {
-                data: 'area_executor',
-                defaultContent: '-'
-            },
-            {
-                data: 'n_perfil',
-                defaultContent: '-'
-            },
-            {
-                data: 'n_status',
-                render: function (data, type, row) {
-
-                    let classe = 'badge bg-secondary';
-
-                    switch (data) {
-                        case 'PAUSADO':
-                            classe = 'badge bg-warning';
-                            break;
-
-                        case 'FINALIZADO':
-                            classe = 'badge bg-success';
-                            break;
-
-                        case 'EM ANDAMENTO':
-                            classe = 'badge bg-primary';
-                            break;
-                    }
-
-                    return `
-                     <div class="dropdown dropdown-dinamico-status">
-                      <button class="btn btn-sm btn-light ${classe}  dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
-                         ${data ?? '-'}
-                    </button>
-                      <ul class="dropdown-menu p-2">
-                            <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-                            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Status</h6></li>
-                            <li><a class="dropdown-item items-status" href="#" data-id="0">Todos</a></li>
-                             <li><hr class="dropdown-divider"></li>
-                            <div class="lista-status">
-                                <li class="text-muted small px-2">Carregando...</li>
-                            </div>
-                        </ul>
-                    </div>`;
-                }
-            },
-            {
-                data: null,
-                render: function (data, type, row) {
-                    return renderData(data, type, row);
-
-                    // if (!data) return '-';
-
-                    // return data;
-                }
-            },
-            {
-                data: 'data_inicio',
-                render: function (data, type, row) {
-                    return renderDataIncio(data, type, row);
-                    // if (!data) return '-';
-
-                    // return data;
-                }
-            },
-            {
-                data: 'data_fim',
-                render: function (data, type, row) {
-                    return renderDataFim(data, type, row);
-                    // if (!data) return '-';
-
-                    // return data;
-                }
-            },
-        ]
+        `);
     });
+
+    return apresentar_lista;
+}
+
+// ── RENDERIZAÇÃO  HISTORICO OBSERVACOES──────────────────────────────────────────────
+function renderTabelaHistoricoObs() {
+    console.log('ACESSANDO A ROTA OBS');
+
+
+    const apresentar_lista = $('#historico-lista-apresentar-observacoes');
+
+    apresentar_lista.empty();
+    $('#apresentar_msg_obs').empty();
+
+
+    if (!App.dadosFiltradosHistoricoObs || App.dadosFiltradosHistoricoObs.length === 0) {
+        apresentar_lista.append(`<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">Nenhum histórico encontrado para esta parcela.</div>`);
+        return apresentar_lista;
+    }
+
+
+    App.dadosFiltradosHistoricoObs.forEach(function (item) {
+
+
+        let classeBadge = 'bg-secondary';
+        // if (item.n_status === 'FINALIZADO') classeBadge = 'bg-success';
+        // if (item.n_status === 'EM ANDAMENTO') classeBadge = 'bg-primary';
+        // if (item.n_status === 'PAUSADO') classeBadge = 'bg-warning text-dark';
+
+        apresentar_lista.append(`
+            <div class="hist-item" style="border-left: 4px solid var(--primary); padding: 10px; margin-bottom: 10px; background: #f8f9fa; border-radius: 4px;">
+                <div class="hist-meta" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="hist-data" style="font-size:12px; font-weight:bold;">ID: ${item.tabela} -</span>
+                    <span class="badge ${classeBadge}" style="font-size:10px; padding: 4px 8px;">Data inserida ${item.data_cadastro}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:12px;">
+                    <span class="hist-tipo"><b>Obs Inserida:</b> ${item.obs}</span>
+                  
+                </div>
+            </div>
+        `);
+    });
+
+    return apresentar_lista;
 }
 
 
@@ -1736,5 +1748,38 @@ $(document).ready(function () {
 
         listArchivesJobsHistorico(idSelecionadoTabela);
 
+    });
+});
+
+
+$(document).ready(function () {
+    $('.btn-listar-historico-obs').on('click', function (e) {
+
+        console.log('estou saindoa aqui ');
+        console.log('PEGANDO O CLICK DENTRO DO BTN LISTAR OBSS:');
+        var idSelecionadoTabela = $('#d-id-tabela-historico').val();
+        console.log('ID SELECIONADO OBS ', $('#d-id-tabela-historico').val());
+
+        listArchivesJobsHistoricoObs(idSelecionadoTabela);
+
+    });
+});
+
+$(document).ready(function () {
+    // Quando fechar o modal, reseta a lista para o estado inicial limpo
+    $('#modalDados').on('hidden.bs.modal', function () {
+        App.dadosFiltradosHistorico = []; // Limpa o array de dados
+
+        $("#historico-lista-apresentar").empty();
+
+        // Volta a mensagem padrão
+        $('#historico-lista').html(`
+            <div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">
+                Selecione uma parcela para ver o histórico.
+            </div>
+        `);
+
+        // Opcional: recolhe o collapse para começar fechado na próxima
+        $('#collapseExampleAtualizacoes').collapse('hide');
     });
 });
