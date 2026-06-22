@@ -169,6 +169,46 @@ class Kpiindicadores extends Model
         }
     }
 
+    public function cad_informacoes_obs($dados, $config)
+    {
+        extract($dados);
+
+        $sql = "";
+        $error = [];
+        $msg = [];
+
+        $tabela = $config['tabela'];
+        $campoObs = $config['campos'][0];
+        $campoId    = $config['campos'][1];
+        $campo = strtoupper($campos);
+
+
+        $sql = "INSERT INTO {$tabela} ({$campoObs}, crt_interno_obs, {$campoId})
+            VALUES (:campo_inserir,:crt_interno_obs,:id_inserir)";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':campo_inserir', $campo, PDO::PARAM_STR);
+            $stmt->bindParam(':crt_interno_obs', $ctr, PDO::PARAM_INT);
+            $stmt->bindParam(':id_inserir', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            #lista de erros 
+            return  $stmt->rowCount() > 0 ? $msg[] = ["MSG" => "Sucesso em inserir o dado informado"] : $error[] = ["error" => "Dados informado já inserido na {$tabela}"];
+        } catch (Exception $e) {
+            //CRIA O 
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em inserir dados na tabela {$tabela},cod error: {$e->getCode()}"];
+        }
+    }
+
     public function vinculador($dados, $config)
     {
         extract($dados);
@@ -339,6 +379,89 @@ class Kpiindicadores extends Model
                     $newDate = new DateTime($row['data_solicitacao']);
                     $newDateInicio = !empty($row['data_inicio']) ? new DateTime($row['data_inicio']) : $row['data_inicio'];
                     $row['data_solicitacao'] = $newDate->format('d-m-Y');
+
+                    $row['data_inicio'] =  $newDateInicio != null ? $newDateInicio->format('d-m-Y') : $newDateInicio;
+
+                    $row['dados_solicitante'] =  self::users($row['solicitante_id']);
+                    $row['dados_executor'] =  self::users($row['executante_id']);
+
+                    $registros[] = $row;
+                }
+                return $registros;
+            } else {
+
+                return $error[] = ['error' => 'Dados Não localizados'];
+            }
+        } catch (PDOException $e) {
+
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Job, cod error: {$e->getCode()}"];
+        }
+    }
+    public function lista_jobs_atualizacoes($idTabela)
+    {
+        $error = [];
+        $msg = [];
+        $registros = [];
+
+
+        $sql = "WITH job_perfil as (
+            SELECT
+                    jperfil.n_perfil,
+                    jperfil.id_perfil
+                FROM cadastro_job.jobperfil jperfil
+            ),
+            job_status AS (
+                SELECT
+                    jstatus.n_status,
+                    jstatus.id_status
+                FROM cadastro_job.jobstatus jstatus
+            )
+            SELECT
+                cadjobs.cad_idjob,
+                cadjobs.solicitante_id,
+                cadjobs.executante_id,
+                cadjobs.data_cad_hist,
+            -- jbus.n_nome_user ,
+                --ar.n_area as area_solicitante,
+                tstatus.n_status,
+                cadjobs.data_inicio,
+                cadjobs.data_fim,
+                --cadjobs.titulo_email,
+                --cadjobs.detalhamento,
+                cadjobs.data_cad_job,
+                --cadjobs.nome_cliente,
+                --cadjobs.data_solicitacao,
+                perjobs.n_perfil
+
+            FROM cadastro_job.jobhistorico cadjobs
+            INNER JOIN job_perfil perjobs
+                ON perjobs.id_perfil = cadjobs.perfil_id
+                INNER JOIN job_status tstatus
+                ON tstatus.id_status = cadjobs.status_id
+                WHERE cadjobs.cad_idjob = :id_busca";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(":id_busca", $idTabela, PDO::PARAM_INT);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+
+                    // $newDate = new DateTime($row['data_solicitacao']);
+                    $newDateInicio = !empty($row['data_inicio']) ? new DateTime($row['data_inicio']) : $row['data_inicio'];
+                    // $row['data_solicitacao'] = $newDate->format('d-m-Y');
 
                     $row['data_inicio'] =  $newDateInicio != null ? $newDateInicio->format('d-m-Y') : $newDateInicio;
 
@@ -732,10 +855,7 @@ class Kpiindicadores extends Model
 
         $busca_tabela = self::get_jobs_inserts($dados['tabela']);
 
-        echo "<pre>";
-        echo "vindo para atualizar\n";
 
-        print_R($busca_tabela);
         try {
 
             $this->db->beginTransaction();
@@ -794,7 +914,7 @@ class Kpiindicadores extends Model
             // Se atualizou, grava o histórico
             if ($stmt->rowCount() > 0 && !empty($valores_insert)) {
                 $insertHistorico = "INSERT INTO cadastro_job.jobhistorico 
-                (cad_idjob, executante_id, job_id, nome_cliente, status_id, perfil_id, data_solicitacao, data_inicio, data_fim, titulo_emai, detalhamento, ctr_interno_cad, data_cad_job, solicitante_id, cliid_id, alter_id) VALUES ";
+                (cad_idjob, executante_id, job_id, nome_cliente, status_id, perfil_id, data_solicitacao, data_inicio, data_fim, titulo_email, detalhamento, ctr_interno_cad, data_cad_job, solicitante_id, cliid_id, alter_id) VALUES ";
                 $stmt = $this->db->prepare($insertHistorico . implode(', ', $valores_insert));
 
                 $stmt->execute();
@@ -803,8 +923,8 @@ class Kpiindicadores extends Model
             $this->db->commit();
         } catch (PDOException $e) {
 
-        echo '<pre>';
-        print_r($e->getMessage());
+            echo '<pre>';
+            print_r($e->getMessage());
 
             $this->db->rollBack();
 

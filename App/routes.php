@@ -60,6 +60,7 @@ return [
     '/api/CadExecutor' => ['IndicadoresController', 'vincular_executor'],
     '/api/CadJob' => ['IndicadoresController', 'cadatrar_job'],
     '/api/ListJobs' => ['IndicadoresController', 'listaJobs'],
+    '/api/ListJobsHis' => ['IndicadoresController', 'listaJobHistorico'],
     '/api/ListArea' => ['IndicadoresController', 'listArea'],
     '/api/ListUserArea' => ['IndicadoresController', 'listUserArea'],
     '/api/ListTipo' => ['IndicadoresController', 'listTipo'],

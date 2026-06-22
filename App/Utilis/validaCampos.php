@@ -193,6 +193,13 @@ class validaCampos
                     'status',
                     'id_area'
                 ]
+            ],
+            11 => [
+                'tabela' => 'cadastro_job.jobobservacoes',
+                'campos' => [
+                    'obs',
+                    'job_cad_id',
+                ]
             ]
         ];
         if (array_key_exists($tipo, $dados_tabela)) {

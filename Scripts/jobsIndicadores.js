@@ -3,6 +3,7 @@ const App = {
     dados: [], // todos os registros da API
     data_global_contratros: [],
     dadosFiltrados: [], // subconjunto após filtros
+    dadosFiltradosHistorico: [], // subconjunto após filtros historico
     paginaAtual: 1,
     porPagina: 50,
     linhaSelecionada: null,
@@ -100,6 +101,54 @@ function listArchivesJobs() {
                 console.log('ESTOU CHAMANDO OS DADOS \n');
                 console.log(App.dados);
                 renderTabela();
+            } else {
+                // clearFiltro();
+                //RESPSTA ESTA DENTRO DE DADOS
+                mostrarErro(resp.dados.msg || 'Resposta inesperada do servidor.');
+            }
+        },
+        error: function (xhr) {
+            mostrarErro('Falha de conexão. (HTTP ' + xhr.status + ')');
+        }
+    });
+}
+
+function listArchivesJobsHistorico(id) {
+    mostrarLoading();
+
+    if (App.dadosFiltradosHistorico.length > 0) {
+        App.dadosFiltradosHistorico = [];
+    }
+
+    $.ajax({
+        url: '/api/ListJobsHis',
+        data: {
+            'tabela': id,
+        },
+        type: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso && Array.isArray(resp.dados)) {
+                App.dados = resp.dados;
+                App.dadosFiltradosHistorico = [...resp.dados];
+
+                App.dadosFiltradosHistorico = App.dadosFiltradosHistorico.map(item => ({
+                    ...item,
+                    solicitante: item.dados_solicitante?.n_nome_user ?? '-',
+                    area_solicitante: item.dados_solicitante?.n_area ?? '-',
+                    area_executor: item.dados_executor?.n_area ?? '-',
+                    n_executor: item.dados_executor?.n_nome_user ?? '-',
+
+                }));
+
+                console.log('ESTOU CHAMANDO OS DADOS \n');
+                console.log(App.dados);
+                renderTabelaHistorico();
             } else {
                 // clearFiltro();
                 //RESPSTA ESTA DENTRO DE DADOS
@@ -286,7 +335,7 @@ function renderTabela() {
                     return `
                     <div class="d-flex flex-row mb-3">
                       <div class="p-2 pg-file-section">
-                        <button type="button" class="custom-file-label btn-editar"> Editar </button> 
+                        <button type="button" class="custom-file-label btn-list-dados" data-id-tabela="${row.id_cadjob}"> Dados </button> 
                         </div>
                          <div class="p-2 pg-file-section">
                             <button type="button" class="custom-file-label btn-status-action" data-tipo="" data-dados-id=""> 
@@ -310,6 +359,164 @@ function renderTabela() {
     $('#contagem').html(
         `${App.dadosFiltrados.length} registro(s) encontrado(s)`
     );
+}
+
+
+
+// ── RENDERIZAÇÃO  HISTORICO──────────────────────────────────────────────
+function renderTabelaHistorico() {
+    // atualizarCardsResumoJobs();
+
+    if ($.fn.DataTable.isDataTable('#table-relatorio-historico')) {
+        $('#table-relatorio-historico').DataTable().clear().destroy();
+    }
+
+    tabela_indicadores_historico = $('#table-relatorio-historico').DataTable({
+        destroy: true,
+        processing: true,
+        // select: true,
+        paging: true,
+        scrollX: true,
+        searching: true,
+        ordering: true,
+        responsive: false,
+        language: {
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Nenhum registro encontrado",
+            lengthMenu: "Mostrar _MENU_ registros",
+            search: "Pesquisar:",
+            searchPlaceholder: "Digite para pesquisar...",
+            paginate: {
+                previous: "Anterior",
+                next: "Próximo"
+            }
+        },
+
+        data: App.dadosFiltradosHistorico, //DADOS VINDO DA API
+
+        columns: [
+
+            {
+                data: 'id_cadjob',
+                defaultContent: '-'
+            }, {
+                data: 'titulo_email',
+                defaultContent: '-'
+            },
+            {
+                data: 'nome_cliente',
+                defaultContent: '-'
+            },
+            {
+                data: 'solicitante',
+                defaultContent: '-',
+
+            },
+            {
+                data: 'area_solicitante',
+                defaultContent: '-'
+            },
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    return `
+   <div class="dropdown dropdown-dinamico">
+        <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+            ${row.dados_executor.n_nome_user || 'Sem nome'}
+        </button>
+            <ul class="dropdown-menu p-2">
+              <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Executor</h6></li>
+            <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <div class="lista-executantes">
+                <li class="text-muted small px-2">Carregando...</li>
+            </div>
+        </ul>
+    </div>
+ 
+        `;
+                }
+            },
+
+
+            {
+                data: 'area_executor',
+                defaultContent: '-'
+            },
+            {
+                data: 'n_perfil',
+                defaultContent: '-'
+            },
+            {
+                data: 'n_status',
+                render: function (data, type, row) {
+
+                    let classe = 'badge bg-secondary';
+
+                    switch (data) {
+                        case 'PAUSADO':
+                            classe = 'badge bg-warning';
+                            break;
+
+                        case 'FINALIZADO':
+                            classe = 'badge bg-success';
+                            break;
+
+                        case 'EM ANDAMENTO':
+                            classe = 'badge bg-primary';
+                            break;
+                    }
+
+                    return `
+                     <div class="dropdown dropdown-dinamico-status">
+                      <button class="btn btn-sm btn-light ${classe}  dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+                         ${data ?? '-'}
+                    </button>
+                      <ul class="dropdown-menu p-2">
+                            <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+                            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Status</h6></li>
+                            <li><a class="dropdown-item items-status" href="#" data-id="0">Todos</a></li>
+                             <li><hr class="dropdown-divider"></li>
+                            <div class="lista-status">
+                                <li class="text-muted small px-2">Carregando...</li>
+                            </div>
+                        </ul>
+                    </div>`;
+                }
+            },
+            {
+                data: null,
+                render: function (data, type, row) {
+                    return renderData(data, type, row);
+
+                    // if (!data) return '-';
+
+                    // return data;
+                }
+            },
+            {
+                data: 'data_inicio',
+                render: function (data, type, row) {
+                    return renderDataIncio(data, type, row);
+                    // if (!data) return '-';
+
+                    // return data;
+                }
+            },
+            {
+                data: 'data_fim',
+                render: function (data, type, row) {
+                    return renderDataFim(data, type, row);
+                    // if (!data) return '-';
+
+                    // return data;
+                }
+            },
+        ]
+    });
 }
 
 
@@ -601,6 +808,15 @@ function validarCamposInput(dados, tipo) {
             }
             break;
         case 0:
+            for (const [chave, valor] of Object.entries(dados)) {
+                if (!valor || valor == 0) {
+                    toast(`Campo ${chave} não pode ser vazio!.`, 'error');
+                    $('#btn-salvar-tratativa').prop('disabled', false);
+                    return false; // Para a função aqui
+                }
+            }
+            break;
+        case 11:
             for (const [chave, valor] of Object.entries(dados)) {
                 if (!valor || valor == 0) {
                     toast(`Campo ${chave} não pode ser vazio!.`, 'error');
@@ -956,6 +1172,9 @@ function tipos(tipos) {
         case "status":
             content = 2;
             break;
+        case "obs":
+            content = 11;
+            break;
         default:
             content = null;
     }
@@ -1238,7 +1457,7 @@ $(document).ready(function () {
 
                     setTimeout(function () {
                         redimensionarTdDropdown($divDropdown);
-                    }, 50); //Delay 
+                    }, 50); //delay 
                 } else {
                     toast('Outro status:', resp.message, 'error');
                 }
@@ -1279,8 +1498,6 @@ $(document).ready(function () {
             executante_id: idSelecionado,
             tipo: 4,
             crt: App.crt
-
-
         }
 
         console.log(playload);
@@ -1457,4 +1674,67 @@ $(document).on('change', '.d-data-fim', function (e) {
     console.log(playloads);
     UpDados(playloads);
 
+});
+
+
+$(document).on('click', '.btn-list-dados', function (e) {
+
+    e.preventDefault();
+
+    // var idSelecionado = $(this).data('id-tabela');
+    $('#d-id-tabela').val($(this).data('id-tabela'));
+    $('#d-id-tabela-historico').val($(this).data('id-tabela'));
+    // console.log('ID da linha selecionada:', idSelecionado);
+
+    $('#modalDados').modal('show');
+
+});
+
+//    <!-- ============================================================
+// CAPTURA FORMULARIO 
+// ============================================================ -->
+$("#obs_job").submit(function (event) {
+    event.preventDefault();
+    console.log('CAPTURA DOS DADOS VINDO DO OBS');
+
+    var obs = $('#info_job').val();
+
+    console.log('MINHA CAPTURA DOS DADOS VINDO DO ');
+    var idSelecionadoTabela = $('#d-id-tabela').val();
+    console.log('ID SELECIONADO ', $('#d-id-tabela').val());
+
+    console.log(obs);
+    // $("#d-obs").val();
+
+    const tipo = tipos($("#d-obs").val());
+    const listaValida = {
+        obs: $('#info_job').val()
+    }
+
+    console.log(idSelecionadoTabela);
+    const infoErros = validarCamposInput(listaValida, tipo);
+
+    if (infoErros) {
+        listaValida.id = idSelecionadoTabela;
+        listaValida.campos = listaValida.obs
+        listaValida.tipo = tipo;
+        listaValida.ctr = App.crt;
+        listaValida.status = App.status;
+        delete listaValida.obs;
+
+        salvarDados(listaValida, $("#d-obs").val());
+    }
+});
+
+$(document).ready(function () {
+    $('.btn-listar-historico').on('click', function (e) {
+
+        console.log('estou saindoa aqui ');
+        console.log('PEGANDO O CLICK DENTRO DO BTN LISTAR');
+        var idSelecionadoTabela = $('#d-id-tabela-historico').val();
+        console.log('ID SELECIONADO ', $('#d-id-tabela-historico').val());
+
+        listArchivesJobsHistorico(idSelecionadoTabela);
+
+    });
 });

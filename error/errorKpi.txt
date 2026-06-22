@@ -106,3 +106,59 @@ DETAIL:  Failing row contains (1, 2, 7, 1, EMPRESA FICTICIA, 1, 2, 2026-12-06, n
 [2026-06-19 16:55:18] Nível: 42601 | Erro: SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near ","
 LINE 2: ..._cad_job, solicitante_id, cliid_id, alter_id) VALUES (13, , 
                                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 797
+[2026-06-22 10:25:26] Nível: HY093 | Erro: SQLSTATE[HY093]: Invalid parameter number: :campo_inserir | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 202
+[2026-06-22 10:25:26] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:46:57] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 198
+[2026-06-22 10:46:57] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:48:06] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "data_cadastro" of relation "jobobservacoes" violates not-null constraint
+DETAIL:  Failing row contains (1, 2, 417039, DASDAS, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 198
+[2026-06-22 10:48:06] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:51:12] Nível: 23502 | Erro: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "data_cadastro" of relation "jobobservacoes" violates not-null constraint
+DETAIL:  Failing row contains (2, 2, 417039, DASDAS, null). | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 198
+[2026-06-22 10:51:12] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:53:18] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:55:35] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:56:16] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:56:52] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 10:58:56] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:01:08] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:02:01] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:04:05] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:05:15] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:06:17] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:08:03] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-22 11:08:35] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
+LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
+                                                      ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154

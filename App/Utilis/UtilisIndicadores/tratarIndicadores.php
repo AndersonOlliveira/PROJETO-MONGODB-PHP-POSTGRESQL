@@ -31,7 +31,8 @@ class tratarIndicadores extends Controller
             return $retorno_tabela;
         }
 
-        $result_insert = $this->modelKpi->cad_informacoes($dados, $retorno_tabela);
+        $result_insert =  $dados['tipo'] == 11 ? $this->modelKpi->cad_informacoes_obs($dados, $retorno_tabela) : $this->modelKpi->cad_informacoes($dados, $retorno_tabela);
+        // $result_insert = $this->modelKpi->cad_informacoes($dados, $retorno_tabela);
 
         return $result_insert;
     }
@@ -131,5 +132,17 @@ class tratarIndicadores extends Controller
         $result_get_cliente = $this->modelKpi->up_dados_jobs($dados, $retorno_tabela);
 
         return $result_get_cliente;
+    }
+
+    public function list_historico($tabela)
+    {
+        // $retorno_tabela = $this->functions->getDados_atualiza_jobs($dados['tipo']);
+
+        // if (isset($retorno_tabela['error'])) {
+        //     return $retorno_tabela;
+        // }
+        $result_get_historico = $this->modelKpi->lista_jobs_atualizacoes($tabela);
+
+        return $result_get_historico;
     }
 }
