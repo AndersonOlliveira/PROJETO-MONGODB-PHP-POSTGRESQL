@@ -162,3 +162,7 @@ LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
 [2026-06-22 11:08:35] Nível: 42703 | Erro: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "ctr_interno_cad" of relation "jobobservacoes" does not exist
 LINE 1: INSERT INTO cadastro_job.jobobservacoes (obs, ctr_interno_ca...
                                                       ^ | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-23 12:55:32] Nível: 23505 | Erro: SQLSTATE[23505]: Unique violation: 7 ERROR:  duplicate key value violates unique constraint "jobusuarios_pkey"
+DETAIL:  Key (id)=(7) already exists. | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154
+[2026-06-23 12:59:35] Nível: 23505 | Erro: SQLSTATE[23505]: Unique violation: 7 ERROR:  duplicate key value violates unique constraint "jobarea_pkey"
+DETAIL:  Key (id_area)=(10) already exists. | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\servicoIndicadores\Kpiindicadores.php | Linha: 154

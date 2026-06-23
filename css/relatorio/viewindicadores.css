@@ -4,6 +4,7 @@
       --azul-hover: #1e40af;
       --azul-light: #eff6ff;
       --azul-border: #bfdbfe;
+      --azul-fundo: #e6eef8;
       --surface: #f0f2f7;
       --card: #ffffff;
       --border: #e2e6ed;
@@ -1042,4 +1043,32 @@
       transition: background .2s !important;
       cursor: pointer;
       letter-spacing: .2px;
+  }
+
+  /* PARA O ACORDIONN */
+
+  .accordion-item {
+      margin-bottom: 5px !important
+  }
+
+  .accordion-item .collapsed {
+      background-color: var(--azul-border) !important;
+  }
+
+  .accordion-body {
+      background: var(--azul-fundo) !important;
+      /* padding-right: 2px; */
+  }
+
+  .accordion-flush>.accordion-item:last-child {
+      margin: 10px !important;
+  }
+
+  #corpo-tabela-indicadores {
+      font-size: 15px !important;
+      font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  #historico-lista-apresentar-observacoes {
+      overflow-y: auto;
   }

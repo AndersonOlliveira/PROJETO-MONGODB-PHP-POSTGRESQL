@@ -17,17 +17,15 @@ const App = {
     clientesSelecionado: '',
     perfilSelecionado: '',
     clienteTeste: 'novo',
-    tipo: 9
+    clienteProscore: 'PROSCORE',
+    tipo: 9,
+    tipoJobs: 1
 };
 
 // ── INICIALIZAÇÃO ─────────────────────────────────────────────
 $(document).ready(function () {
     // PEGO O LOGIN E APROVEITO DE FORMA GLOBAL DENTRO DO CODIGO
     App.crt = $('#d-id').val();
-    //   preencherDataHoje();
-    //   listContato();
-    //   list_action();
-
 
     listArchivesJobs();
 
@@ -155,8 +153,7 @@ function listArchivesJobsHistorico(id) {
 
                 }));
 
-                console.log('ESTOU CHAMANDO OS DADOS PARA A API DE HISTORICO \n');
-                console.log(App.dados);
+
                 renderTabelaHistorico();
             } else {
                 // clearFiltro();
@@ -206,32 +203,14 @@ function listArchivesJobsHistoricoObs(id) {
         success: function (resp) {
             if (resp.sucesso && Array.isArray(resp.dados)) {
                 App.dadosFiltradosHistoricoObs = [...resp.dados];
-
-
-
-                // App.dadosFiltradosHistoricoObs = App.dadosFiltradosHistoricoObs.map(item => ({
-                //     ...item,
-                //     solicitante: item.dados_solicitante?.n_nome_user ?? '-',
-                //     area_solicitante: item.dados_solicitante?.n_area ?? '-',
-                //     area_executor: item.dados_executor?.n_area ?? '-',
-                //     n_executor: item.dados_executor?.n_nome_user ?? '-',
-
-                // }));
-
-                console.log('ESTOU CHAMANDO OS DADOS PARA A API DE HISTORICO  OBS....\n');
-                // console.log(App.dadosObs);
                 renderTabelaHistoricoObs();
 
             } else {
-                // clearFiltro();
                 //RESPSTA ESTA DENTRO DE DADOS
                 $('#apresentar_msg').empty();
-                $('#historico-lista-apresentar').html(`
+                $('#historico-lista-apresentar-observacoes').html(`
                 <div class="loading-row" style="text-align:center; padding:40px; color:var(--muted); font-size:14px;">
-                    <span style="margin-right: 8px;">${resp.dados}</span>
-                    
-                </div>
-    `);
+                    <span style="margin-right: 8px;">${resp.dados}</span></div>`);
 
                 mostrarErro(resp.dados.msg || 'Resposta inesperada do servidor.');
             }
@@ -281,6 +260,9 @@ function renderTabela() {
                 next: "Próximo"
             }
         },
+        "order": [
+            [0, "desc"]
+        ],
 
         data: App.dadosFiltrados, //DADOS VINDO DA API
 
@@ -311,23 +293,28 @@ function renderTabela() {
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row) {
+                    const executorName = (row.dados_executor?.n_nome_user || '').trim();
+
+                    if (type === 'filter' || type === 'sort') {
+                        return executorName;
+                    }
+
                     return `
-   <div class="dropdown dropdown-dinamico">
-        <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
-            ${row.dados_executor.n_nome_user || 'Sem nome'}
-        </button>
-            <ul class="dropdown-menu p-2">
-              <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Executor</h6></li>
-            <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <div class="lista-executantes">
-                <li class="text-muted small px-2">Carregando...</li>
-            </div>
-        </ul>
-    </div>
- 
-        `;
+                    
+                            <div class="dropdown dropdown-dinamico">
+                                    <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+                                        ${executorName || 'Sem nome'}
+                                    </button>
+                                        <ul class="dropdown-menu p-2">
+                                        <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+                                        <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Executor</h6></li>
+                                        <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <div class="lista-executantes">
+                                            <li class="text-muted small px-2">Carregando...</li>
+                                        </div>
+                                    </ul>
+                                </div> `;
                 }
             },
 
@@ -344,65 +331,25 @@ function renderTabela() {
                 data: 'n_status',
                 render: function (data, type, row) {
 
-                    let classe = 'badge bg-secondary';
-
-                    switch (data) {
-                        case 'PAUSADO':
-                            classe = 'badge bg-warning';
-                            break;
-
-                        case 'FINALIZADO':
-                            classe = 'badge bg-success';
-                            break;
-
-                        case 'EM ANDAMENTO':
-                            classe = 'badge bg-primary';
-                            break;
-                    }
-
-                    return `
-                     <div class="dropdown dropdown-dinamico-status">
-                      <button class="btn btn-sm btn-light ${classe}  dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
-                         ${data ?? '-'}
-                    </button>
-                      <ul class="dropdown-menu p-2">
-                            <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-                            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Status</h6></li>
-                            <li><a class="dropdown-item items-status" href="#" data-id="0">Todos</a></li>
-                             <li><hr class="dropdown-divider"></li>
-                            <div class="lista-status">
-                                <li class="text-muted small px-2">Carregando...</li>
-                            </div>
-                        </ul>
-                    </div>`;
+                    return renderOptionStatus(data, type, row);
                 }
             },
             {
                 data: null,
                 render: function (data, type, row) {
                     return renderData(data, type, row);
-
-                    // if (!data) return '-';
-
-                    // return data;
                 }
             },
             {
                 data: 'data_inicio',
                 render: function (data, type, row) {
                     return renderDataIncio(data, type, row);
-                    // if (!data) return '-';
-
-                    // return data;
                 }
             },
             {
                 data: 'data_fim',
                 render: function (data, type, row) {
                     return renderDataFim(data, type, row);
-                    // if (!data) return '-';
-
-                    // return data;
                 }
             },
             {
@@ -411,36 +358,165 @@ function renderTabela() {
             }, {
                 data: null,
                 render: function (data, type, row) {
-
-
                     return `
                     <div class="d-flex flex-row mb-3">
                       <div class="p-2 pg-file-section">
-                        <button type="button" class="custom-file-label btn-list-dados" data-id-tabela="${row.id_cadjob}"> Dados </button> 
-                        </div>
-                         <div class="p-2 pg-file-section">
-                            <button type="button" class="custom-file-label btn-status-action" data-tipo="" data-dados-id=""> 
-                            Cancelar
-                            </button>
-                            </div>  
-                            
-                            
-                            <div class="p-2 pg-file-section">
-                            <button type="button" class="custom-file-label btn-status-action" data-tipo="" data-dados-id=""> 
-                            Detalhes
-                            </button>
-                            </div> 
-                        </div>`;
-
+                          <button type="button" class="custom-file-label btn-list-dados" data-id-tabela="${row.id_cadjob}" aria-label="Ver detalhes">
+                              <img src="/img/em-formacao.png" alt="Ver detalhes" width="40" height="40">
+                          </button>
+                      </div>
+                    </div>`;
                 },
             },
         ]
     });
 
+
+
+    $('#f-status').on('change', function () {
+        const filtroSelecionado = this.value.trim();
+
+        if (filtroSelecionado && filtroSelecionado != 0) {
+
+            tabela_indicadores
+                .column(8)
+                .search(filtroSelecionado)
+                .draw();
+
+        } else {
+
+            tabela_indicadores
+                .column(8)
+                .search('')
+                .draw();
+        }
+    });
+
+    $('#f-executante').on('change', function () {
+        const filtroSelecionado = this.value;
+
+
+        if (filtroSelecionado && filtroSelecionado != 0) {
+
+            console.log('que dados vai ser apresentado aqui?');
+            console.log(filtroSelecionado);
+
+            tabela_indicadores
+                .column(5)
+                .search(filtroSelecionado)
+                .draw();
+
+
+        } else {
+
+            tabela_indicadores
+                .column(5)
+                .search('')
+                .draw();
+        }
+    });
+
+    const dadosFiltradosVisiveis = tabela_indicadores.rows({
+        search: 'applied',
+        page: 'current'
+    }).data().toArray();
+
+    console.log(dadosFiltradosVisiveis);
+
+
+    listaOption(dadosFiltradosVisiveis);
+    listaOptionExecutante(dadosFiltradosVisiveis);
+
+
     $('#contagem').html(
         `${App.dadosFiltrados.length} registro(s) encontrado(s)`
     );
 }
+
+
+
+// APRESEMTAR O OPTION 
+
+function listaOption(dadosFiltradosVisiveis) {
+
+    const statusSelects = document.getElementById('f-status');
+
+    statusSelects.innerHTML = 'Carregando..';
+    const todosOption = document.createElement("option");
+    todosOption.value = "0";
+    todosOption.className = "form-control";
+    todosOption.text = "Todos";
+    statusSelects.appendChild(todosOption);
+
+    //mapea para não repedir os dados que vem da consulta que já existe,pois fica inteirando
+    const unicos = [...new Set(dadosFiltradosVisiveis.map(el => el.n_status))];
+
+    console.log(unicos);
+
+    unicos.forEach(element => {
+
+        const options = document.createElement("option");
+        options.className = 'form-control selectControll';
+
+        options.value = removerAcentos(element).toUpperCase().trim();
+        options.text = element;
+        statusSelects.appendChild(options);
+
+    });
+}
+
+function listaOptionExecutante(dadosFiltradosVisiveis) {
+
+    const statusSelects = document.getElementById('f-executante');
+
+    statusSelects.innerHTML = 'Carregando..';
+    const todosOption = document.createElement("option");
+    todosOption.value = "0";
+    todosOption.className = "form-control";
+    todosOption.text = "Todos";
+    statusSelects.appendChild(todosOption);
+
+
+    const unicos = [...new Map(dadosFiltradosVisiveis.map(el => [el.dados_executor.id, el.dados_executor])).values()];
+
+    unicos.forEach(element => {
+        const options = document.createElement("option");
+        // options.value = element.id;
+        // options.text = element.n_nome_user;
+        options.value = element.n_nome_user;
+        options.text = element.n_nome_user;
+        statusSelects.appendChild(options);
+    });
+}
+
+
+// $(document).on('change', '.selectControll', function (e) {
+
+//     console.log($('#f-status').val(), 'valor selecionado');
+
+//     $.fn.dataTable.ext.search = [];
+//     $.fn.dataTable.ext.search_new = [];
+//     data_global = [];
+
+
+
+//     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+//         //caso tenha mais uma tabela ele pega somente a que definir
+//         if (settings.nTable.id != 'table-relatorio-indicadores') return true;
+//         const filtroTabela = data[8].trim();
+
+//         console.log('meu filtro aplicado');
+//         console.log(filtroTabela);
+
+
+//     });
+//     // Aplica o filtro
+//     tabelaJobs.draw();
+
+
+// });
+
+
 
 
 
@@ -463,20 +539,19 @@ function renderTabelaHistorico() {
 
     App.dadosFiltradosHistorico.forEach(function (item) {
 
+        let newName_status = item.n_status;
+        const statusLimpo = removerAcentos(newName_status).toUpperCase().trim();
+        let classeBadge = switchStatus(statusLimpo);
 
-        let classeBadge = 'bg-secondary';
-        if (item.n_status === 'FINALIZADO') classeBadge = 'bg-success';
-        if (item.n_status === 'EM ANDAMENTO') classeBadge = 'bg-primary';
-        if (item.n_status === 'PAUSADO') classeBadge = 'bg-warning text-dark';
 
         apresentar_lista.append(`
             <div class="hist-item" style="border-left: 4px solid var(--primary); padding: 10px; margin-bottom: 10px; background: #f8f9fa; border-radius: 4px;">
                 <div class="hist-meta" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="hist-data" style="font-size:12px; font-weight:bold;">ID: ${item.cad_idjob} - ${item.titulo_email}</span>
+                    <span class="hist-data" style="font-size:12px; font-weight:bold;">ID: ${item.cad_idjob} - Data: ${item.data_cad_hist}</span>
                     <span class="badge ${classeBadge}" style="font-size:10px; padding: 4px 8px;">${item.n_status ?? 'SEM STATUS'}</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; font-size:12px;">
-                    <span class="hist-tipo"><b>Cliente:</b> ${item.nome_cliente}</span>
+                    <span class="hist-tipo"><b>Perfil:</b> ${item.n_perfil}</span>
                     <span class="hist-resp"><b>Executor:</b> ${item.dados_executor?.n_nome_user || 'Sem nome'}</span>
                 </div>
                 <div class="hist-desc" style="font-size:11px; color:#555; margin-top:5px;">
@@ -489,10 +564,75 @@ function renderTabelaHistorico() {
     return apresentar_lista;
 }
 
+
+function switchStatus(statusLimpo) {
+
+    let classe = 'badge bg-secondary';
+    switch (statusLimpo) {
+        case 'NAO INICIADO':
+            classe = 'badge bg-warning text-dark';
+            break;
+
+        case 'EM ANDAMENTO':
+            classe = 'badge bg-primary';
+            break;
+
+        case 'EM REVISAO':
+            classe = 'badge bg-info text-dark';
+            break;
+
+        case 'PAUSADO':
+            classe = 'badge bg-warning text-dark';
+            break;
+
+        case 'IMPEDIMENTO':
+            classe = 'badge bg-danger';
+            break;
+
+        case 'FINALIZADO':
+            classe = 'badge bg-success';
+            break;
+
+        case 'CANCELADO':
+            classe = 'badge bg-dark';
+            break;
+
+        default:
+            classe = 'badge bg-secondary';
+            break;
+    }
+
+    return classe;
+}
+
+function renderOptionStatus(data, type, row) {
+
+    let classe = 'badge bg-secondary';
+
+    const statusLimpo = removerAcentos(data).toUpperCase().trim();
+
+    classe = switchStatus(statusLimpo);
+
+
+    return `<div class="dropdown dropdown-dinamico-status">
+                      <button class="btn btn-sm btn-light ${classe}  dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+                         ${data ?? '-'}
+                    </button>
+                      <ul class="dropdown-menu p-2">
+                            <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+                            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Status</h6></li>
+                            <li><a class="dropdown-item items-status" href="#" data-id="0">Todos</a></li>
+                             <li><hr class="dropdown-divider"></li>
+                            <div class="lista-status">
+                                <li class="text-muted small px-2">Carregando...</li>
+                            </div>
+                        </ul>
+                    </div>`;
+}
+
+
 // ── RENDERIZAÇÃO  HISTORICO OBSERVACOES──────────────────────────────────────────────
 function renderTabelaHistoricoObs() {
-    console.log('ACESSANDO A ROTA OBS');
-
 
     const apresentar_lista = $('#historico-lista-apresentar-observacoes');
 
@@ -509,10 +649,12 @@ function renderTabelaHistoricoObs() {
     App.dadosFiltradosHistoricoObs.forEach(function (item) {
 
 
-        let classeBadge = 'bg-secondary';
-        // if (item.n_status === 'FINALIZADO') classeBadge = 'bg-success';
-        // if (item.n_status === 'EM ANDAMENTO') classeBadge = 'bg-primary';
-        // if (item.n_status === 'PAUSADO') classeBadge = 'bg-warning text-dark';
+        console.log(item.n_status);
+
+        let classeBadge = switchStatus(item.n_status);
+
+
+        console.log(classeBadge);
 
         apresentar_lista.append(`
             <div class="hist-item" style="border-left: 4px solid var(--primary); padding: 10px; margin-bottom: 10px; background: #f8f9fa; border-radius: 4px;">
@@ -533,15 +675,16 @@ function renderTabelaHistoricoObs() {
 
 
 function renderRowSolicitante(row, type, data) {
-
-    console.log(row['dados_solicitante']);
     $.each(row['dados_solicitante'], function (key, value) {
         return key == 'n_nome_user' ?? value;
 
     });
-
-
 }
+// TRATAMENTO DO TEXTOS
+function removerAcentos(texto) {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+}
+
 
 function renderData(row, type, data) {
     let date = row['data_solicitacao'];
@@ -556,6 +699,7 @@ function renderData(row, type, data) {
 
 
 function renderDataIncio(data, type, row) {
+
     let content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
                     <span class="infodiasdate"> Informe data de inicio</span>
                 </span>`;
@@ -838,10 +982,24 @@ function validarCamposInput(dados, tipo) {
             }
             break;
 
-        case "perfil":
-            content = 3
-        case "status":
-            content = 2
+        case 3:
+            for (const [chave, valor] of Object.entries(dados)) {
+                if (!valor || valor == 0) {
+                    toast(`Campo ${chave} não pode ser vazio!.`, 'error');
+                    $('#btn-salvar-tratativa').prop('disabled', false);
+                    return false; // Para a função aqui
+                }
+            }
+            break;
+        case 2:
+            for (const [chave, valor] of Object.entries(dados)) {
+                if (!valor || valor == 0) {
+                    toast(`Campo ${chave} não pode ser vazio!.`, 'error');
+                    $('#btn-salvar-tratativa').prop('disabled', false);
+                    return false; // Para a função aqui
+                }
+            }
+            break;
         default:
             content = null;
     }
@@ -902,33 +1060,43 @@ function salvarDados(playload, botao) {
         success: function (resp) {
             if (resp.sucesso) {
                 // _atualizarEstadoLocal(id, payloadtext);
-                // toast('Área salva com sucesso!', 'success');
+                toast(`${botao} salva com sucesso!`, 'success');
+                atualizar_botao(botao);
+                //atualizar tabela
+                ataulizar_tabela();
+
             } else {
-
-                //   toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
                 var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
-
                 toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
+                atualizar_botao(botao);
+
             }
         },
         error: function () {
             toast('Falha de conexão ao salvar. Tente novamente.', 'error');
+            atualizar_botao(botao);
         },
         complete: function () {
-            $('#btn-salvar-area').prop('disabled', false).html(`
+
+            atualizar_botao(botao);
+        }
+    });
+}
+
+function atualizar_botao(botao) {
+
+    $(`#btn-salvar-${botao}`).prop('disabled', false).html(`
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
                             <polyline points="17 21 17 13 7 13 7 21"/>
                             <polyline points="7 3 7 8 15 8"/>
-                        </svg> Salvar Área..`);
-        }
-    });
+                        </svg> Salvar ${botao}..`);
 }
 
 // PARA SALVAMENTO ATUALIZAR OS DADOS 
 function UpDados(playload, botao) {
 
-    // $(`#btn-salvar-${botao}`).prop('disabled', true).text('Salvando...');
+    $(`#btn-salvar-${botao}`).prop('disabled', true).text('Salvando...');
 
     const playloadJson = JSON.stringify(playload);
 
@@ -940,25 +1108,24 @@ function UpDados(playload, botao) {
         success: function (resp) {
             if (resp.sucesso) {
                 // _atualizarEstadoLocal(id, payloadtext);
-                // toast('Área salva com sucesso!', 'success');
+                var msg = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
+                toast(`${msg}`, 'success');
+                ataulizar_tabela();
             } else {
 
-                //   toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
+
                 var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
 
                 toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
+                atualizar_botao(botao);
             }
         },
         error: function () {
             toast('Falha de conexão ao salvar. Tente novamente.', 'error');
         },
         complete: function () {
-            $('#btn-salvar-area').prop('disabled', false).html(`
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                            <polyline points="17 21 17 13 7 13 7 21"/>
-                            <polyline points="7 3 7 8 15 8"/>
-                        </svg> Salvar Área..`);
+            atualizar_botao(botao);
+
         }
     });
 }
@@ -1138,15 +1305,10 @@ function get_lista_cliente() {
 $('#n_cliente').on('select2:select', function (e) {
     App.clientesSelecionado = e.params.data
     const cliente = e.params.data;
-
-    console.log(cliente.id);
-    console.log(cliente.text);
-
 });
 
 $('#n_perfil').on('select2:select', function (e) {
     const perId = e.params.data;
-    console.warn(perId.id);
     App.perfilSelecionado = perId;
 });
 
@@ -1158,18 +1320,16 @@ checkbox.addEventListener('change', function () {
     input.disabled = checkbox.checked;
     //SE MARCAR MOSTRO, CASO NÃO OCULTO
     checkbox.checked ? $('#clientes_inputs').show() : $('#clientes_inputs').hide();
-    // $('#n_cliente').val(null).trigger('change');
-    // App.clientesSelecionado = null;
 });
 
 
 
 
-function tipos(tipos) {
+function tipos(tiposNumber) {
 
     var content = '';
     // 0- araea,1-jobtipo,2-jobstatus,3-jobperfil,4-jobexecutor,5-jobsolicitante,10-jobusuarios
-    switch (tipos) {
+    switch (tiposNumber) {
         case "usuarios":
             content = 10;
             break;
@@ -1194,21 +1354,29 @@ function tipos(tipos) {
     return content;
 }
 
+$(document).on('change', '#d-tipo-job', function () {
+
+    const idjob = $('#d-tipo-job').val()
+    validarInterno(idjob, App.tipoJobs);
+
+    //VERIFICAR O INPUT
+});
+
 
 // CAPUTRA O FORM DO FORMULARIO DO CAD 
 $("#cad_job").submit(function (event) {
     event.preventDefault();
-    console.log(App.perfilSelecionado, ' PERFIL SELECIONADO');
     const clienteInput = $('#clientes_inputs').val() ? $('#clientes_inputs').val().trim() : '';
     const selectPerfil = App.perfilSelecionado ? App.perfilSelecionado.id : '';
     const usandoInput = checkbox.checked; // SE MARCA O CHECK EU PEGO DAQUI
+    const padrao = $('#cliente_padrao').val();
+
     let n_info_cliente = '';
     let n_info_perfil = '';
 
-    console.log(selectPerfil, ' PERFIL SELECIONADO');
+    n_info_cliente = padrao ? padrao : validarCliente(usandoInput, clienteInput);
 
-    n_info_cliente = validarCliente(usandoInput, clienteInput);
-    // n_info_cliente = validarPerfil(clienteInput);
+
 
 
     const listaCadastro = {
@@ -1225,15 +1393,16 @@ $("#cad_job").submit(function (event) {
         tipo: App.tipo
 
     }
-
-
-    enviarSolicitacao(listaCadastro);
+    enviarSolicitacao(listaCadastro, 'job');
 
 });
 
 
-function enviarSolicitacao(listaCadastro) {
-    const playloadJson = JSON.stringify(listaCadastro);
+function enviarSolicitacao(listaCadastro, botao) {
+
+
+    $(`#btn-salvar-${botao}`).prop('disabled', true).text('Salvando...');
+    let playloadJson = JSON.stringify(listaCadastro);
 
     $.ajax({
         url: '/api/CadJob',
@@ -1243,30 +1412,81 @@ function enviarSolicitacao(listaCadastro) {
         success: function (resp) {
             if (resp.sucesso) {
                 // _atualizarEstadoLocal(id, payloadtext);
-                // toast('Área salva com sucesso!', 'success');
+                toast(`${botao} com sucesso!`, 'success');
+
+                ataulizar_tabela();
+                // if ($.fn.DataTable.isDataTable("#table-relatorio-indicadores")) {
+                //     $("#table-relatorio-indicadores").DataTable().destroy();
+                // }
+                // limpar payload e campos após sucesso para evitar reenvio do mesmo dado
+                playloadJson = null;
+                try {
+                    $('#titulo_email').val('');
+                    $('#detalhamento_email').val('');
+                    $('#range').val('');
+                    $('#d-id').val('');
+                    $('#d-tipo-job').val($('#d-tipo-job option:first').val());
+                    $('#d-tipo-job-status').val($('#d-tipo-job-status option:first').val());
+                    $('#d-tipo-user-area-solicitante').val($('#d-tipo-user-area-solicitante option:first').val());
+                } catch (e) {
+                    /* ignora se elementos não existirem */
+                }
+                // listArchivesJobs();
+
+                atualizar_botao(botao);
             } else {
 
                 //   toast('Erro ao salvar: ' + (resp.dados.error[0] || 'tente novamente'), 'error');
                 var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
 
                 toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
+                atualizar_botao(botao);
             }
         },
         error: function () {
             toast('Falha de conexão ao salvar. Tente novamente.', 'error');
+            atualizar_botao(botao);
         },
         complete: function () {
-            $('#btn-salvar-area').prop('disabled', false).html(`
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                            <polyline points="17 21 17 13 7 13 7 21"/>
-                            <polyline points="7 3 7 8 15 8"/>
-                        </svg> Salvar Área..`);
+            atualizar_botao(botao);
         }
     });
 
 }
 
+function ataulizar_tabela() {
+
+    if ($.fn.DataTable.isDataTable("#table-relatorio-indicadores")) {
+        $("#table-relatorio-indicadores").DataTable().destroy();
+    }
+    listArchivesJobs();
+}
+
+function validarInterno(usandoInput, tipo) {
+
+
+    const jobId = Number(usandoInput);
+    const tipoId = Number(tipo);
+
+    if (!jobId) {
+        alert('Informe o Tipo de Job.');
+        $('#myCheckbox').prop('disabled', false);
+        $('#cliente_padrao').val('');
+        $('#n_cliente').prop('disabled', false).show();
+        return;
+    }
+
+    if (tipoId === jobId) {
+        const result = App.clienteTeste + '$' + App.clienteProscore;
+        $('#cliente_padrao').val(result);
+        $('#myCheckbox').prop('disabled', true);
+        $('#n_cliente').prop('disabled', true).hide();
+    } else {
+        $('#cliente_padrao').val('');
+        $('#myCheckbox').prop('disabled', false);
+        $('#n_cliente').prop('disabled', false).show();
+    }
+}
 
 function validarCliente(usandoInput, clienteInput) {
     let result = ''
@@ -1307,13 +1527,9 @@ function validarPerfil(usandoInput, clienteInput) {
     return result;
 }
 
-
-
-
 function datePicker() {
 
     flatpickr("#range", {
-        // mode: "multiple",
         locale: "pt",
         dateFormat: "Y-m-d",
         maxDate: new Date().toISOString().split("T")[0],
@@ -1345,6 +1561,7 @@ function montar_selec_user_area(dados) {
     tipo_selects.innerHTML = '';
     const todosOption = document.createElement("option");
     todosOption.value = "0";
+    todosOption.className = "form-control";
     todosOption.text = "Todos";
     tipo_selects.appendChild(todosOption);
 
@@ -1364,6 +1581,7 @@ function montar_selec_tipo(dados) {
     tipo_selects.innerHTML = '';
     const todosOption = document.createElement("option");
     todosOption.value = "0";
+    todosOption.className = "form-control";
     todosOption.text = "Todos";
     tipo_selects.appendChild(todosOption);
 
@@ -1381,6 +1599,7 @@ function montar_select_status(dados) {
     tipo_selects.innerHTML = '';
     const todosOption = document.createElement("option");
     todosOption.value = "0";
+    todosOption.className = "form-control";
     todosOption.text = "Todos";
     tipo_selects.appendChild(todosOption);
 
@@ -1501,9 +1720,7 @@ $(document).ready(function () {
         var idSelecionado = $(this).data('id-user');
         var nomeSelecionado = $(this).text();
         var tabela_row = $linkClicado.closest('.dropdown-menu').find('.tabela-row').val();
-        console.log("ID Selecionado:", idSelecionado);
-        console.log("Nome Selecionado:", nomeSelecionado);
-        console.log("Nome tabela_row:", tabela_row);
+
 
         const playload = {
             tabela: tabela_row,
@@ -1511,8 +1728,6 @@ $(document).ready(function () {
             tipo: 4,
             crt: App.crt
         }
-
-        console.log(playload);
         UpDados(playload);
 
     });
@@ -1621,20 +1836,14 @@ $(document).ready(function () {
         var idSelecionado = $(this).data('id-status');
         var nomeSelecionado = $(this).text();
         var tabela_row = $linkClicado.closest('.dropdown-menu').find('.tabela-row').val();
-        console.log("ID Selecionado:", idSelecionado);
-        console.log("Nome Selecionado:", nomeSelecionado);
-        console.log("Nome tabela_row:", tabela_row);
 
         const playload = {
             tabela: tabela_row,
             status_id: idSelecionado,
             tipo: 3,
             crt: App.crt
-
-
         }
 
-        console.log(playload);
         UpDados(playload);
 
     });
@@ -1647,20 +1856,16 @@ $(document).on('change', '.d-data-inicio', function (e) {
     var $input = $(this);
     var idSelecionadoTabela = $input.data('id-tabela');
     var dataSelecionada = $input.val();
-    console.log('TENHO O CLICK VINDO PARA PEGAR A DATA');
-    console.log("ID Selecionado:", idSelecionadoTabela);
-    console.log("Nome Selecionado:", dataSelecionada);
+
 
     const playload = {
         tabela: idSelecionadoTabela,
         data_inicio: dataSelecionada,
         tipo: 1,
         crt: App.crt
-
-
     }
 
-    console.log(playload);
+
     UpDados(playload);
 
 });
@@ -1672,9 +1877,6 @@ $(document).on('change', '.d-data-fim', function (e) {
     var $input = $(this);
     var idSelecionadoTabela = $input.data('id-tabela');
     var dataSelecionada = $input.val();
-    console.log('TENHO O CLICK VINDO PARA PEGAR A DATA FIM');
-    console.log("ID Selecionado:", idSelecionadoTabela);
-    console.log("Nome Selecionado:", dataSelecionada);
 
     const playloads = {
         tabela: idSelecionadoTabela,
@@ -1683,7 +1885,6 @@ $(document).on('change', '.d-data-fim', function (e) {
         crt: App.crt
     }
 
-    console.log(playloads);
     UpDados(playloads);
 
 });
@@ -1693,10 +1894,9 @@ $(document).on('click', '.btn-list-dados', function (e) {
 
     e.preventDefault();
 
-    // var idSelecionado = $(this).data('id-tabela');
     $('#d-id-tabela').val($(this).data('id-tabela'));
     $('#d-id-tabela-historico').val($(this).data('id-tabela'));
-    // console.log('ID da linha selecionada:', idSelecionado);
+
 
     $('#modalDados').modal('show');
 
@@ -1707,23 +1907,17 @@ $(document).on('click', '.btn-list-dados', function (e) {
 // ============================================================ -->
 $("#obs_job").submit(function (event) {
     event.preventDefault();
-    console.log('CAPTURA DOS DADOS VINDO DO OBS');
+
 
     var obs = $('#info_job').val();
 
-    console.log('MINHA CAPTURA DOS DADOS VINDO DO ');
     var idSelecionadoTabela = $('#d-id-tabela').val();
-    console.log('ID SELECIONADO ', $('#d-id-tabela').val());
-
-    console.log(obs);
-    // $("#d-obs").val();
 
     const tipo = tipos($("#d-obs").val());
     const listaValida = {
         obs: $('#info_job').val()
     }
 
-    console.log(idSelecionadoTabela);
     const infoErros = validarCamposInput(listaValida, tipo);
 
     if (infoErros) {
@@ -1741,10 +1935,7 @@ $("#obs_job").submit(function (event) {
 $(document).ready(function () {
     $('.btn-listar-historico').on('click', function (e) {
 
-        console.log('estou saindoa aqui ');
-        console.log('PEGANDO O CLICK DENTRO DO BTN LISTAR');
         var idSelecionadoTabela = $('#d-id-tabela-historico').val();
-        console.log('ID SELECIONADO ', $('#d-id-tabela-historico').val());
 
         listArchivesJobsHistorico(idSelecionadoTabela);
 
@@ -1755,10 +1946,8 @@ $(document).ready(function () {
 $(document).ready(function () {
     $('.btn-listar-historico-obs').on('click', function (e) {
 
-        console.log('estou saindoa aqui ');
-        console.log('PEGANDO O CLICK DENTRO DO BTN LISTAR OBSS:');
+
         var idSelecionadoTabela = $('#d-id-tabela-historico').val();
-        console.log('ID SELECIONADO OBS ', $('#d-id-tabela-historico').val());
 
         listArchivesJobsHistoricoObs(idSelecionadoTabela);
 
@@ -1766,7 +1955,7 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    // Quando fechar o modal, reseta a lista para o estado inicial limpo
+
     $('#modalDados').on('hidden.bs.modal', function () {
         App.dadosFiltradosHistorico = []; // Limpa o array de dados
 
@@ -1779,7 +1968,36 @@ $(document).ready(function () {
             </div>
         `);
 
-        // Opcional: recolhe o collapse para começar fechado na próxima
+
         $('#collapseExampleAtualizacoes').collapse('hide');
     });
+});
+
+
+$('#cad_status').submit(function (e) {
+
+    e.preventDefault();
+
+
+    const tipo = tipos($("#d-status").val());
+    const listaValida = {
+        nome_status: $('#n_status').val()
+    }
+
+    const infoErros = validarCamposInput(listaValida, tipo);
+
+    if (infoErros) {
+        listaValida.id = '';
+        listaValida.campos = listaValida.nome_status
+        listaValida.tipo = tipo;
+        listaValida.ctr = App.crt;
+        listaValida.status = App.status;
+        delete listaValida.nome_status;
+
+        salvarDados(listaValida, 'Status');
+    }
+
+
+
+
 });

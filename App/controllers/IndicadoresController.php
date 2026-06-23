@@ -456,10 +456,30 @@ class IndicadoresController extends Controller
 
         $dados = json_decode($dados, true);
 
+        $retorno_upddates = $this->process_dados->atualizar_dados($dados);
 
-        echo "<pre>";
+        if (isset($retorno_upddates['error'])) {
+            $retorno_upddates = $this->validaCampos->convertEncode($retorno_upddates);
 
-        print_R($dados);
-        $retorno_lista_clientes = $this->process_dados->atualizar_dados($dados);
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 0,
+                'sucesso' => false,
+                'dados'   => $retorno_upddates['error']
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+
+            $retorno_upddates = $this->validaCampos->convertEncode($retorno_upddates);
+
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'mensagem' => 'Sucesso ao Atualizar o dado',
+                'dados'   => $retorno_upddates
+            ], JSON_UNESCAPED_UNICODE);
+        }
     }
 }

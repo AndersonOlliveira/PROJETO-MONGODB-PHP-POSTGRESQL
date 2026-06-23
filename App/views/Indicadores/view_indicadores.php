@@ -64,251 +64,206 @@
         </div>
     </div>
 
-    <!-- filtros (aplicados no front sobre os dados já carregados) -->
+    <div class="container-fluid">
 
+        <div class="accordion accordion-flush" id="accordionFlushflow">
 
-    <!-- TESTE PARA MELHOR  OPÇÃO ABAS OU  ACORDIAN -->
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Home</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Profile</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Contact</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
-        </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">...</div>
-        <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">...</div>
-        <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...</div>
-        <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">...</div>
-    </div>
+            <!-- CADASTRAR USUÁRIOS -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headinExecutor">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseExecutor" aria-expanded="false" aria-controls="flush-collapseExecutor">
+                        Cadastrar usuários
+                    </button>
+                </h2>
+                <div id="flush-collapseExecutor" class="accordion-collapse collapse" aria-labelledby="flush-headinExecutor" data-bs-parent="#accordionFlushflow">
+                    <div class="accordion-body">
+                        <form id="cad_usuario">
+                            <div class="mb-3 form-check">
+                                <label for="n_usuario" class="form-label">Nome:</label>
+                                <input type="text" class="form-control" id="n_usuario" aria-describedby="name_help">
+                                <div id="name_help" class="form-text"></div>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <label class="form-check-label" for="d-tipo-area">Selecione Área</label>
+                                <select class="form-control" id="d-tipo-area"></select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-salvar-area" id="btn-salvar-usuarios">
+                                <svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                    <polyline points="17 21 17 13 7 13 7 21" />
+                                    <polyline points="7 3 7 8 15 8" />
+                                </svg>
+                                Salvar Usuário
+                            </button>
+                            <input type="hidden" value="usuarios" id="d-usuario">
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-    <!-- accordion accordion-flush -->
-    <div class="accordion accordion-flush" id="accordionFlushflow">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headinExecutor">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseExecutor" aria-expanded="false" aria-controls="flush-collapseOne">
-                    Cadastrar usuário
-                </button>
-            </h2>
-            <div id="flush-collapseExecutor" class="accordion-collapse collapse" aria-labelledby="flush-headinExecutor" data-bs-parent="#accordionFlushflow">
-                <div class="accordion-body">FLUXO PARA APRESENTACAO DE FORMULADOR PARA CADASTRO DO EXECUTOR
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingStatus">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseStatus" aria-expanded="false" aria-controls="flush-collapseStatus">
+                        Cadastrar Status
+                    </button>
+                </h2>
+            </div>
+            <div id="flush-collapseStatus" class="accordion-collapse collapse" aria-labelledby="flush-headingStatus" data-bs-parent="#accordionFlushflow">
 
-                    <form id="cad_usuario">
+                <div class="accordion-body">
+
+                    <form id="cad_status">
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Nome:</label>
-                            <input type="text" class="form-control" id="n_usuario" aria-describedby="name_help">
-                            <div id="emailHelp" class="form-text"></div>
+                            <label for="n_status" class="form-label">Nome Status</label>
+                            <input type="text" class="form-control" id="n_status" aria-describedby="status_help">
+                            <input type="hidden" class="form-control" id="status-tipo" value="2">
+                            <input type="hidden" value="status" id="d-status">
                         </div>
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1">
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <label class="form-check-label" for="exampleCheck1">Selecione Área</label>
-                            <select class="form-control-d" id="d-tipo-area"></select>
-
-                        </div>
-                        <button class="btn-salvar-area" id="btn-salvar-usuarios">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="submit" class="btn btn-primary btn-salvar-area" id="btn-salvar-area">
+                            <svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                                 <polyline points="17 21 17 13 7 13 7 21" />
                                 <polyline points="7 3 7 8 15 8" />
                             </svg>
-                            Salvar tratativa
+                            Salvar Status
                         </button>
-                        <input type="hidden" value="usuarios" id="d-usuario">
                     </form>
                 </div>
-
-
             </div>
-        </div>
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingTwo">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                    Cadastrar área
-                </button>
-            </h2>
-            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body">FLUXO PARA APRESENTACAO DE FORMULADOR PARA CADASTRO DO areas
+            <!-- </div> -->
+
+
+            <!-- CADASTRAR ÁREA -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                        Cadastrar área
+                    </button>
+                </h2>
+            </div>
+
+
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushflow">
+                <div class="accordion-body">
 
                     <form id="cad_area">
                         <div class="mb-3">
-                            <label for="areaInput" class="form-label">Nome área</label>
+                            <label for="n_area" class="form-label">Nome área</label>
                             <input type="text" class="form-control" id="n_area" aria-describedby="area_help">
                             <input type="hidden" class="form-control" id="data-tipo" value="0">
                             <input type="hidden" value="area" id="d-area">
                         </div>
-
-                        <button class="btn-salvar-area" id="btn-salvar-area">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <button type="submit" class="btn btn-primary btn-salvar-area" id="btn-salvar-area">
+                            <svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                                 <polyline points="17 21 17 13 7 13 7 21" />
                                 <polyline points="7 3 7 8 15 8" />
                             </svg>
-                            Salvar tratativa
+                            Salvar Área
                         </button>
                     </form>
                 </div>
             </div>
+
+
+            <!--REGISTRAR SOLICITAÇÃO -->
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingThree">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
                         Registrar Solicitação
                     </button>
                 </h2>
-                <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-                    <div class="accordion-body">FLUXO PARA APRESENTACAO DE FORMULADOR PARA CADASTRO DOS JOBS
-                        <form id="cad_job">
-                            <div class="mb-3 form-check">
-                                <label class="form-check-label" for="exampleCheck1">Selecione Solicitante</label>
-                                <select class="form-control-d" id="d-tipo-user-area-solicitante"></select>
 
-                            </div>
-                            <span>ao selecionaar o solicitante já tem o vinculo solicite a área</span>
-                            <div class="mb-3">
-                                <!-- <label for="areaInput" class="form-label">Selecione Cliente</label> -->
-                                <label for="cliente">Selecione Cliente</label>
+            </div>
 
-                                <input type="text" id="n_cliente" list="n_cliente" class="form-control" autocomplete="off">
+            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushflow">
+                <div class="accordion-body">
 
-                                <datalist id="n_cliente"></datalist>
+                    <form id="cad_job">
+                        <div class="mb-3">
+                            <label class="form-check-label" for="d-tipo-user-area-solicitante">Selecione Solicitante</label>
+                            <select class="form-control" id="d-tipo-user-area-solicitante"></select>
+                            <span>ao selecionar o solicitante já tem o vinculo solicite a área</span>
+                        </div>
 
-                            </div>
-                            <label>
-                                <input type="checkbox" id="myCheckbox">
-                                Cliente Novo ou Teste
-                            </label>
-                            <input type="text" id="clientes_inputs" placeholder="Type here...">
-                            <div class="mb-3 form-check">
-                                <label class="form-check-label" for="exampleCheck1">Selecione Tipo Job:</label>
-                                <select class="form-control-d" id="d-tipo-job"></select>
+                        <div class="mb-3">
+                            <label class="form-check-label" for="d-tipo-job">Selecione Tipo Job:</label>
+                            <select class="form-control" id="d-tipo-job"></select>
+                            <input type="hidden" value="" id="cliente_padrao">
+                            <span>ao selecionar interno por padrão fica clinte Proscore</span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="n_cliente">Selecione Cliente</label>
+                            <input type="text" id="n_cliente" list="dl_cliente" class="form-control" autocomplete="off">
+                            <datalist id="dl_cliente"></datalist>
+                        </div>
 
-                            </div>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="myCheckbox">
+                            <label class="form-check-label" for="myCheckbox">Cliente Novo ou Teste</label>
+                        </div>
 
-                            <div class="mb-3 form-check">
-                                <label class="form-check-label" for="exampleCheck1">Selecione Tipo Status:</label>
-                                <select class="form-control-d" id="d-tipo-job-status"></select>
-                            </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="clientes_inputs" placeholder="Type here...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label" for="d-tipo-job-status">Selecione Tipo Status:</label>
+                            <select class="form-control" id="d-tipo-job-status"></select>
+                        </div>
 
-                            <div class="mb-3">
-                                <!-- <label for="areaInput" class="form-label">Selecione Cliente</label> -->
-                                <label for="cliente">Selecione Perfil do Job:</label>
+                        <div class="mb-3">
+                            <label for="n_perfil">Selecione Perfil do Job:</label>
+                            <input type="text" id="n_perfil" list="dl_perfil" class="form-control" autocomplete="off">
+                            <datalist id="dl_perfil"></datalist>
+                        </div>
 
-                                <input type="text" id="n_perfil" list="n_perfil" class="form-control" autocomplete="off">
+                        <div class="col col-lg-2">
+                            <label for="range" class="form-label">Data Solicitação</label>
+                            <input type="date" class="form-control" id="range">
+                        </div>
 
-                                <datalist id="n_perfil"></datalist>
+                        <div class="mb-3">
+                            <label for="titulo_email" class="form-label">Informe o Titulo do e-mail</label>
+                            <input type="text" class="form-control" id="titulo_email" placeholder="Type here...">
+                        </div>
 
-                            </div>
-                            <div class="mb-3">
-                                <div class="fg">
-                                    <label>Data Solicitação</label>
-                                    <input type="date" id="range">
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="detalhamento_email" class="form-label">Detalhamento do e-mail</label>
+                            <textarea id="detalhamento_email" class="form-control" name="story" rows="5">It was a dark and stormy night...</textarea>
+                        </div>
 
-                            <div class="mb-3">
-                                <div class="fg">
-                                    <label>Informe o Titulo do e-mail</label>
-                                    <input type="text" id="titulo_email" placeholder="Type here...">
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <div class="fg">
-                                    <label>Detalahamento do e-mail</label>
-
-
-                                    <textarea id="detalhamento_email" name="story" rows="5" cols="33">
-                                        It was a dark and stormy night...</textarea>
-                                </div>
-                            </div>
-
-                            <button class="btn-salvar-area" id="btn-salvar-area">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                                    <polyline points="17 21 17 13 7 13 7 21" />
-                                    <polyline points="7 3 7 8 15 8" />
-                                </svg>
-                                Salvar Solicitação
-                            </button>
-                            <input type="hidden" class="form-control" id="data-tipo-cadastro" value="0">
-                        </form>
-                    </div>
+                        <button type="submit" class="btn btn-primary btn-salvar-area" id="btn-salvar-job">
+                            <svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Salvar Solicitação
+                        </button>
+                        <input type="hidden" class="form-control" id="data-tipo-cadastro" value="0">
+                    </form>
                 </div>
             </div>
-        </div>
-        <!-- accordion accordion-flush  finish-->
 
 
+        </div> <!-- accordion accordion-flush  finish-->
+    </div><!-- container-fluid finish-->
+
+    <div class="container-fluid">
         <div class="filterbar">
-            <!-- <div class="fg">
-            <label>Data inicial</label>
-            <input type="date" id="range">
-        </div>
-        <div class="fg">
-            <label>Data final</label>
-            <input type="date" id="range_ate">
-        </div> -->
+
             <div class="fg">
                 <label>Status</label>
-                <select id="f-status">
-                    <option value="">Todos</option>
-                    <option value="1">Pendente</option>
-                    <option value="2">Em andamento</option>
-                    <option value="3">Sem retorno</option>
-                    <option value="4">Resolvido</option>
-                    <option value="5">Cancelado</option>
-                </select>
+                <select id="f-status" class="form-control selectControll"> </select>
             </div>
+
+
+
+
             <div class="fg">
-                <label>Dias de atraso</label>
-                <select id="f-dias">
-                    <option value="">Todos</option>
-                    <option value="1-10">1 a 10 dias</option>
-                    <option value="11-30">11 a 30 dias</option>
-                    <option value="31+">Acima de 30</option>
-                </select>
+                <label>Executante</label>
+                <select id="f-executante" class="form-control selectControllExecutante"> </select>
             </div>
-            <div class="fg fg-busca">
-                <label>Buscar</label>
-                <input type="text" id="f-busca" placeholder="Cliente, parcela, doc...">
-            </div>
-            <button class="btn-buscar" id="btn-limpar">
-                Limpar filtros
-            </button>
-            <button class="btn-buscar" id="btn-buscar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                </svg>
-                Buscar
-            </button>
-            <button class="btn-csv" id="btn-csv" title="Exportar registros filtrados para CSV">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Exportar CSV
-            </button>
         </div>
 
         <!-- layout: tabela + drawer -->
@@ -538,149 +493,145 @@
             </div>
 
         </div>
+    </div>
 
-        <!-- ============================================================
-                            MODAL PARA APRESENTAÇÃO DOS DADOS DO JOB
+    <!-- ============================================================
+                             MODAL PARA APRESENTAÇÃO DOS DADOS DO JOB
                         ============================================================ -->
-        <div class="modal fade" id="modalDados" tabindex="-1" aria-labelledby="exampleModalDados" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalDados">Lista de dados</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+    <div class="modal fade" id="modalDados" tabindex="-1" aria-labelledby="exampleModalDados" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalDados">Lista de dados</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-                    <div class="pg-dash-wrapper">
-                        <div class="pg-year-metrics-card">
-                            <div class="pg-table-section">
-                                <div id="teste" class="row">
-                                    <div class="d-flex">
+                <div class="pg-dash-wrapper">
+                    <div class="pg-year-metrics-card">
+                        <div class="pg-table-section">
+                            <div id="teste" class="row">
+                                <div class="d-flex">
 
-                                        <!-- O container (Accordion) envolve os botões E os conteúdos collapse -->
-                                        <div id="acordionPai" class="d-flex w-100">
+                                    <!---->
+                                    <div id="acordionPai" class="d-flex w-100">
 
-                                            <!-- Menu Lateral Principal -->
-                                            <div class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
+                                        <!-- Menu Lateral Principal -->
+                                        <div class="sidebar bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
 
-                                                <!-- Botão 1 -->
-                                                <div class="menu-item position-relative mb-2">
-                                                    <a class="custom-file-label w-100 mb-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                                        Observações
-                                                    </a>
+                                            <!-- Botão 1 -->
+                                            <div class="menu-item position-relative mb-2">
+                                                <a class="custom-file-label w-100 mb-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                                    Observações
+                                                </a>
+                                            </div>
+
+                                            <!-- Botão 2 -->
+                                            <div class="menu-item position-relative mb-2">
+                                                <a class="custom-file-label w-100 mb-2 btn-listar-historico-obs" data-bs-toggle="collapse" href="#collapseObservacoes" role="button" aria-expanded="false" aria-controls="collapseObservacoes">
+                                                    Listar Observações
+                                                </a>
+                                            </div>
+
+                                            <!-- Botão 3 -->
+                                            <div class="menu-item position-relative mb-2">
+                                                <a class="custom-file-label w-100 mb-2 btn-listar-historico" data-bs-toggle="collapse" href="#collapseExampleAtualizacoes" role="button" aria-expanded="false" aria-controls="collapseExampleAtualizacoes">
+                                                    Listar atualizações
+                                                </a>
+                                                <input type="hidden" id="d-id-tabela-historico" value="">
+                                            </div>
+
+                                        </div> <!-- /sidebar -->
+
+                                        <!-- Área de Conteúdo Principal -->
+                                        <div class="content flex-grow-1 p-3">
+                                            <div id="apresentar_msg">
+                                                <div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">
+                                                    Selecione Alguma opção para ver os dados!
                                                 </div>
+                                            </div>
 
-                                                <!-- Botão 2 -->
-                                                <div class="menu-item position-relative mb-2">
-                                                    <a class="custom-file-label w-100 mb-2 btn-listar-historico-obs" data-bs-toggle="collapse" href="#collapseObservacoes" role="button" aria-expanded="false" aria-controls="collapseObservacoes">
-                                                        Listar Observações
-                                                    </a>
+                                            <!-- Painel 1 -->
+                                            <div class="collapse" id="collapseExample" data-bs-parent="#acordionPai">
+                                                <div class="card card-body">
+                                                    <form id="obs_job">
+                                                        <textarea id="info_job" name="story" rows="5" cols="33" placeholder="Informe algum dados inportante sobre o o job ...."></textarea>
+                                                        <input type="hidden" value="obs" id="d-obs">
+                                                        <input type="hidden" value="" id="d-id-tabela">
+                                                        <button class="btn-salvar-area" id="btn-salvar-usuarios">
+                                                            Salvar tratativa
+                                                        </button>
+                                                    </form>
                                                 </div>
+                                            </div>
 
-                                                <!-- Botão 3 -->
-                                                <div class="menu-item position-relative mb-2">
-                                                    <a class="custom-file-label w-100 mb-2 btn-listar-historico" data-bs-toggle="collapse" href="#collapseExampleAtualizacoes" role="button" aria-expanded="false" aria-controls="collapseExampleAtualizacoes">
-                                                        Listar atualizações
-                                                    </a>
-                                                    <input type="hidden" id="d-id-tabela-historico" value="">
+                                            <!-- Painel 2: Listar Observações  -->
+                                            <div class="collapse" id="collapseObservacoes" data-bs-parent="#acordionPai">
+                                                <div id="historico-lista-apresentar-observacoes" class="card card-body">
+                                                    Conteúdo da lista de observações aqui...
                                                 </div>
+                                            </div>
 
-                                            </div> <!-- /sidebar -->
-
-                                            <!-- Área de Conteúdo Principal -->
-                                            <div class="content flex-grow-1 p-3">
-                                                <div id="apresentar_msg">
-                                                    <div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">
-                                                        Selecione Alguma opção para ver os dados!
-                                                    </div>
+                                            <!-- Painel 3 -->
+                                            <div class="collapse" id="collapseExampleAtualizacoes" data-bs-parent="#acordionPai">
+                                                <div id="historico-lista-apresentar" class="card card-body">
+                                                    Conteúdo do histórico de atualizações...
                                                 </div>
+                                            </div>
 
-                                                <!-- Painel 1 -->
-                                                <div class="collapse" id="collapseExample" data-bs-parent="#acordionPai">
-                                                    <div class="card card-body">
-                                                        <form id="obs_job">
-                                                            <textarea id="info_job" name="story" rows="5" cols="33" placeholder="Informe algum dados inportante sobre o o job ...."></textarea>
-                                                            <input type="hidden" value="obs" id="d-obs">
-                                                            <input type="hidden" value="" id="d-id-tabela">
-                                                            <button class="btn-salvar-area" id="btn-salvar-usuarios">
-                                                                Salvar tratativa
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
+                                        </div> <!-- /content -->
 
-                                                <!-- Painel 2: Listar Observações  -->
-                                                <div class="collapse" id="collapseObservacoes" data-bs-parent="#acordionPai">
-                                                    <div id="historico-lista-apresentar-observacoes" class="card card-body">
-                                                        Conteúdo da lista de observações aqui...
-                                                    </div>
-                                                </div>
+                                    </div> <!-- /ARCORDION-PAi -->
 
-                                                <!-- Painel 3 -->
-                                                <div class="collapse" id="collapseExampleAtualizacoes" data-bs-parent="#acordionPai">
-                                                    <div id="historico-lista-apresentar" class="card card-body">
-                                                        Conteúdo do histórico de atualizações...
-                                                    </div>
-                                                </div>
-
-                                            </div> <!-- /content -->
-
-                                        </div> <!-- /ARCORDION-PAi -->
-
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-
-                    </div>
                 </div>
-
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
+    </div>
 
 
 
-        <div class="toast-wrapper" id="toast-wrapper"></div>
+    <div class="toast-wrapper" id="toast-wrapper"></div>
+    <script type="text/javascript" src="../../Scripts/jquery/jquery.min.js"></script>
+
+    <!-- SELECT BIBLIOTECA -->
+    <script type="text/javascript" src="../../Scripts/select/select2.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> -->
+
+    <script src="../../../Scripts/jobsIndicadores.js?v=<?= time(); ?>"></script>
 
 
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="../../Scripts/propper/popper.min.js"></script>
+    <!-- <script type="text/javascript" src="../Scripts/bootstrap/bootstrap.bundle.min.js"></script> -->
+    <script type="text/javascript" src="../../Scripts/bootstrap/bootstrap.min.js"></script>
 
-        <script type="text/javascript" src="../../Scripts/jquery/jquery.min.js"></script>
+    <!-- DataTables principal -->
+    <script type="text/javascript" src="../../Scripts/datatable/dataTables.js"></script>
 
-        <!-- SELECT BIBLIOTECA -->
-        <script type="text/javascript" src="../../Scripts/select/select2.min.js"></script>
-        <!-- <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> -->
+    <!-- Extensão Buttons -->
+    <script type="text/javascript" src="../../Scripts/datatable/dataTablesbuttons.js"></script>
 
-        <script src="../../../Scripts/jobsIndicadores.js?v=<?= time(); ?>"></script>
+    <!-- Dependências de exportação -->
+    <script type="text/javascript" src="../../Scripts/jszip/jszip.min.js"></script>
+    <!-- <script type="text/javascript" src="../Scripts/pdfMake/pdfmake.min.js"></script> -->
+    <script type="text/javascript" src="../../Scripts/pdfMake/vfs_fonts.js"></script>
 
+    <!-- Botões HTML5 -->
+    <script type="text/javascript" src="../../Scripts/datatable/buttonshtml5.min.js"></script>
 
-        <!-- Bootstrap -->
-        <script type="text/javascript" src="../../Scripts/propper/popper.min.js"></script>
-        <!-- <script type="text/javascript" src="../Scripts/bootstrap/bootstrap.bundle.min.js"></script> -->
-        <script type="text/javascript" src="../../Scripts/bootstrap/bootstrap.min.js"></script>
-
-        <!-- DataTables principal -->
-        <script type="text/javascript" src="../../Scripts/datatable/dataTables.js"></script>
-
-        <!-- Extensão Buttons -->
-        <script type="text/javascript" src="../../Scripts/datatable/dataTablesbuttons.js"></script>
-
-        <!-- Dependências de exportação -->
-        <script type="text/javascript" src="../../Scripts/jszip/jszip.min.js"></script>
-        <!-- <script type="text/javascript" src="../Scripts/pdfMake/pdfmake.min.js"></script> -->
-        <script type="text/javascript" src="../../Scripts/pdfMake/vfs_fonts.js"></script>
-
-        <!-- Botões HTML5 -->
-        <script type="text/javascript" src="../../Scripts/datatable/buttonshtml5.min.js"></script>
-
-        <!-- Flatpickr -->
-        <script type="text/javascript" src="../../Scripts/flatpickr/flatpickr.js"></script>
-        <script type="text/javascript" src="../../Scripts/flatpickr/languageFlatPickr.js"></script>
-        <!-- sweetAlert -->
-        <script type="text/javascript" src="../../Scripts/sweetAlert/sweetAlert.js"></script>
-        <script type="text/javascript" src="../../Scripts/flatpickr/flatpickr.js"></script>
-        <script type="text/javascript" src="../../Scripts/flatpickr/languageFlatPickr.js"></script>
+    <!-- Flatpickr -->
+    <script type="text/javascript" src="../../Scripts/flatpickr/flatpickr.js"></script>
+    <script type="text/javascript" src="../../Scripts/flatpickr/languageFlatPickr.js"></script>
+    <!-- sweetAlert -->
+    <script type="text/javascript" src="../../Scripts/sweetAlert/sweetAlert.js"></script>
+    <script type="text/javascript" src="../../Scripts/flatpickr/flatpickr.js"></script>
+    <script type="text/javascript" src="../../Scripts/flatpickr/languageFlatPickr.js"></script>
 
 </body>
 

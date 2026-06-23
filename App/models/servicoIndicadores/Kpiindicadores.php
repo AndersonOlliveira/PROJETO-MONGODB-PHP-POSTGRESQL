@@ -232,20 +232,6 @@ class Kpiindicadores extends Model
             $campo_b_inserir = isset($dados['id_solicitante']) ? $dados['id_solicitante'] : null;
         }
 
-        echo "<pre>";
-        echo "MEUS DADOS\n";
-        echo $campoA;
-        echo "-------\n";
-
-
-        print_r($campo_a_inserir);
-        echo "-------\n";
-        print_r($campo_b_inserir);
-
-
-
-
-
         $sql = "INSERT INTO {$tabela} ($campoA, $campoB)
                 SELECT
                     :campo_vincular,
@@ -347,8 +333,7 @@ class Kpiindicadores extends Model
                     cadjobs.id_cadjob,  -- PRECISA ALTERAR O NOME DA COLUNA
                     cadjobs.solicitante_id,
                     cadjobs.executante_id,
-                -- jbus.n_nome_user ,
-                    --ar.n_area as area_solicitante,
+                     tstatus.id_status,
                     tstatus.n_status,
                     cadjobs.data_inicio,
                     cadjobs.data_fim,
@@ -357,14 +342,13 @@ class Kpiindicadores extends Model
                     cadjobs.data_cad_job,
                     cadjobs.nome_cliente,
                     cadjobs.data_solicitacao,
-                    
                     perjobs.n_perfil
 
                 FROM cadastro_job.jobcadjobs cadjobs
                 INNER JOIN job_perfil perjobs
                     ON perjobs.id_perfil = cadjobs.perfil_id
                     INNER JOIN job_status tstatus
-                    ON tstatus.id_status = cadjobs.status_id;";
+                    ON tstatus.id_status = cadjobs.status_id ORDER BY cadjobs.id_cadjob DESC;";
 
         try {
 
@@ -428,17 +412,12 @@ class Kpiindicadores extends Model
                 cadjobs.cad_idjob,
                 cadjobs.solicitante_id,
                 cadjobs.executante_id,
+                tstatus.id_status,
                 cadjobs.data_cad_hist,
-            -- jbus.n_nome_user ,
-                --ar.n_area as area_solicitante,
                 tstatus.n_status,
                 cadjobs.data_inicio,
                 cadjobs.data_fim,
-                --cadjobs.titulo_email,
-                --cadjobs.detalhamento,
                 cadjobs.data_cad_job,
-                --cadjobs.nome_cliente,
-                --cadjobs.data_solicitacao,
                 perjobs.n_perfil
 
             FROM cadastro_job.jobhistorico cadjobs
@@ -599,7 +578,7 @@ class Kpiindicadores extends Model
                 INNER JOIN job_status tstatus
                     ON tstatus.id_status = cadjobs.status_id
                 INNER JOIN job_perfil perjobs
-                    ON perjobs.id_perfil = cadjobs.perfil_id;";
+                    ON perjobs.id_perfil = cadjobs.perfil_id ORDER BY ;";
 
 
 
@@ -829,8 +808,9 @@ class Kpiindicadores extends Model
         $sql = "";
 
         $sql = "SELECT jbarea.id_area,
-          jbarea.n_area, 
-          juser.n_nome_user
+          juser.id,
+          trim(jbarea.n_area) as n_area,   
+          trim(juser.n_nome_user) as n_nome_user
 	      FROM cadastro_job.jobusuarios juser
 	      INNER JOIN cadastro_job.jobarea jbarea on (jbarea.id_area = juser.id_area)
           WHERE juser.id = :id";
@@ -858,11 +838,6 @@ class Kpiindicadores extends Model
     }
     public function get_jobs_inserts($id)
     {
-
-        echo "<pre>";
-        echo "ENVIADO\n";
-
-        print_R($id);
 
 
         $sql = "";
@@ -895,13 +870,12 @@ class Kpiindicadores extends Model
     public function up_dados_jobs($dados, $config)
     {
         $sql = "";
-
-
+        $msg = [];
+        $error = [];
 
         //busco os dados da tabela pelo o id 
 
         $busca_tabela = self::get_jobs_inserts($dados['tabela']);
-
 
         try {
 
@@ -947,16 +921,9 @@ class Kpiindicadores extends Model
                     " . (isset($busca_tabela['alter_id']) ? $busca_tabela['alter_id'] : $dados["crt"]) . ")";
             }
 
-            echo "<pre>";
-
-            print_R($valores_insert);
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
-
-            echo "<pre>";
-
-            print_r($stmt->rowCount());
 
             // Se atualizou, grava o histórico
             if ($stmt->rowCount() > 0 && !empty($valores_insert)) {
@@ -966,12 +933,9 @@ class Kpiindicadores extends Model
 
                 $stmt->execute();
             }
-
             $this->db->commit();
+            return $stmt->rowCount() > 0 ? $msg[] = ["MSG" => "Sucesso em Atualizar Job"] : $error[] = ["error" => "Falha ao inserir verifique campos enviados!"];
         } catch (PDOException $e) {
-
-            echo '<pre>';
-            print_r($e->getMessage());
 
             $this->db->rollBack();
 
