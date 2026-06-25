@@ -646,6 +646,35 @@ class Kpiindicadores extends Model
             return $error[] = ['error' => "Falha em Solicitar os dados area, cod error: {$e->getCode()}"];
         }
     }
+    public function get_propesct()
+    {
+
+
+        $error = [];
+
+        $sql = "SELECT cliid,
+                COALESCE(NULLIF(clinomraz, ''), clinomfan) AS cli_propect
+                FROM cli_prospect limit 10;";
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+
+            if ($stmt->execute()) {
+
+                return  $stmt->rowCount() > 0 ? $stmt->fetchAll(PDO::FETCH_ASSOC)  : $error[] = ['error' => "Nenhum dados encontrado"];
+            }
+        } catch (PDOException $e) {
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados propesct, cod error: {$e->getCode()}"];
+        }
+    }
 
     public function get_user_area()
     {

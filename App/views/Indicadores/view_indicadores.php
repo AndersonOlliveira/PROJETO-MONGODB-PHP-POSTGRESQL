@@ -72,7 +72,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-headinExecutor">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseExecutor" aria-expanded="false" aria-controls="flush-collapseExecutor">
-                        Cadastrar usuários
+                        Cadastrar Usuário
                     </button>
                 </h2>
                 <div id="flush-collapseExecutor" class="accordion-collapse collapse" aria-labelledby="flush-headinExecutor" data-bs-parent="#accordionFlushflow">
@@ -108,6 +108,8 @@
                     </button>
                 </h2>
             </div>
+
+            <!-- Cadastrar Status -->
             <div id="flush-collapseStatus" class="accordion-collapse collapse" aria-labelledby="flush-headingStatus" data-bs-parent="#accordionFlushflow">
 
                 <div class="accordion-body">
@@ -137,7 +139,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="flush-headingTwo">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                        Cadastrar área
+                        Cadastrar Área
                     </button>
                 </h2>
             </div>
@@ -192,6 +194,7 @@
                             <input type="hidden" value="" id="cliente_padrao">
                             <span>ao selecionar interno por padrão fica clinte Proscore</span>
                         </div>
+
                         <div class="mb-3">
                             <label for="n_cliente">Selecione Cliente</label>
                             <input type="text" id="n_cliente" list="dl_cliente" class="form-control" autocomplete="off">
@@ -199,8 +202,20 @@
                         </div>
 
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="myCheckbox">
-                            <label class="form-check-label" for="myCheckbox">Cliente Novo ou Teste</label>
+                            <input type="checkbox" class="form-check-input" id="myCheckbox" value="novo">
+                            <label class="form-check-label" for="myCheckbox">Cliente Novo</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="myCheckboxProspect" value="prospect">
+                            <label class="form-check-label" for="myCheckboxProspect">Cliente Prospect</label>
+
+
+                            <div class="mb-3" id="container_prospect" style="display: none;">
+                                <select id="n_clientes_inputs_prospect" class="form-control" style="width: 100%;">
+                                    <option></option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -229,7 +244,7 @@
 
                         <div class="mb-3">
                             <label for="detalhamento_email" class="form-label">Detalhamento do e-mail</label>
-                            <textarea id="detalhamento_email" class="form-control" name="story" rows="5">It was a dark and stormy night...</textarea>
+                            <textarea id="detalhamento_email" class="form-control" name="story" rows="5" placeholder="Informe o detalhamento.."></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-salvar-area" id="btn-salvar-job">
@@ -241,6 +256,39 @@
                             Salvar Solicitação
                         </button>
                         <input type="hidden" class="form-control" id="data-tipo-cadastro" value="0">
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingPerfil">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapsePerfil" aria-expanded="false" aria-controls="flush-collapsePerfil">
+                        Cadastrar Perfil
+                    </button>
+                </h2>
+            </div>
+
+            <!-- CADASTARA PERFIL -->
+            <div id="flush-collapsePerfil" class="accordion-collapse collapse" aria-labelledby="flush-headingPerfil" data-bs-parent="#accordionFlushflow">
+
+                <div class="accordion-body">
+
+                    <form id="cad_perfil">
+                        <div class="mb-3">
+                            <label for="n_perfil" class="form-label">Nome Perfil</label>
+                            <input type="text" class="form-control" id="n_perfils" aria-describedby="perfil_help">
+                            <input type="hidden" class="form-control" id="data-perfil" value="3">
+                            <input type="hidden" value="perfil" id="d-perfil">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-salvar-area" id="btn-salvar-area">
+                            <svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Salvar Perfil
+                        </button>
                     </form>
                 </div>
             </div>
@@ -263,6 +311,11 @@
             <div class="fg">
                 <label>Executante</label>
                 <select id="f-executante" class="form-control selectControllExecutante"> </select>
+            </div>
+
+            <div class="fg">
+                <label>Área</label>
+                <select id="f-area" class="form-control selectControllArea"> </select>
             </div>
         </div>
 
@@ -315,7 +368,10 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="d-flex flex-wrap align-items-center justify-content-right gap-3 mb-2 border-bottom pb-2" style="font-size: 11px; color: var(--muted);">
+            </div>
+
+            <!-- d-flex flex-wrap align-items-center justify-content-right gap-3 mb-2 border-bottom pb-2 -->
+            <!-- <div class="d-flex flex-wrap align-items-center justify-content-right gap-3 mb-2 border-bottom pb-2" style="font-size: 11px; color: var(--muted);">
                     <div id="contagem" class="m-0">Carregando contagem...</div>
 
                     <div class="d-flex flex-wrap align-items-center gap-3">
@@ -341,20 +397,20 @@
                     <span id="pag-info">—</span>
                     <div class="pg-btns" id="pg-btns"></div>
                 </div>
-            </div>
+            </div> -->
 
 
-            <div class="tab-pane fade" id="nav-profile-tab" role="tabpanel" aria-labelledby="nav-profile-tab">
-                <p>SEU E-MAIL</p>
+            <!-- <div class="tab-pane fade" id="nav-profile-tab" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <p>SEU E-MAIL</p>
 
-                <div class="pg-dash-wrapper">
-                    <div class="pg-year-metrics-card">
-                        <div class="pg-table-section">
+                    <div class="pg-dash-wrapper">
+                        <div class="pg-year-metrics-card">
+                            <div class="pg-table-section">
 
-                            <form class="col-sm-12">
-                                <span>MEUS DADOS</span>
+                                <form class="col-sm-12">
+                                    <span>MEUS DADOS</span> -->
 
-                                <!-- <table id="listagem_arquivos" class="text-center text-center tableJobs"
+            <!-- <table id="listagem_arquivos" class="text-center text-center tableJobs"
                                 style=" font-size:10px; width:100%; border-radius:0;">
                                 <thead>
                                     <tr class="list-jobs">
@@ -364,12 +420,13 @@
                                     </tr>
                                 </thead>
                             </table> -->
-                            </form>
+            <!-- </form> -->
 
-                        </div><!-- /pg-table-section -->
-                    </div>
-                </div>
-            </div>
+            <!-- </div> -->
+            <!-- /pg-table-section -->
+            <!-- </div>
+    </div>
+    </div> -->
 
 
             <!-- drawer lateral: 3 abas — Nova tratativa | Histórico | Detalhes -->
@@ -459,16 +516,16 @@
                     </div>
 
                     <!-- aba: histórico -->
-                    <div class="tab-pane" id="tab-historico">
+                    <!-- <div class="tab-pane" id="tab-historico">
                         <div id="historico-lista">
                             <div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">
                                 Selecione uma parcela para ver o histórico.
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- aba: detalhes -->
-                    <div class="tab-pane" id="tab-detalhes">
+                    <!-- <div class="tab-pane" id="tab-detalhes">
                         <div class="det-section">
                             <div class="det-section-title">Dados da parcela</div>
                             <div class="det-row"><span class="det-label">Cliente</span> <span class="det-val" id="det-cliente">—</span></div>
@@ -487,7 +544,7 @@
                             <div class="det-row"><span class="det-label">Última tratativa</span> <span class="det-val" id="det-ultima">—</span></div>
                             <div class="det-row"><span class="det-label">Próxima ação</span> <span class="det-val" id="det-proxacao">—</span></div>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
             </div>
@@ -554,11 +611,17 @@
                                             <div class="collapse" id="collapseExample" data-bs-parent="#acordionPai">
                                                 <div class="card card-body">
                                                     <form id="obs_job">
-                                                        <textarea id="info_job" name="story" rows="5" cols="33" placeholder="Informe algum dados inportante sobre o o job ...."></textarea>
+                                                        <textarea id="info_job" name="story" rows="5" cols="33" placeholder="Informe algo importantes sobre o o job ...."></textarea>
                                                         <input type="hidden" value="obs" id="d-obs">
                                                         <input type="hidden" value="" id="d-id-tabela">
-                                                        <button class="btn-salvar-area" id="btn-salvar-usuarios">
-                                                            Salvar tratativa
+                                                        <button class="btn btn-primary btn-salvar-obs" id="btn-salvar-usuarios">
+                                                            Salvar Observação
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                                                <polyline points="17 21 17 13 7 13 7 21" />
+                                                                <polyline points="7 3 7 8 15 8" />
+                                                            </svg>
                                                         </button>
                                                     </form>
                                                 </div>

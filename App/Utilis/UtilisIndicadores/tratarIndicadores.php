@@ -157,4 +157,11 @@ class tratarIndicadores extends Controller
 
         return $result_get_historico;
     }
+    public function get_propesct()
+    {
+
+        $result_get_historico = $this->modelKpi->get_propesct();
+
+        return $result_get_historico;
+    }
 }

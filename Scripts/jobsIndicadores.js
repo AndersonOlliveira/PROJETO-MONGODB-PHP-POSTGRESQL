@@ -15,11 +15,14 @@ const App = {
     crt: '',
     status: true,
     clientesSelecionado: '',
+    clientesSelecionadoPropesct: '',
     perfilSelecionado: '',
     clienteTeste: 'novo',
     clienteProscore: 'PROSCORE',
     tipo: 9,
-    tipoJobs: 1
+    tipoJobs: 1,
+    filtrosExecutane: [],
+    filtrosAreas: []
 };
 
 // ── INICIALIZAÇÃO ─────────────────────────────────────────────
@@ -89,6 +92,27 @@ function listArchivesJobs() {
                 App.dados = resp.dados;
                 App.dadosFiltrados = [...resp.dados];
 
+
+                App.filtrosAreas = App.dadosFiltrados.map(item => ({
+                    ...item,
+                    solicitante: item.dados_solicitante?.n_nome_user ?? '-',
+                    area_solicitante: item.dados_solicitante?.n_area ?? '-',
+                    area_executor: item.dados_executor?.n_area ?? '-',
+                    n_executor: item.dados_executor?.n_nome_user ?? '-',
+
+                }));
+
+
+
+                App.filtrosExecutane = App.dadosFiltrados.map(item => ({
+                    ...item,
+                    solicitante: item.dados_solicitante?.n_nome_user ?? '-',
+                    area_solicitante: item.dados_solicitante?.n_area ?? '-',
+                    area_executor: item.dados_executor?.n_area ?? '-',
+                    n_executor: item.dados_executor?.n_nome_user ?? '-',
+
+                }));
+
                 App.dadosFiltrados = App.dadosFiltrados.map(item => ({
                     ...item,
                     solicitante: item.dados_solicitante?.n_nome_user ?? '-',
@@ -98,8 +122,7 @@ function listArchivesJobs() {
 
                 }));
 
-                console.log('ESTOU CHAMANDO OS DADOS \n');
-                console.log(App.dados);
+
                 renderTabela();
             } else {
                 // clearFiltro();
@@ -231,7 +254,8 @@ function mostrarErro(msg) {
     $('#contagem').text('');
 }
 
-
+console.log($('.dt-info').length);
+console.log($('.dataTables_info').length);
 // ── RENDERIZAÇÃO ──────────────────────────────────────────────
 function renderTabela() {
     atualizarCardsResumoJobs();
@@ -249,6 +273,23 @@ function renderTabela() {
         searching: true,
         ordering: true,
         responsive: false,
+        // info: true,
+        layout: {
+            top: {
+                search: {
+                    placeholder: 'Digite para pesquisar...'
+                }
+            },
+            topEnd: [{
+
+                    buttons: [
+                        ['excel'],
+                    ],
+
+                },
+
+            ],
+        },
         language: {
             info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
             infoEmpty: "Nenhum registro encontrado",
@@ -289,21 +330,20 @@ function renderTabela() {
                 defaultContent: '-'
             },
             {
-                data: null,
+                data: 'dados_executor.n_nome_user',
                 orderable: false,
-                searchable: false,
+                searchable: true,
                 render: function (data, type, row) {
-                    const executorName = (row.dados_executor?.n_nome_user || '').trim();
 
-                    if (type === 'filter' || type === 'sort') {
+                    const executorName = (row.dados_executor?.n_nome_user || 'Sem nome').trim();
+
+                    if (type !== 'display')
                         return executorName;
-                    }
-
                     return `
                     
                             <div class="dropdown dropdown-dinamico">
                                     <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
-                                        ${executorName || 'Sem nome'}
+                                        ${executorName}
                                     </button>
                                         <ul class="dropdown-menu p-2">
                                         <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
@@ -355,13 +395,14 @@ function renderTabela() {
             {
                 data: 'detalhamento',
                 defaultContent: '-'
-            }, {
+            },
+            {
                 data: null,
                 render: function (data, type, row) {
                     return `
                     <div class="d-flex flex-row mb-3">
                       <div class="p-2 pg-file-section">
-                          <button type="button" class="custom-file-label btn-list-dados" data-id-tabela="${row.id_cadjob}" aria-label="Ver detalhes">
+                          <button type="button" class="btn-action btn-list-dados" data-id-tabela="${row.id_cadjob}" aria-label="Ver detalhes">
                               <img src="/img/em-formacao.png" alt="Ver detalhes" width="40" height="40">
                           </button>
                       </div>
@@ -393,17 +434,13 @@ function renderTabela() {
     });
 
     $('#f-executante').on('change', function () {
-        const filtroSelecionado = this.value;
+        const filtroExecutor = this.value;
 
-
-        if (filtroSelecionado && filtroSelecionado != 0) {
-
-            console.log('que dados vai ser apresentado aqui?');
-            console.log(filtroSelecionado);
+        if (filtroExecutor && filtroExecutor != 0) {
 
             tabela_indicadores
                 .column(5)
-                .search(filtroSelecionado)
+                .search(filtroExecutor)
                 .draw();
 
 
@@ -415,17 +452,34 @@ function renderTabela() {
                 .draw();
         }
     });
+    $('#f-area').on('change', function () {
+        const filtroArea = this.value;
+        if (filtroArea && filtroArea != 0) {
+            tabela_indicadores
+                .column(6)
+                .search(filtroArea)
+                .draw();
+
+
+        } else {
+
+            tabela_indicadores
+                .column(6)
+                .search('')
+                .draw();
+        }
+    });
 
     const dadosFiltradosVisiveis = tabela_indicadores.rows({
         search: 'applied',
         page: 'current'
     }).data().toArray();
 
-    console.log(dadosFiltradosVisiveis);
-
+    console.log(App.filtrosAreas, 'DADOS PARA OS FILTROS');
 
     listaOption(dadosFiltradosVisiveis);
-    listaOptionExecutante(dadosFiltradosVisiveis);
+    listaOptionExecutante(App.filtrosExecutane);
+    listaOptionArea(App.filtrosAreas);
 
 
     $('#contagem').html(
@@ -477,46 +531,41 @@ function listaOptionExecutante(dadosFiltradosVisiveis) {
     statusSelects.appendChild(todosOption);
 
 
-    const unicos = [...new Map(dadosFiltradosVisiveis.map(el => [el.dados_executor.id, el.dados_executor])).values()];
+    const dadosUnicos = [...new Map(dadosFiltradosVisiveis.map(el => [el.dados_executor.n_nome_user, el.dados_executor])).values()];
 
-    unicos.forEach(element => {
+    dadosUnicos.forEach(element => {
+        var dlistaN = element.n_nome_user ? element.n_nome_user : 'Sem nome';
+
         const options = document.createElement("option");
-        // options.value = element.id;
-        // options.text = element.n_nome_user;
-        options.value = element.n_nome_user;
-        options.text = element.n_nome_user;
+        options.value = dlistaN;
+        options.text = dlistaN;
         statusSelects.appendChild(options);
     });
 }
 
+function listaOptionArea(dadosFiltradosAreas) {
 
-// $(document).on('change', '.selectControll', function (e) {
+    const statusSelects = document.getElementById('f-area');
 
-//     console.log($('#f-status').val(), 'valor selecionado');
+    statusSelects.innerHTML = 'Carregando...';
+    const todosOption = document.createElement("option");
+    todosOption.value = "0";
+    todosOption.className = "form-control selectControllArea";
+    todosOption.text = "Todos";
+    statusSelects.appendChild(todosOption);
 
-//     $.fn.dataTable.ext.search = [];
-//     $.fn.dataTable.ext.search_new = [];
-//     data_global = [];
+    const dadosUnicos = [...new Map(dadosFiltradosAreas.map(el => [el.dados_executor.n_area, el.dados_executor])).values()];
 
+    dadosUnicos.forEach(element => {
+        var dlistaN = element.n_area ? element.n_area : '-';
 
-
-//     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-//         //caso tenha mais uma tabela ele pega somente a que definir
-//         if (settings.nTable.id != 'table-relatorio-indicadores') return true;
-//         const filtroTabela = data[8].trim();
-
-//         console.log('meu filtro aplicado');
-//         console.log(filtroTabela);
-
-
-//     });
-//     // Aplica o filtro
-//     tabelaJobs.draw();
-
-
-// });
-
-
+        const options = document.createElement("option");
+        options.className = "area";
+        options.value = dlistaN;
+        options.text = dlistaN;
+        statusSelects.appendChild(options);
+    });
+}
 
 
 
@@ -789,12 +838,7 @@ function aplicarFiltros() {
 
     App.paginaAtual = 1;
     renderTabela();
-    toast(`
-    $ {
-        App.dadosFiltrados.length
-    }
-    registro(s) encontrado(s)
-    `);
+    toast(`${App.dadosFiltrados.length}registro(s) encontrado(s)`);
 }
 
 
@@ -1301,7 +1345,46 @@ function get_lista_cliente() {
 
 }
 
+// LISTA DE CLIENTES PROPESCT
+function get_lista_cliente_propesct() {
+
+    $.ajax({
+        url: '/api/ListPropesct',
+        type: 'GET',
+        dataType: 'json',
+        success: function (resp) {
+
+            if (resp.status == 2) {
+
+                const dados = resp.dados.map(function (item) {
+                    return {
+                        id: item.cliid,
+                        text: item.cli_propect
+                    };
+                });
+
+                $('#n_clientes_inputs_prospect').empty().append('<option></option>');
+
+                $('#n_clientes_inputs_prospect').select2({
+                    placeholder: 'Selecione um cliente Prospect',
+                    allowClear: true,
+                    data: dados
+                });
+
+            }
+
+        }
+    });
+
+}
+
+
 // PEGAR OS DADOS
+$('#n_clientes_inputs_prospect').on('select2:select', function (e) {
+    App.clientesSelecionadoPropesct = e.params.data
+    const proPesct = e.params.data;
+});
+
 $('#n_cliente').on('select2:select', function (e) {
     App.clientesSelecionado = e.params.data
     const cliente = e.params.data;
@@ -1320,6 +1403,27 @@ checkbox.addEventListener('change', function () {
     input.disabled = checkbox.checked;
     //SE MARCAR MOSTRO, CASO NÃO OCULTO
     checkbox.checked ? $('#clientes_inputs').show() : $('#clientes_inputs').hide();
+    checkbox.checked ? $('#myCheckboxProspect').prop('disabled', true) : $('#myCheckboxProspect').prop('disabled', false);
+});
+
+
+// PARA TRATAMENTO DO CHECKBOX AO CLIENTE PROPESCT
+$('#myCheckboxProspect').on('change', function () {
+    const isChecked = this.checked;
+    $('#container_prospect').toggle(isChecked);
+
+    if (isChecked) {
+        get_lista_cliente_propesct();
+        $('#myCheckbox').prop('disabled', true);
+        $('#n_cliente').prop('disabled', true).hide();
+
+    } else {
+
+        $('#n_clientes_inputs_prospect').val(null).trigger('change');
+        $('#cliente_padrao').val('');
+        $('#myCheckbox').prop('disabled', false);
+        $('#n_cliente').prop('disabled', false).show();
+    }
 });
 
 
@@ -1366,17 +1470,25 @@ $(document).on('change', '#d-tipo-job', function () {
 // CAPUTRA O FORM DO FORMULARIO DO CAD 
 $("#cad_job").submit(function (event) {
     event.preventDefault();
-    const clienteInput = $('#clientes_inputs').val() ? $('#clientes_inputs').val().trim() : '';
     const selectPerfil = App.perfilSelecionado ? App.perfilSelecionado.id : '';
-    const usandoInput = checkbox.checked; // SE MARCA O CHECK EU PEGO DAQUI
+
+
+    var valoresSelecionados = $('input:checkbox:checked').map(function () {
+        App.clientesSelecionado = '';
+        return $(this).val();
+    }).get();
+
+
     const padrao = $('#cliente_padrao').val();
 
     let n_info_cliente = '';
     let n_info_perfil = '';
 
-    n_info_cliente = padrao ? padrao : validarCliente(usandoInput, clienteInput);
+    n_info_cliente = padrao ? padrao : validarCliente(valoresSelecionados[0]);
 
 
+    console.info('SAIU OS CLIENTES PROSPECT....');
+    console.log(n_info_cliente);
 
 
     const listaCadastro = {
@@ -1393,7 +1505,8 @@ $("#cad_job").submit(function (event) {
         tipo: App.tipo
 
     }
-    enviarSolicitacao(listaCadastro, 'job');
+
+    // enviarSolicitacao(listaCadastro, 'job');
 
 });
 
@@ -1488,19 +1601,43 @@ function validarInterno(usandoInput, tipo) {
     }
 }
 
-function validarCliente(usandoInput, clienteInput) {
-    let result = ''
+function validarCliente(usandoInput) {
+    let result = '';
+
+
+    const isClienteNovo = $('#myCheckbox').is(':checked');
+    const isProspect = $('#myCheckboxProspect').is(':checked');
+
     if (usandoInput) {
-        if (!clienteInput) {
-            alert('Informe o cliente.');
-            return;
+        let clienteInput = '';
+
+        if (isProspect) {
+
+            clienteInput = (App.clientesSelecionadoPropesct && App.clientesSelecionadoPropesct.text) ?
+                App.clientesSelecionadoPropesct.text.trim() :
+                $('#n_clientes_inputs_prospect option:selected').text().trim();
+        } else if (isClienteNovo) {
+
+            clienteInput = ($('#clientes_inputs').val() || '').trim();
+        } else {
+
+            clienteInput = ($('#clientes_inputs').val() || '').trim();
         }
+
+        if (!clienteInput || clienteInput === "") {
+            alert('Informe o cliente ou selecione um Prospect.');
+            return null;
+        }
+
         result = (App.clienteTeste ? App.clienteTeste + '$' : '') + clienteInput;
+
     } else {
+
         if (!App.clientesSelecionado || !App.clientesSelecionado.id) {
             alert('Selecione um cliente.');
-            return;
+            return null;
         }
+
         result = App.clientesSelecionado.id + '$' + App.clientesSelecionado.text;
     }
 
@@ -1630,35 +1767,30 @@ function montar_lista_user_area_datatable(dados, containerElement) {
 }
 
 // Função TD
-function redimensionarTdDropdown($divDropdown) {
-    var $td = $divDropdown.closest('td');
-    var $menu = $divDropdown.find('.dropdown-menu');
+// function redimensionarTdDropdown($divDropdown) {
+//     var $td = $divDropdown.closest('td');
+//     var $menu = $divDropdown.find('.dropdown-menu');
 
-    $td.css('position', 'relative');
+//     if (!$td.data('padding-original')) {
+//         $td.data('padding-original', {
+//             top: $td.css('padding-top'),
+//             right: $td.css('padding-right'),
+//             bottom: $td.css('padding-bottom'),
+//             left: $td.css('padding-left')
+//         });
+//     }
 
-    var menuHeight = $menu.outerHeight();
-    var menuWidth = $menu.outerWidth();
+//     $td.css({
+//         position: 'relative',
+//         padding: '0',
+//     });
 
-    // altura do botão para somar no cálculo real
-    var buttonHeight = $divDropdown.outerHeight() || 35;
-
-
-    var paddingBottomValue = Math.max(40, buttonHeight + menuHeight + 20) + 'px';
-    var paddingRightValue = Math.max(40, menuWidth + 20) + 'px';
-
-    $divDropdown.css({
-        'position': 'absolute',
-        'top': '5px',
-        'left': '5px'
-    });
-
-    $td.css({
-        'padding-top': '0px',
-        'padding-left': '0px',
-        'padding-bottom': paddingBottomValue,
-        'padding-right': paddingRightValue
-    });
-}
+//     $divDropdown.css({
+//         position: 'absolute',
+//         top: '4px',
+//         left: '4px'
+//     });
+// }
 
 $(document).ready(function () {
 
@@ -1666,10 +1798,10 @@ $(document).ready(function () {
         var $divDropdown = $(this);
         var $containerLista = $divDropdown.find('.lista-executantes');
 
-        //Executa o cálculo inicial(para o estado atual / carregando)
+
         setTimeout(function () {
             redimensionarTdDropdown($divDropdown);
-        }, 10);
+        }, 50);
 
 
         $.ajax({
@@ -1771,6 +1903,8 @@ function redimensionarTdDropdown($divDropdown) {
         'left': '5px'
     });
 
+    console.log($td);
+
     $td.css({
         'padding-top': '0px',
         'padding-left': '0px',
@@ -1820,6 +1954,8 @@ $(document).ready(function () {
     });
 
     $(document).on('hide.bs.dropdown', '.dropdown-dinamico-status', function () {
+
+        console.log('ACIONANDO O STATUS DINAMICO');
         var $td = $(this).closest('td');
         $td.css({
             'padding-top': '',
@@ -1929,6 +2065,39 @@ $("#obs_job").submit(function (event) {
         delete listaValida.obs;
 
         salvarDados(listaValida, $("#d-obs").val());
+    }
+});
+//    <!-- ============================================================
+// CAPTURA FORMULARIO  PERFIL
+// ============================================================ -->
+
+$("#cad_perfil").submit(function (event) {
+    event.preventDefault();
+
+
+    var perfilInformado = $('#n_perfils').val();
+
+
+    console.log(perfilInformado);
+
+    const tipo = tipos($("#d-perfil").val());
+    const listaValida = {
+        perfil: perfilInformado
+    }
+
+    const infoErros = validarCamposInput(listaValida, tipo);
+
+    if (infoErros) {
+        listaValida.id = '';
+        listaValida.campos = listaValida.perfil
+        listaValida.tipo = tipo;
+        listaValida.ctr = App.crt;
+        listaValida.status = App.status;
+        delete listaValida.perfil;
+
+        console.log(listaValida, 'RESULTADO');
+
+        salvarDados(listaValida, $("#d-perfil").val());
     }
 });
 

@@ -466,6 +466,42 @@
       background-color: #1e40af;
   }
 
+  .btn-action {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 10px;
+      flex-shrink: 0;
+      transition: opacity .15s;
+  }
+
+  button.dt-button {
+      background: #1e2d5a !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 6px !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      font-family: 'Inter', sans-serif !important;
+      padding: 6px 16px !important;
+      transition: background .2s !important;
+      cursor: pointer;
+      letter-spacing: .2px;
+  }
+
+  .dt-layout-row {
+      padding: 10px !important;
+  }
+
+  .btn-action:hover {
+      opacity: .8;
+      transform: scale(1.08);
+  }
 
 
   .dias-atraso {
@@ -1031,8 +1067,8 @@
       width: 100%
   }
 
-  button.dt-paging-button {
-      background: #a8baf0 !important;
+  button {
+      background: #1e2d5a !important;
       color: #fff !important;
       border: none !important;
       border-radius: 6px !important;
@@ -1053,6 +1089,7 @@
 
   .accordion-item .collapsed {
       background-color: var(--azul-border) !important;
+      color: var(--text) !important;
   }
 
   .accordion-body {

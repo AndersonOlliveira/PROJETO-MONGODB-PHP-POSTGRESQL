@@ -66,6 +66,7 @@ return [
     '/api/ListUserArea' => ['IndicadoresController', 'listUserArea'],
     '/api/ListTipo' => ['IndicadoresController', 'listTipo'],
     '/api/ListStatus' => ['IndicadoresController', 'listStatus'],
+    '/api/ListPropesct' => ['IndicadoresController', 'lproprect'],
     '/api/ListPerfil' => ['IndicadoresController', 'listPerfil'],
     '/api/ListCliente' => ['IndicadoresController', 'listCliente'],
     '/api/UpdadosJobs' => ['IndicadoresController', 'upDados']
