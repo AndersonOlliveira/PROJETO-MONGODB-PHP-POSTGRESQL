@@ -92,7 +92,7 @@ class validaCampos
     }
     public function dadosVeficar($dados)
     {
-        $parametros = ["campos", "ctr", "status", 'id'];
+        $parametros =  ["campos", "tctrid", "status", 'id', 'tctraut'];
 
         $parametros = self::validarParametrosDados($dados, $parametros);
 

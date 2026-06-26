@@ -41,11 +41,11 @@
             </a>
 
 
-            <a class="btn-top"
+            <!-- <a class="btn-top"
                 href="relatz.chp?r=viewSups&tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
                 title="Serviços">
                 Passíveis de suspensão
-            </a>
+            </a> -->
 
 
             <a class="btn-top danger"

@@ -62,6 +62,8 @@ class tratarIndicadores extends Controller
             return $retorno_tabela;
         }
 
+
+
         $error = $this->functions->validarParametrosDados($dadosCadastros, $retorno_tabela['campos']);
 
         if (isset($error['error'])) {
