@@ -825,9 +825,10 @@
       tipo_selects.appendChild(todosOption);
 
       tipo.forEach((items) => {
+          const n_trativa = items.tipo_tratativa;
           const option = document.createElement("option");
           option.value = items.cod_tipo_tratativa;
-          option.text = items.tipo_tratativa;
+          option.text = n_trativa.toUpperCase();
           tipo_selects.appendChild(option);
       });
   }

@@ -615,10 +615,7 @@ class Crc_tratativas extends Model
     public function verifry_cobraca($idCobranca, $dados = null)
     {
 
-        echo "<pre>";
-        echo "ID ENVIADO PARA A CONSULTA\n";
 
-        print_R($idCobranca);
 
         $sql = "SELECT EXISTS(
                     SELECT 1
@@ -714,40 +711,58 @@ class Crc_tratativas extends Model
             $nome = empty($ctr_interno) ? "INSERIDO SISTEMA" :  $ctr_interno . " - " . self::info_responsavel($ctr_interno);
             echo "------- nome \n";
             print_R($nome);
-            $new_ocorrencia =  $this->ajustar->convertEncode('Foi inserido a movimentacao da cobrança ' . $idCobranca . ' com o tipo ' . $new_tipo[0]['tipo_tratativa'] . ' com a ação ' . $new_acoes[0]['acao_descricao'] . ' com a seguinte observação ' . $descricao_movimentacao . ' inserido pelo o contrato ' . $nome);
+            // $new_ocorrencia =  $this->ajustar->convertEncode('Foi inserido a movimentacao da cobrança: ' . $idCobranca . ' com o tipo: ' . $new_tipo[0]['tipo_tratativa'] . ' com a ação: ' . $new_acoes[0]['acao_descricao'] . ' com a seguinte observação: ' . $descricao_movimentacao . ' inserido pelo o contrato ' . $ctr_interno);
+            $new_ocorrencia =  'Foi inserido a movimentacao da cobrança: ' . $idCobranca . ' com o tipo: ' . $this->ajustar->convertEncode($new_tipo[0]['tipo_tratativa']) . ' com a ação: ' . $this->ajustar->convertEncode($new_acoes[0]['acao_descricao']) . ' com a seguinte observação: ' . $descricao_movimentacao . ' inserido pelo o contrato ' . $ctr_interno;
 
             echo "-------";
             print_R($new_ocorrencia);
-            // $stmt = $conexaoBd->BD_COM->prepare($sql);
-            // $stmt->bindParam(':cobranca', $idCobranca);
-            // $stmt->bindParam(':crc_tratativa_tipo_id', $crc_tratativa_tipo_id);
-            // $stmt->bindParam(':crc_tipo_acoes_id', $crc_tipo_acoes_id);
-            // $stmt->bindParam(':descricao_movimentacao', $descricao_movimentacao);
-            // $stmt->bindParam(':ctr_interno', $ctr_interno);
 
-            // $stmt->execute();
+            echo "<pre>";
+            var_dump($new_ocorrencia);
+            var_dump(bin2hex($new_ocorrencia));
+            var_dump(mb_detect_encoding(
+                $new_ocorrencia,
+                array('UTF-8', 'ISO-8859-1'),
+                true
+            ));
+            echo "</pre>";
+            die();
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':cobranca', $idCobranca);
+            $stmt->bindParam(':crc_tratativa_tipo_id', $crc_tratativa_tipo_id);
+            $stmt->bindParam(':crc_tipo_acoes_id', $crc_tipo_acoes_id);
+            $stmt->bindParam(':descricao_movimentacao', $descricao_movimentacao);
+            $stmt->bindParam(':ctr_interno', $ctr_interno);
+
+            $stmt->execute();
 
             // Recupera o ID gerado usando o FETCH do RETURNING (Postgres)
-            // $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            // $idTratativa = $resultado['id_crc_tratativas'];
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            $idTratativa = $resultado['id_crc_tratativas'];
 
             $cod_status = isset($dados) && !empty($dados) ? $status_tratativa : 1;  //# dados;
 
 
             $status_descricao = $descricao_movimentacao;
 
-            // $stmt = $conexaoBd->BD_COM->prepare($sqlStatus);
-            // $stmt->bindParam(':crc_tratativas_id', $idTratativa);
-            // $stmt->bindParam(':cod_status', $cod_status);
-            // $stmt->bindParam(':status_descricao', $status_descricao);
-            // $stmt->execute();
+            // echo "<pre>";
+            // echo "que dados esta vindo para inserimos\n";
+            // print_r($status_descricao);
 
-            // if ($stmt->execute()) {
-            //     // Se a inserção do status for bem-sucedida, registra a ocorrência
-            //     self::registrarOcorrencia($cliIds[0]['cliid'], $tpos[0]['tpoid'], $new_ocorrencia, $nome);
+            // die();
 
-            //     return ['status' => 'success', 'message' => 'Movimentação e Status inseridos com sucesso!'];
-            // }
+            $stmt = $this->db->prepare($sqlStatus);
+            $stmt->bindParam(':crc_tratativas_id', $idTratativa);
+            $stmt->bindParam(':cod_status', $cod_status);
+            $stmt->bindParam(':status_descricao', $status_descricao);
+            $stmt->execute();
+
+            if ($stmt->execute()) {
+                // Se a inserção do status for bem-sucedida, registra a ocorrência
+                self::registrarOcorrencia($cliIds[0]['cliid'], $tpos[0]['tpoid'], $new_ocorrencia, $nome);
+
+                // return ['status' => 'success', 'message' => 'Movimentação e Status inseridos com sucesso!'];
+            }
         } catch (PDOException $e) {
             self::manipuladorDeErros(11, 'Erro ao inserir movimentação  public.crc_tratativas_status public.crc_tratativas_movimentacao : ' . $e->getMessage(), __FILE__, __LINE__);
 

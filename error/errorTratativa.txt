@@ -196,3 +196,122 @@ LINE 33:             FROM public.crc_tratativas_movimentacao
 [2026-06-15 20:44:19] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
 [2026-06-15 20:44:22] Nível: 8 | Erro: Undefined variable: resultado | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
 [2026-06-15 20:44:22] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 736
+[2026-06-29 09:11:22] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 158
+[2026-06-29 09:12:32] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 158
+[2026-06-29 09:15:46] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 158
+[2026-06-29 09:17:31] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 158
+[2026-06-29 09:18:29] Nível: 8 | Erro: Undefined variable: conexaoBd | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 719
+[2026-06-29 09:18:29] Nível: 8 | Erro: Trying to get property 'BD_COM' of non-object | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 719
+[2026-06-29 09:19:49] Nível: 8 | Erro: Undefined variable: conexaoBd | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 719
+[2026-06-29 09:19:49] Nível: 8 | Erro: Trying to get property 'BD_COM' of non-object | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 719
+[2026-06-29 09:21:03] Nível: 11 | Erro: Erro ao inserir movimentação  public.crc_tratativas_status public.crc_tratativas_movimentacao : SQLSTATE[22001]: String data, right truncated: 7 ERROR:  value too long for type character varying(80) | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\models\Crc_tratativas.php | Linha: 750
+[2026-06-29 09:37:55] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 158
+[2026-06-29 09:48:19] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:19] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:19] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:19] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:19] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:19] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:34] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:34] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:34] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:34] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:34] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:48:34] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:23] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:49:42] Nível: 2 | Erro: trim() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:07] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:07] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:07] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:07] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:07] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:07] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:22] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:22] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:22] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:22] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:22] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:51:22] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:10] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:10] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:10] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:10] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:10] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:52:11] Nível: 2 | Erro: utf8_decode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:12] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:12] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:12] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:12] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:12] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:12] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:27] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:27] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:27] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:27] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:27] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:53:27] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 09:54:15] Nível: 2 | Erro: utf8_encode() expects parameter 1 to be string, array given | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\Utilis\validaCampos.php | Linha: 51
+[2026-06-29 10:08:13] Nível: 8 | Erro: Trying to access array offset on value of type null | Arquivo: C:\xampp_backup\htdocs\projeto74\mvc\App\controllers\ApiControllerTratativas.php | Linha: 158

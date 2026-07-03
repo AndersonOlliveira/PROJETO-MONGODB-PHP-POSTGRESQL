@@ -1586,6 +1586,7 @@ function validarInterno(usandoInput, tipo) {
         $('#myCheckbox').prop('disabled', false);
         $('#cliente_padrao').val('');
         $('#n_cliente').prop('disabled', false).show();
+        $('#myCheckboxProspect').prop('disabled', false).show();
         return;
     }
 
@@ -1594,10 +1595,13 @@ function validarInterno(usandoInput, tipo) {
         $('#cliente_padrao').val(result);
         $('#myCheckbox').prop('disabled', true);
         $('#n_cliente').prop('disabled', true).hide();
+        $('#myCheckboxProspect').prop('disabled', true);
+
     } else {
         $('#cliente_padrao').val('');
         $('#myCheckbox').prop('disabled', false);
         $('#n_cliente').prop('disabled', false).show();
+        $('#myCheckboxProspect').prop('disabled', false);
     }
 }
 

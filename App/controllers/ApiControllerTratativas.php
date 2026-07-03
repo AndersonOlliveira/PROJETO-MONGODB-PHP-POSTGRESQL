@@ -30,8 +30,7 @@ class ApiControllerTratativas extends Controller
     }
     public function get_tratativas()
     {
-        header('Content-Type: application/json');
-
+        header('Content-Type: application/json; charset=utf-8');
 
         $retorno_dados = $this->utilis_pgadmin->listTipoContrato();
 
@@ -98,7 +97,7 @@ class ApiControllerTratativas extends Controller
     {
 
 
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
 
 
         $retorno_dados = $this->utilis_pgadmin->listTipoAcoes();
@@ -126,7 +125,7 @@ class ApiControllerTratativas extends Controller
         // PARA CONVERTER OS DADOS VINDO DE FORM DATA
         $dados = json_decode($dados, true);
 
-        $dados['tipo_acoes'] = 0;
+        // $dados['tipo_acoes'] = 0;
         //AQUI VERIFICA OS CAMPOS ENVIADOS SE ESTA CORRETO
         $retorno_campos  =  $this->utilis_trativas->validaCampos($dados);
         //VERIFICA OS DADOS DENTRO DO CAMPOS

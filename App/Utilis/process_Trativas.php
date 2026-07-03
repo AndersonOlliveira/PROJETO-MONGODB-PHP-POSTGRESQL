@@ -119,15 +119,15 @@ class process_Trativas extends Controller
             );
         }
 
-        if (!empty($retorno)) {
+        // if (!empty($retorno)) {
 
-            foreach ($retorno as $result) {
+        //     foreach ($retorno as $result) {
 
-                if (!empty($result['n_nro'])) {
-                    $this->utilis_pgadmin->verifry_cobraca($result['n_nro']);
-                }
-            }
-        }
+        //         if (!empty($result['n_nro'])) {
+        //             $this->utilis_pgadmin->verifry_cobraca($result['n_nro']);
+        //         }
+        //     }
+        // }
 
         // Consulta final após possíveis inserções
         if (!empty($dados['tdataInicio']) && !empty($dados['tdataFim'])) {
