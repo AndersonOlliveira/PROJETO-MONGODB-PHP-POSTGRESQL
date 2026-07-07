@@ -138,7 +138,7 @@ class Kpiindicadores extends Model
                     WHERE UPPER({$campoPrincipal}) = :campo_check)";
         }
 
-
+        $campo = $this->ajustar->convertToLatin1($campo);
 
         try {
 
@@ -185,6 +185,9 @@ class Kpiindicadores extends Model
 
         $sql = "INSERT INTO {$tabela} ({$campoObs}, crt_interno_obs, {$campoId})
             VALUES (:campo_inserir,:crt_interno_obs,:id_inserir)";
+
+        $campo = $this->ajustar->convertToLatin1($campo);
+
 
         try {
 
@@ -275,6 +278,11 @@ class Kpiindicadores extends Model
 
         $tratado  = $id_cliid[0] == 'novo' ? null : $id_cliid[0];
 
+        $titulo = $this->ajustar->convertToLatin1($dados['titulo_email']);
+        $detalhamento = $this->ajustar->convertToLatin1($detalhamento);
+
+
+
         $sql = "INSERT INTO {$tabela} (solicitante_id, job_id, nome_cliente, status_id, perfil_id, data_solicitacao, titulo_email, detalhamento, ctr_interno_cad,cliid_id)
         VALUES (:solicitante_id, :job_id,:nome_cliente, :status_id, :perfil_id, :data_solicitacao, :titulo_email, :detalhamento, :ctr_interno_cad,:cliid_id);";
         // VALUES (:executante_id, :job_id, :area_id, :nome_cliente, :status_id, :perfil_id, :data_solicitacao, :titulo_email, :detalhamento, :ctr_interno_cad);";
@@ -288,7 +296,7 @@ class Kpiindicadores extends Model
             $stmt->bindParam(':status_id', $dados['s_tatus']);
             $stmt->bindParam(':perfil_id', $dados['perfil']);
             $stmt->bindParam(':data_solicitacao', $dados['d_soliciticao']);
-            $stmt->bindParam(':titulo_email', $dados['titulo_email']);
+            $stmt->bindParam(':titulo_email', $titulo);
             $stmt->bindParam(':detalhamento', $detalhamento);
             $stmt->bindParam(':ctr_interno_cad', $dados['ctr']);
             $stmt->bindParam(':cliid_id', $tratado);
@@ -363,7 +371,7 @@ class Kpiindicadores extends Model
                     $newDate = new DateTime($row['data_solicitacao']);
                     $newDateInicio = !empty($row['data_inicio']) ? new DateTime($row['data_inicio']) : $row['data_inicio'];
                     $row['data_solicitacao'] = $newDate->format('d-m-Y');
-
+                    $row['n_perfil'] = strtoupper($row['n_perfil']);
                     $row['data_inicio'] =  $newDateInicio != null ? $newDateInicio->format('d-m-Y') : $newDateInicio;
 
                     $row['dados_solicitante'] =  self::users($row['solicitante_id']);

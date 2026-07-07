@@ -269,10 +269,12 @@ function renderTabela() {
         processing: true,
         // select: true,
         paging: true,
+        pagingType: "full_numbers",
         scrollX: true,
         searching: true,
         ordering: true,
         responsive: false,
+
         // info: true,
         layout: {
             top: {
@@ -281,14 +283,10 @@ function renderTabela() {
                 }
             },
             topEnd: [{
-
-                    buttons: [
-                        ['excel'],
-                    ],
-
-                },
-
-            ],
+                buttons: [
+                    ['excel'],
+                ],
+            }],
         },
         language: {
             info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
@@ -297,15 +295,17 @@ function renderTabela() {
             search: "Pesquisar:",
             searchPlaceholder: "Digite para pesquisar...",
             paginate: {
-                previous: "Anterior",
-                next: "Próximo"
+                first: "|<<",
+                previous: "<",
+                next: ">",
+                last: ">>|"
             }
         },
         "order": [
             [0, "desc"]
         ],
+        data: App.dadosFiltrados,
 
-        data: App.dadosFiltrados, //DADOS VINDO DA API
 
         columns: [
 
@@ -314,11 +314,19 @@ function renderTabela() {
                 defaultContent: '-'
             }, {
                 data: 'titulo_email',
-                defaultContent: '-'
+                defaultContent: '-',
+                render: function (data, type, row) {
+                    return quebrarTexto(data, type, row);
+
+                }
             },
             {
                 data: 'nome_cliente',
-                defaultContent: '-'
+                defaultContent: '-',
+                render: function (data, type, row) {
+                    return quebrarTexto(data, type, row);
+
+                }
             },
             {
                 data: 'solicitante',
@@ -342,12 +350,12 @@ function renderTabela() {
                     return `
                     
                             <div class="dropdown dropdown-dinamico">
-                                    <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
+                                    <button class="btn btn-sm btn-light dropdown-toggle tacn tam" data-bs-toggle="dropdown" data-bs-flip="false">
                                         ${executorName}
                                     </button>
                                         <ul class="dropdown-menu p-2">
                                         <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-                                        <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Executor</h6></li>
+                                        <li><p class="dropdown-header fw-bold text-dark">Selecione Executor</p></li>
                                         <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <div class="lista-executantes">
@@ -365,7 +373,10 @@ function renderTabela() {
             },
             {
                 data: 'n_perfil',
-                defaultContent: '-'
+                defaultContent: '-',
+                render: function (data, type, row) {
+                    return data.toUpperCase();
+                }
             },
             {
                 data: 'n_status',
@@ -394,7 +405,11 @@ function renderTabela() {
             },
             {
                 data: 'detalhamento',
-                defaultContent: '-'
+                defaultContent: '-',
+                render: function (data, type, row) {
+                    return quebrarTexto(data, type, row);
+
+                }
             },
             {
                 data: null,
@@ -403,7 +418,7 @@ function renderTabela() {
                     <div class="d-flex flex-row mb-3">
                       <div class="p-2 pg-file-section">
                           <button type="button" class="btn-action btn-list-dados" data-id-tabela="${row.id_cadjob}" aria-label="Ver detalhes">
-                              <img src="/img/em-formacao.png" alt="Ver detalhes" width="40" height="40">
+                              <img src="img/em-formacao.png" alt="Ver detalhes">
                           </button>
                       </div>
                     </div>`;
@@ -487,6 +502,41 @@ function renderTabela() {
     );
 }
 
+function corteEstrito(texto, limite = 10) {
+
+    return texto.match(new RegExp('.{1,' + limite + '}', 'g')).join('\n');
+}
+
+function quebrarTexto(texto, limite = 20) {
+    if (!texto) return ''; // Evita erros se o campo vier vazio ou nulo
+
+    const palavras = texto.split(' ');
+    let linhaAtual = '';
+    const resultado = [];
+
+    palavras.forEach(palavra => {
+
+        const espaco = linhaAtual === '' ? '' : ' ';
+        if ((linhaAtual + espaco + palavra).length <= limite) {
+            linhaAtual += espaco + palavra;
+        } else {
+            if (linhaAtual !== '') resultado.push(linhaAtual);
+            linhaAtual = palavra;
+        }
+    });
+
+    if (linhaAtual !== '') resultado.push(linhaAtual);
+
+
+    return resultado.join('<br>');
+
+
+}
+
+function renderDetalhamento(data, type, row) {
+    const retorno_texto = quebrarTexto(data, 20);
+    return retorno_texto;
+}
 
 
 // APRESEMTAR O OPTION 
@@ -505,15 +555,13 @@ function listaOption(dadosFiltradosVisiveis) {
     //mapea para não repedir os dados que vem da consulta que já existe,pois fica inteirando
     const unicos = [...new Set(dadosFiltradosVisiveis.map(el => el.n_status))];
 
-    console.log(unicos);
-
     unicos.forEach(element => {
 
         const options = document.createElement("option");
         options.className = 'form-control selectControll';
 
         options.value = removerAcentos(element).toUpperCase().trim();
-        options.text = element;
+        options.text = element.toUpperCase().trim();
         statusSelects.appendChild(options);
 
     });
@@ -538,7 +586,7 @@ function listaOptionExecutante(dadosFiltradosVisiveis) {
 
         const options = document.createElement("option");
         options.value = dlistaN;
-        options.text = dlistaN;
+        options.text = dlistaN.toUpperCase();
         statusSelects.appendChild(options);
     });
 }
@@ -550,7 +598,7 @@ function listaOptionArea(dadosFiltradosAreas) {
     statusSelects.innerHTML = 'Carregando...';
     const todosOption = document.createElement("option");
     todosOption.value = "0";
-    todosOption.className = "form-control selectControllArea";
+    todosOption.className = "form-control selectControllArea pda";
     todosOption.text = "Todos";
     statusSelects.appendChild(todosOption);
 
@@ -562,7 +610,7 @@ function listaOptionArea(dadosFiltradosAreas) {
         const options = document.createElement("option");
         options.className = "area";
         options.value = dlistaN;
-        options.text = dlistaN;
+        options.text = dlistaN.toUpperCase();
         statusSelects.appendChild(options);
     });
 }
@@ -2169,8 +2217,15 @@ $('#cad_status').submit(function (e) {
 
         salvarDados(listaValida, 'Status');
     }
-
-
-
-
 });
+
+
+function current() {
+    const date_day = new Date();
+    const ano = date_day.getFullYear();
+    const mes = String(date_day.getMonth() + 1).padStart(2, '0');
+    const dia = String(date_day.getDate()).padStart(2, '0');
+
+    return `${ano}-${mes}-${dia}`;
+
+}
