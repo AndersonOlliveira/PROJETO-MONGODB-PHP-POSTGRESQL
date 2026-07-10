@@ -356,7 +356,7 @@ class Kpiindicadores extends Model
                 INNER JOIN job_perfil perjobs
                     ON perjobs.id_perfil = cadjobs.perfil_id
                     INNER JOIN job_status tstatus
-                    ON tstatus.id_status = cadjobs.status_id ORDER BY cadjobs.id_cadjob DESC;";
+                    ON tstatus.id_status = cadjobs.status_id ORDER BY cadjobs.id_cadjob DESC LIMIT 2;";
 
         try {
 
@@ -369,15 +369,34 @@ class Kpiindicadores extends Model
 
 
                     $newDate = new DateTime($row['data_solicitacao']);
-                    $newDateInicio = !empty($row['data_inicio']) ? new DateTime($row['data_inicio']) : $row['data_inicio'];
+                    $newDateInicio = !empty($row['data_inicio']) && $row['data_inicio'] != null ? new DateTime($row['data_inicio']) : $row['data_inicio'];
+                    $newDateFim = !empty($row['data_fim']) && $row['data_fim'] != null ? new DateTime($row['data_fim']) : $row['data_fim'];
                     $row['data_solicitacao'] = $newDate->format('d-m-Y');
                     $row['n_perfil'] = strtoupper($row['n_perfil']);
                     $row['data_inicio'] =  $newDateInicio != null ? $newDateInicio->format('d-m-Y') : $newDateInicio;
-
+                    $row['data_fim'] =  $newDateFim != null ? $newDateFim->format('d-m-Y') : $newDateFim;
+                    $dataAtual = date('Y/m/d');
+                    $dataAtual =  new DateTime($dataAtual);
+                    // if ($row['id_cadjob'] == 34) {
+                    //     $row['data_inicio'] = '10-07-2026';
+                    //     $row['data_fim'] = '30-07-2026';
+                    // }
+                    $data_inicio = new DateTime($row['data_inicio']);
+                    $data_fim_projeto = new DateTime($row['data_fim']);
+                    $intervalo_dias_de_inicio_data_solicitacao = $row['data_inicio'] != null ? $newDate->diff($data_inicio) : null;
+                    $intervalod_fim_projeto = $row['data_fim'] != null ? $newDate->diff($data_fim_projeto)->days : 0; // DIFERENÇA ENTRE DATA SOLICITACAO A DATA FINAL DO JOBS PEGANDO OS DIAS
+                    $intervalo = $dataAtual->diff($newDate); // CALCULO A DIFERENÇA DOS DIAS DA SOLICITACAO A DATA ATUAL
+                    $row['qta_dias_solicitacao_jobs'] = $intervalo->days; //QTA DO DIA ATUAL JUNTO COM A SOLICITACAO EXEMPLO: SOLICITADO A 5 
+                    $row['diferencias_em_horas_solicitacao'] = $intervalo->days * 8; //HORAS DE TRABALHO 8 HORAS DIAS   
+                    $row['qta_diferencias_em_dias_inicio_solicitacao'] = $intervalo_dias_de_inicio_data_solicitacao != null ? $intervalo_dias_de_inicio_data_solicitacao->days : 'SEM DATA DE INÍCIO ATRIBUIDA'; //DIFERENÇA DATA DA SOLICITACAO E DATA DO INICIO DO JOB
+                    $row['qta_dias_jobs_finalizado'] =  $intervalod_fim_projeto;
+                    $row['qt_dias_jobs_horas_finalizado'] = $intervalod_fim_projeto * 8 . ':Hs';
                     $row['dados_solicitante'] =  self::users($row['solicitante_id']);
                     $row['dados_executor'] =  self::users($row['executante_id']);
 
                     $registros[] = $row;
+
+                    // $registros[] = $row;
                 }
                 return $registros;
             } else {
@@ -396,6 +415,11 @@ class Kpiindicadores extends Model
 
             return $error[] = ['error' => "Falha em Solicitar os dados Job, cod error: {$e->getCode()}"];
         }
+    }
+
+    public function diasParaHoras($dias)
+    {
+        return $dias * 8;
     }
     public function lista_jobs_atualizacoes($idTabela)
     {

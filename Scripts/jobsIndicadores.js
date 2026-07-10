@@ -64,7 +64,7 @@ $(document).ready(function () {
     $("#clientes_inputs").hide();
 
     //   $('#btn-salvar-tratativa').on('click', salvarTratativa);
-    $('#btn-csv').on('click', exportarCSV);
+    // $('#btn-csv').on('click', exportarCSV);
 
 });
 
@@ -386,7 +386,8 @@ function renderTabela() {
                 }
             },
             {
-                data: null,
+                data: 'data_solicitacao',
+                defaultContent: '-',
                 render: function (data, type, row) {
                     return renderData(data, type, row);
                 }
@@ -484,6 +485,31 @@ function renderTabela() {
                 .draw();
         }
     });
+    $('#f-mes').on('change', function () {
+        let filtroMes = this.value;
+
+        if (filtroMes && filtroMes != 0) {
+            filtroMes = filtroMes.padStart(2, '0');
+            console.warn('filtro selecionado depois do padStart');
+            console.warn(filtroMes);
+            // const regexMes = `^\\s*\\d{2}[-\\/]${filtroMes}[-\\/]\\d{4}\\s*$`;
+            const regexMes = `[-\\/]${filtroMes}[-\\/]`;
+
+            console.warn('Regex gerada:', regexMes);
+
+            tabela_indicadores
+                .column(9)
+                // .search(regexMes, true, false, true)
+                .search(regexMes, true, false)
+                .draw();
+        } else {
+            tabela_indicadores
+                .column(9)
+                .search('')
+                .draw();
+        }
+    });
+
 
     const dadosFiltradosVisiveis = tabela_indicadores.rows({
         search: 'applied',
@@ -495,6 +521,9 @@ function renderTabela() {
     listaOption(dadosFiltradosVisiveis);
     listaOptionExecutante(App.filtrosExecutane);
     listaOptionArea(App.filtrosAreas);
+
+    listaOptionMeses(App.dadosFiltrados);
+
 
 
     $('#contagem').html(
@@ -616,6 +645,35 @@ function listaOptionArea(dadosFiltradosAreas) {
 }
 
 
+function listaOptionMeses(dadosFiltradosAreas) {
+    const statusSelects = document.getElementById('f-mes');
+
+    statusSelects.innerHTML = 'Carregando...';
+    const todosOption = document.createElement("option");
+    todosOption.value = "0";
+    todosOption.className = "form-control selectControllMes pda";
+    todosOption.text = "Todos";
+    statusSelects.appendChild(todosOption);
+
+    const mesesUnicos = new Set();
+    dadosFiltradosAreas.forEach(el => {
+        if (el.data_solicitacao) {
+            console.log(el.data_solicitacao);
+            const mes = el.data_solicitacao.split("-")[1];
+            mesesUnicos.add(mes);
+        }
+    });
+
+
+    Array.from(mesesUnicos).sort().forEach(mes => {
+        console.log(mes);
+        const options = document.createElement("option");
+        options.className = "mes";
+        options.value = mes;
+        options.text = lista_meses([mes]);
+        statusSelects.appendChild(options);
+    });
+}
 
 // ── RENDERIZAÇÃO  HISTORICO──────────────────────────────────────────────
 function renderTabelaHistorico() {
@@ -782,18 +840,15 @@ function removerAcentos(texto) {
     return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 }
 
-
-function renderData(row, type, data) {
-    let date = row['data_solicitacao'];
-    let infoDate = calcularDias(date);
-    let content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
-                    <span class="infodiasdate"> Solicitado a ${infoDate || ''}D</span>
-                </span>`;
+function renderData(data, type, row) {
+    const date = data;
     if (!date) return '-';
-
+    const infoDate = calcularDias(date);
+    const content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
+                    <span class="infodiasdate"> Solicitado a ${infoDate}D</span>
+                </span>`;
     return date + content;
 }
-
 
 function renderDataIncio(data, type, row) {
 
@@ -939,6 +994,7 @@ function exportarCSV() {
 }
 
 
+
 // ── UTILITÁRIOS ───────────────────────────────────────────────
 function calcularDias(vencimento) {
     if (!vencimento) return 0;
@@ -960,7 +1016,10 @@ function calcularDias(vencimento) {
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-    return Math.floor((hoje - venc) / 86400000);
+
+    const resultFlor = Math.floor((hoje - venc) / 86400000);
+
+    return resultFlor;
 }
 
 function formatarValor(v) {
@@ -1316,19 +1375,30 @@ function get_lista_perfil() {
             if (resp.status == 2) {
 
                 const dados = resp.dados.map(function (item) {
+                    const n_perfilUpper = item.n_perfil.toUpperCase();
+
                     return {
                         id: item.id_perfil,
-                        text: item.n_perfil
+                        text: n_perfilUpper
                     };
                 });
 
+
+                if ($('#n_perfil').hasClass("select2-hidden-accessible")) {
+                    $('#n_perfil').select2('destroy');
+                }
+
+
+                $('#n_perfil').html('<option></option>');
+
+
                 $('#n_perfil').select2({
                     placeholder: 'Selecione um Perfil',
+                    // class: 'form-control',
+                    width: '100%',
                     data: dados
                 });
-
             }
-
         }
     });
 }
@@ -1371,7 +1441,6 @@ function get_lista_cliente() {
         type: 'GET',
         dataType: 'json',
         success: function (resp) {
-
             if (resp.status == 2) {
 
                 const dados = resp.dados.map(function (item) {
@@ -1381,16 +1450,24 @@ function get_lista_cliente() {
                     };
                 });
 
+
+                if ($('#n_cliente').hasClass("select2-hidden-accessible")) {
+                    $('#n_cliente').select2('destroy');
+                }
+
+
+                $('#n_cliente').html('<option></option>');
+
+
                 $('#n_cliente').select2({
                     placeholder: 'Selecione um cliente',
+                    // class: 'form-control',
+                    width: '100%',
                     data: dados
                 });
-
             }
-
         }
     });
-
 }
 
 // LISTA DE CLIENTES PROPESCT
@@ -1411,19 +1488,22 @@ function get_lista_cliente_propesct() {
                     };
                 });
 
-                $('#n_clientes_inputs_prospect').empty().append('<option></option>');
+                if ($('#n_clientes_inputs_prospect').hasClass("select2-hidden-accessible")) {
+                    $('#n_clientes_inputs_prospect').select2('destroy');
+                }
+
+
+                $('#n_clientes_inputs_prospect').html('<option></option>');
+
 
                 $('#n_clientes_inputs_prospect').select2({
                     placeholder: 'Selecione um cliente Prospect',
                     allowClear: true,
                     data: dados
                 });
-
             }
-
         }
     });
-
 }
 
 
@@ -1534,9 +1614,17 @@ $("#cad_job").submit(function (event) {
 
     n_info_cliente = padrao ? padrao : validarCliente(valoresSelecionados[0]);
 
+    const retorno_data_atual = current();
+    const data_atual_selecionada = $('#range').val();
 
-    console.info('SAIU OS CLIENTES PROSPECT....');
-    console.log(n_info_cliente);
+    const partesFim = formaTdiasPesquisa(data_atual_selecionada);
+
+
+    if (partesFim > current()) {
+
+        toast('Escolha data menor que á a data atual', 'error');
+        return
+    }
 
 
     const listaCadastro = {
@@ -1548,13 +1636,14 @@ $("#cad_job").submit(function (event) {
         d_soliciticao: $('#range').val(),
         titulo_email: $('#titulo_email').val(),
         detalhamento: $('#detalhamento_email').val(),
-        ctr: $('#d-id').val(),
-        // tcrid falta
+        tctrid: App.crt,
+        ctr: App.crt,
+        tctraut: App.tctraut,
         tipo: App.tipo
 
     }
 
-    // enviarSolicitacao(listaCadastro, 'job');
+    enviarSolicitacao(listaCadastro, 'job');
 
 });
 
@@ -1633,7 +1722,6 @@ function validarInterno(usandoInput, tipo) {
         alert('Informe o Tipo de Job.');
         $('#myCheckbox').prop('disabled', false);
         $('#cliente_padrao').val('');
-        $('#n_cliente').prop('disabled', false).show();
         $('#myCheckboxProspect').prop('disabled', false).show();
         return;
     }
@@ -1886,16 +1974,27 @@ $(document).ready(function () {
     });
 
     // Evento ao fechar o dropdown
+
     $(document).on('hide.bs.dropdown', '.dropdown-dinamico', function () {
-        var $td = $(this).closest('td');
+        var $divDropdown = $(this);
+        var $td = $divDropdown.closest('td');
+
+        // remove inline styles added by redimensionarTdDropdown
+        $divDropdown.css({
+            'position': '',
+            'top': '',
+            'left': '',
+            'z-index': ''
+        });
+
         $td.css({
+            'position': '',
             'padding-top': '',
             'padding-left': '',
             'padding-bottom': '',
             'padding-right': ''
         });
     });
-
     //Evento para quando o usuário clicar em um nome da lista 
     $(document).on('click', '.item-executor, .item-executante', function (e) {
         e.preventDefault();
@@ -1952,19 +2051,21 @@ function redimensionarTdDropdown($divDropdown) {
     $divDropdown.css({
         'position': 'absolute',
         'top': '5px',
-        'left': '5px'
+        'left': '5px',
+        'z-index': 9999
     });
 
     console.log($td);
 
     $td.css({
-        'padding-top': '0px',
-        'padding-left': '0px',
+        'padding-top': '10px',
+        'padding-left': '10px',
         'padding-bottom': paddingBottomValue,
         'padding-right': paddingRightValue
     });
-}
 
+    console.warn('CLASSE TD', $td);
+}
 $(document).ready(function () {
 
     $(document).on('show.bs.dropdown', '.dropdown-dinamico-status', function () {
@@ -2005,11 +2106,21 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('hide.bs.dropdown', '.dropdown-dinamico-status', function () {
+    // Reset styles when dropdown is hidden so layout returns to normal
+    $(document).on('hidden.bs.dropdown', '.dropdown-dinamico-status', function () {
+        var $divDropdown = $(this);
+        var $td = $divDropdown.closest('td');
 
-        console.log('ACIONANDO O STATUS DINAMICO');
-        var $td = $(this).closest('td');
+        // remove inline styles added by redimensionarTdDropdown
+        $divDropdown.css({
+            'position': '',
+            'top': '',
+            'left': '',
+            'z-index': ''
+        });
+
         $td.css({
+            'position': '',
             'padding-top': '',
             'padding-left': '',
             'padding-bottom': '',
@@ -2220,6 +2331,8 @@ $('#cad_status').submit(function (e) {
 });
 
 
+
+
 function current() {
     const date_day = new Date();
     const ano = date_day.getFullYear();
@@ -2227,5 +2340,27 @@ function current() {
     const dia = String(date_day.getDate()).padStart(2, '0');
 
     return `${ano}-${mes}-${dia}`;
+
+}
+
+
+function lista_meses(mes) {
+    const mesesMap = {
+        '01': 'Janeiro',
+        '02': 'Fevereiro',
+        '03': 'Março',
+        '04': 'Abril',
+        '05': 'Maio',
+        '06': 'Junho',
+        '07': 'Julho',
+        '08': 'Agosto',
+        '09': 'Setembro',
+        '10': 'Outubro',
+        '11': 'Novembro',
+        '12': 'Dezembro'
+    };
+
+    return mesesMap[mes];
+
 
 }
