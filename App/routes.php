@@ -69,7 +69,10 @@ return [
     '/api/ListPropesct' => ['IndicadoresController', 'lproprect'],
     '/api/ListPerfil' => ['IndicadoresController', 'listPerfil'],
     '/api/ListCliente' => ['IndicadoresController', 'listCliente'],
-    '/api/UpdadosJobs' => ['IndicadoresController', 'upDados']
+    '/api/UpdadosJobs' => ['IndicadoresController', 'upDados'],
+    '/viewGrupoEconocio' => ['GrupoEconController', 'index_grupo_economico'],
+    '/viewDadosGrupo' => ['GrupoEconController', 'index_grupo_economico_list'],
+    '/api/searchClientes' => ['GrupoEconController', 'search_clientes']
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",

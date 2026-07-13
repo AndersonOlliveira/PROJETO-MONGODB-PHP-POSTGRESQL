@@ -304,4 +304,9 @@ class validaCampos
 
         return $parametros;
     }
+
+    public function validar_campos(){
+
+       
+    }
 }

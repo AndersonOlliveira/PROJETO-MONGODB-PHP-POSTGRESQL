@@ -1608,7 +1608,6 @@ $("#cad_job").submit(function (event) {
 
 
     const padrao = $('#cliente_padrao').val();
-
     let n_info_cliente = '';
     let n_info_perfil = '';
 
