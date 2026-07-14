@@ -72,7 +72,8 @@ return [
     '/api/UpdadosJobs' => ['IndicadoresController', 'upDados'],
     '/viewGrupoEconocio' => ['GrupoEconController', 'index_grupo_economico'],
     '/viewDadosGrupo' => ['GrupoEconController', 'index_grupo_economico_list'],
-    '/api/searchClientes' => ['GrupoEconController', 'search_clientes']
+    '/api/searchClientes' => ['GrupoEconController', 'search_clientes'],
+    '/api/search_limite_nivel' => ['GrupoEconController', 'search_clientes_limites'],
 
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",

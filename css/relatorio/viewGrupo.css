@@ -42,6 +42,23 @@
 
   }
 
+  .container-input {
+      display: flex;
+      margin-top: 20px;
+      justify-content: center;
+
+  }
+
+  .minha-div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+
+  .quebra {
+      white-space: nowrap;
+  }
+
   /* NEW */
   .search-container {
       margin-top: 50px;
@@ -546,7 +563,7 @@
       border-width: 1px;
       border-color: #AAAAAA;
       border-radius: 4em 2em;
-      margin: 20px;
+      margin: 10px;
 
   }
 
@@ -636,7 +653,7 @@
 
   /* botões de ação na tabela */
   .acoes-cell {
-      display: flex;
+      /* display: flex; */
       align-items: center;
       gap: 3px;
   }
@@ -1251,8 +1268,6 @@
       border-style: solid !important;
       border-color: #dadada !important;
       padding: 2 !important;
-      /* border-radius: 4em 2em !important; */
-      /* -moz-border-radius: 4em !important; */
   }
 
   .text-center {
@@ -1402,11 +1417,6 @@
       border-radius: 4em 2em;
       -moz-border-radius: 4em;
   }
-
-  /* COMENTADO */
-  /* .form-check {
-      padding: 5px !important;
-  } */
 
   .teste {
       margin-top: 30px !important;
@@ -1882,15 +1892,7 @@
       font-weight: bold
   }
 
-
-  /* .table-wrap {
-
-      border: 1px solid #ccc;
-      margin-top: 15px;
-  } */
-
-  /* Força a tabela a ocupar o espaço e impede quebra de texto */
-  #table-relatorio-indicadores {
+  #dados_redes {
       width: 10% !important;
       border-collapse: collapse !important;
       font-family: verdana, arial, sans-serif !important;
@@ -1898,9 +1900,9 @@
       text-align: center !important;
   }
 
-  #table-relatorio-indicadores th,
-  #table-relatorio-indicadores td {
-      /* white-space: nowrap; */
+  #dados_redes th,
+  #dados_redes td {
+
       padding: 3px 6px !important;
       border-width: 0 2 2 2 !important;
       border-style: solid !important;
@@ -1943,16 +1945,16 @@
       color: var(--text) !important;
   }
 
-  #table-relatorio-indicadores.dataTable tbody tr:nth-child(odd) td {
+  #dados_redes.dataTable tbody tr:nth-child(odd) td {
       background: #f1f1f1 !important;
       opacity: 0.7 !important;
 
   }
 
   /*  Linhas Pares (2ª, 4ª, 6ª...) */
-  #table-relatorio-indicadores.dataTable tbody tr:nth-child(even) td {
+  #dados_redes.dataTable tbody tr:nth-child(even) td {
       background: #ffffff !important;
       opacity: 0.7 !important;
       box-shadow: 0px 2px 8px #bebebe;
-      /* -8px -8px 15px #ffffff !important; */
+
   }

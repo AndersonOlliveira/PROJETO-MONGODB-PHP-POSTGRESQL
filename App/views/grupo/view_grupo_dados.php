@@ -1,61 +1,67 @@
-<!doctype html>
-<html lang="en">
+<?php require_once('partial/cabecalho.php') ?>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width" />
-    <title>Grupo Econômico -Configuração Limite de níveis</title>
-    <link href="../../css/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="../../css/bootstrap/docs.css" rel="stylesheet">
-    <link href="../../css/flatpickr/flatpickr.min.css" rel="stylesheet">
-    <link href="../../css/select/select2.min.css" rel="stylesheet">
-    <link href="../../css/Relatorio/viewGrupo.css?v= <?= time(); ?>" rel="stylesheet">
-</head>
 
+
+<!-- SE FOR REDE LIBERA OS OPTIONS ABAIXO -->
+<div class="container-input">
+    <form id="cadastrar-limite">
+        <div class="minha-div">
+            <label class="lkpr quebra" for="exampleFormControlInput1" class="form-label">Limite Nível</label>
+            <input type="number" class="form-control" id="limit_config">
+        </div>
+</div>
+<div class="container-input">
+    <div class="minha-div">
+        <input class="form-check-input-" type="radio" name="incluir_contrato" id="radio-todos">
+        <label class="form-check-label- lkpr" for="radio-todos">
+            Incluir para todos os contratos
+        </label>
+    </div>
+</div>
+<div class="container-input">
+    <div class="minha-div">
+        <input class="form-check-input-" type="radio" name="incluir_contrato" id="radio-selecionado">
+        <label class="form-check-label- lkpr" for="radio-selecionado">
+            Incluir somente para o contrato selecionado
+        </label>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-8 text-center">
+        <button type="submit" id="btn-incluir" class="btn btn-primary bot btn-incluir">Incluir</button>
+        <button type="submit" id="btn-desfazer" class="btn btn-primary bot btn-desfazer">Desfazer</button>
+    </div>
+</div>
+</form>
+<div class="spaco"></div>
+<div class="container">
+    <table id="dados_redes" class="display">
+        <thead>
+            <tr>
+                <th>selecionar</th>
+                <th>rede</th>
+                <th>Contrato</th>
+                <th>Nome</th>
+                <th>Limite de nível</th>
+                <th>Opçöes</th>
+            </tr>
+        </thead>
+
+    </table>
+
+
+</div>
+
+
+<div class="spaco"></div>
+<table width=100% align=center class="cdt3">
+    <tr>
+        <td width=100% align=left>
+            <font class="ctitpg"> © </font> Copyright - 2026 PROSCORE<BR>&nbsp;Versão 3.0 - producao<BR /><b>proScore</b>
+            <font class="ctitpg"> ® </font> Todos os direitos reservados</br>As informações contidas neste documento são confidenciais e de uso exclusivo de AREA DE TESTE E QUALIDADE
+        </td>
+    </tr>
+</table>
 <div class="toast-wrapper" id="toast-wrapper"></div>
 
-<script type="text/javascript" src="../../Scripts/jquery/jquery.min.js"></script>
-
-<!-- SELECT BIBLIOTECA -->
-<script type="text/javascript" src="../../Scripts/select/select2.min.js"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> -->
-
-<script src="../../../Scripts/GrupoEconomico.js?v=<?= time(); ?>"></script>
-
-
-<!-- Bootstrap -->
-<script type="text/javascript" src="../../Scripts/propper/popper.min.js"></script>
-<!-- <script type="text/javascript" src="../Scripts/bootstrap/bootstrap.bundle.min.js"></script> -->
-<script type="text/javascript" src="../../Scripts/bootstrap/bootstrap.min.js"></script>
-
-<!-- DataTables principal -->
-<script type="text/javascript" src="../../Scripts/datatable/dataTables.js"></script>
-
-<!-- Extensão Buttons -->
-<script type="text/javascript" src="../../Scripts/datatable/dataTablesbuttons.js"></script>
-
-<!-- Dependências de exportação -->
-<script type="text/javascript" src="../../Scripts/jszip/jszip.min.js"></script>
-<!-- <script type="text/javascript" src="../Scripts/pdfMake/pdfmake.min.js"></script> -->
-<script type="text/javascript" src="../../Scripts/pdfMake/vfs_fonts.js"></script>
-
-<!-- Botões HTML5 -->
-<script type="text/javascript" src="../../Scripts/datatable/buttonshtml5.min.js"></script>
-
-<!-- Flatpickr -->
-<script type="text/javascript" src="../../Scripts/flatpickr/flatpickr.js"></script>
-<script type="text/javascript" src="../../Scripts/flatpickr/languageFlatPickr.js"></script>
-<!-- sweetAlert -->
-<script type="text/javascript" src="../../Scripts/sweetAlert/sweetAlert.js"></script>
-<script type="text/javascript" src="../../Scripts/flatpickr/flatpickr.js"></script>
-<script type="text/javascript" src="../../Scripts/flatpickr/languageFlatPickr.js"></script>
-
-
-</body>
-
-</html>
-
-<?php
-
-
-print_r('estou chegando até aqui');
+<?php require_once('partial/footer.php') ?>

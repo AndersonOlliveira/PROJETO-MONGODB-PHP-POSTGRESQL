@@ -67,7 +67,7 @@ class GrupoEconomico extends Model
                 $sql = "SELECT rdenom,rdeid,rdeljaid,rdeljactr
             
              FROM  rdelja , rde where 
-                    rdeid = :rede and rdeljarde = rdeid";
+                    rdeid = :rede and rdeljarde = rdeid limit 2 ";
             }
 
 
@@ -87,6 +87,45 @@ class GrupoEconomico extends Model
             return false;
         } catch (PDOException $e) {
 
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+        }
+    }
+
+    public function nivel_cliente_grupo($contrato)
+    {
+
+
+        $sql = "";
+        $sql = "SELECT CASE 
+        WHEN limite_nivel IS NULL THEN '-' 
+        ELSE limite_nivel::TEXT END AS nivel_atual FROM grupo_economico.config_limite
+        WHERE contrato_cliente = :contrato_busca";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+
+            $stmt->bindParam(':contrato_busca', $contrato, PDO::PARAM_INT);
+
+            $rr  = [];
+            if ($stmt->execute() && $stmt->rowCount() > 0) {
+                // while ($row =  $stmt->fetchAll(PDO::FETCH_ASSOC));
+
+
+                // $row['nivel_atual'] = 20;
+
+                // $rr[] = $row;
+                return  $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+
+            return "-";
+        } catch (PDOException $e) {
             $this->errorHandler->manipuladorDeErros(
                 $e->getCode(),
                 $e->getMessage(),

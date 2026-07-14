@@ -30,4 +30,8 @@ class grupoEconomicoUtilis extends Controller
 
         return $this->modelGrupo->lista_rde_loja($c_cliente_search, $tipo_busca);
     }
+    public function search_limite($contrato)
+    {
+        return $this->modelGrupo->nivel_cliente_grupo($contrato);
+    }
 }

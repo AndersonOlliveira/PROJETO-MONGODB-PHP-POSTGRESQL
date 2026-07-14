@@ -60,4 +60,32 @@ class GrupoEconController extends Controller
             ], JSON_UNESCAPED_UNICODE);
         }
     }
+    public function search_clientes_limites()
+    {
+
+        $dados = $_REQUEST['id_contrato'];
+
+        // $retorno_validacao =  $this->validaCampos->validarCamposEnviado($dados);
+
+        // if (isset($retorno_validacao['error'])) {
+        //     header('Content-Type: application/json');
+        //     echo json_encode(array(
+        //         'status' => 0,
+        //         'sucesso' => false,
+        //         'dados' => $retorno_validacao['error']
+        //     ), 409);
+        //     die();
+        // }
+        $retorno = $this->process_dados->search_limite($dados);
+
+        if ($retorno) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'dados'   => $retorno
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    }
 }
