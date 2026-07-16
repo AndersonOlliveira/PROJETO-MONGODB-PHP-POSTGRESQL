@@ -59,8 +59,17 @@ class GrupoEconomico extends Model
 
             if ($tipo == 1) {
 
-                $sql = "SELECT * FROM cli, ctr 
-                    WHERE cliid = ctrcli  AND ctrid = :contrato ";
+                $sql = "WITH REDE_LOJA AS (
+			            SELECT rdenom,rdeid,rdeljaid,rdeljactr
+						FROM  rdelja , rde where rdeljarde = rdeid 
+			        )
+					SELECT REDE_LOJA.rdenom,
+					REDE_LOJA.rdeid,
+					REDE_LOJA.rdeljaid,
+					REDE_LOJA.rdeljactr
+					FROM cli INNER JOIN ctr ON cli.cliid = ctr.ctrcli
+					INNER JOIN REDE_LOJA ON REDE_LOJA.rdeljactr = ctr.ctrid
+					WHERE ctr.ctrid = :contrato ";
             } else {
 
                 $sql = "SELECT rdenom,rdeid,rdeljaid,rdeljactr

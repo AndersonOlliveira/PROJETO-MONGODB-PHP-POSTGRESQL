@@ -18,6 +18,13 @@ const App = {
 
 $(document).ready(function () {
 
+    //na onde tiver o click ele limpa o storage
+    $('.voltar_menu').on('click', function () {
+
+        console.log('teve o click no menu ');
+        localStorage.clear()
+    });
+
     //INICIA O CAMPO ESCODINDO
     $('#n_clientes').hide();
 
@@ -70,11 +77,14 @@ $('#pesquisar').submit(function (event) {
 
     console.log('estou sendo clicado');
 
-    const resultCheckd = verify_checkBox();
+    const [resultCheckd, tipo_selecionado] = verify_checkBox();
+
+
+    console.log(resultCheckd, 'QUE RESULTADO TENHO AQUI DO CHECKBOX');
     const list = {
         ctr: App.tctrid, //CONTRATO LOGADO
         tcrt: App.tctraut,
-        c_cliente_search: $('#inputDados').val(),
+        c_cliente_search: tipo_selecionado == 1 ? $('#n_clientes').val() : $('#inputDados').val(),
         tipo_busca: App.tipo_busca_c
     }
 
@@ -82,6 +92,7 @@ $('#pesquisar').submit(function (event) {
         return;
     }
 
+    console.log(list);
     forms_submit(list);
 });
 
@@ -98,13 +109,14 @@ function verify_checkBox() {
         return false;
     } else {
 
+        console.log(selectedRadio.id, 'meu ai seleciondo');
         App.tipo_busca_c = switchTipo(selectedRadio.id);
     }
 
-    const opcaoSelecionada = selectedRadio.value;
+    const [opcaoSelecionada, tipo] = [selectedRadio.value, switchTipo(selectedRadio.id)];
 
 
-    return opcaoSelecionada;
+    return [opcaoSelecionada, tipo];
 }
 
 function toast(msg, tipo = '') {
@@ -156,7 +168,7 @@ function get_lista_cliente() {
 
                 const dados = resp.dados.map(function (item) {
                     return {
-                        id: item.cliid,
+                        id: item.ctrid,
                         text: item.clinomraz
                     };
                 });
@@ -493,6 +505,20 @@ $('#cadastrar-limite').on('submit', function (e) {
             toast(`Selecione ao menos um checkbox !!.`, 'error');
             return
         }
+
+    }
+    //SE O CHECKBOX FOR MARCADO PARA INCLUIR A TODOS ELE VAI PERCORRE A TABELA PARA COLOCAR OS DADOS DENTRO DO APP.SELECIONADOS
+    if (checkBoxSelect == 3) {
+        App.selecionados = [];
+        tabela_indicadores.rows().nodes().to$().find('input.select-checkbox').each(function () {
+            const $row = $(this).closest('tr');
+            const rowData = tabela_indicadores.row($row).data();
+            const contrato = rowData ? rowData.rdeljactr || rowData.rdeid : null;
+            if (contrato) {
+                App.selecionados.push(contrato);
+            }
+        });
+        console.log('Contratos selecionados:', App.selecionados);
     }
 
 
@@ -575,6 +601,10 @@ function verify_checkBox_incluir() {
     const opcaoSelecionada = selectedRadio.value;
 
     console.log('QUE VALOR TENHO AQUI', selectedRadio.id);
+
+    //vou adicionar os ids dentro da App.Selection
+
+
 
 
     return [switchTipo(selectedRadio.id), selectedRadio.id];

@@ -93,8 +93,7 @@ class grupoEconomicoUtilis extends Controller
                 if (!$localizado) {
                     echo "<pre>";
                     echo "saiu aqui!!";
-                    // $resultado_insert[] = $this->modelGrupo->Upsert_grupo($retorno_tipo,  $contrato_afetar, $dados['value_limite'], $dados['id'], $dados['c_interno']);
-
+                    $resultado_insert[] = $this->modelGrupo->Upsert_grupo($retorno_tipo,  $contrato_afetar, $dados['value_limite'], $dados['id'], $dados['c_interno']);
                 }
             }
         } else {

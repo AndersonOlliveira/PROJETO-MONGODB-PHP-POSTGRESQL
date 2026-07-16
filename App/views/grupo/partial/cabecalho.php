@@ -35,14 +35,14 @@
 
     <div class="topbar-actions">
 
-        <a class="btn-top primary tacn"
-            href="/srv/srvcns.chp?tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
+        <a id="" class="btn-top primary tacn voltar_menu"
+            href="/viewGrupoEconocio"
             title="Serviços">
             <div class="lkpr">Menu de serviços</div>
 
         </a>
 
-        <a class="btn-top danger tacn"
+        <a class="btn-top danger tacn voltar_menu"
             href="/srv/srvsai.chp?tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
             title="Sair do sistema">
             <div class="lkpr">Sair</div>
