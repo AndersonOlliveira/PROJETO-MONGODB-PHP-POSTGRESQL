@@ -12,7 +12,7 @@ class GrupoEconController extends Controller
     {
         $this->process_dados = $this->Utilis('GrupoEconomico/grupoEconomicoUtilis');
 
-        $this->validaCampos = $this->Utilis('validaCampos');
+        $this->validaCampos = $this->Utilis('validaCamposEconomico');
     }
     public function index_grupo_economico()
     {
@@ -86,6 +86,48 @@ class GrupoEconController extends Controller
                 'sucesso' => true,
                 'dados'   => $retorno
             ], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function cad_clientes_limites()
+    {
+        header('Content-Type: application/json');
+
+        $dados = file_get_contents('php://input');
+        // PARA CONVERTER OS DADOS VINDO DE FORM DATA
+        $dados = json_decode($dados, true);
+
+
+        $retorno_validacao =  $this->validaCampos->validarCamposEnviado($dados);
+
+        if (isset($retorno_validacao['error'])) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $retorno_validacao['error']
+            ), 409);
+            die();
+        }
+
+
+        // $dados['value_limite'] = 0;
+
+        $retorno_processamento = $this->process_dados->process_dados_grupo($dados);
+
+        echo "<pre>";
+        echo "QUE RESULTANDO AQUI!";
+
+        print_R($retorno_processamento);
+
+        if (isset($retorno_processamento['error'])) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $retorno_processamento['error']
+            ), 409);
+            die();
         }
     }
 }

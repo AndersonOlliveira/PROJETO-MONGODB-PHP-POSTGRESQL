@@ -29,7 +29,7 @@
 <div class="row mt-4">
     <div class="col-md-8 text-center">
         <button type="submit" id="btn-incluir" class="btn btn-primary bot btn-incluir">Incluir</button>
-        <button type="submit" id="btn-desfazer" class="btn btn-primary bot btn-desfazer">Desfazer</button>
+        <button type="submit" id="btn-desfazer" class="btn btn-primary bot btn-desfazer">Limpar Filtros</button>
     </div>
 </div>
 </form>

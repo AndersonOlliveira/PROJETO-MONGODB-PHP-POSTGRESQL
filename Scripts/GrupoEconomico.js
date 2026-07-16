@@ -6,7 +6,14 @@ const App = {
     tctraut: '',
     tipo_busca_c: '',
     dados: JSON.parse(localStorage.getItem('dados_clientes')) || [], //LISTA COM O RETORNO
-    selecionados: []
+    selecionados: [],
+    tipo_button: 'radio-todos',
+    tipoSelection: 'radio-selecionado',
+    nivel_maximo: 3,
+    tipo_acao: {
+        'btn-incluir': 2,
+        'btn-desfazer': 1
+    },
 }
 
 $(document).ready(function () {
@@ -87,7 +94,6 @@ function verify_checkBox() {
 
 
     if (!selectedRadio) {
-
         toast(`Selecione ao menos uma opção!!.`, 'error');
         return false;
     } else {
@@ -224,6 +230,8 @@ $(document).ready(function () {
 
 
 
+
+
 });
 
 
@@ -348,8 +356,7 @@ function create_table() {
                     console.error(err);
                     cell.text('-');
                 });
-                // 
-                // }
+
             });
 
         }
@@ -376,14 +383,10 @@ function create_table() {
 
 function renderActions(data, type, row) {
 
-    const [textoBotao, tipo, idActiton, infoAction] = row.data_cadastro ? ['Desativar', 2, row.id, 'deativate'] : ['Remover', 1, row.id, 'bot'];
-
     return `
     <div class="acoes-cell">
-        <button type="button" class=" dt-button btn-editar"> Alterar </button> 
-        <button type="button" class="dt-button" data-tipo=${tipo} data-dados-id=${idActiton}> 
-            ${textoBotao} 
-        </button> 
+        <button type="button" class="tn-alterar dt-button btn-alterar" data-tipo="${data.rdeljactr}" > Alterar </button> 
+        <button type="button" class="btn-removers dt-button btn-remover" data-tipo="${data.rdeljactr}" >  Remover </button> 
     </div>
 `;
 
@@ -454,27 +457,65 @@ $('#cadastrar-limite').on('submit', function (e) {
     // e.stopPropagation();
     var botaoClicado = $(document.activeElement);
 
-    console.log(App.selecionados);
-
-    //pegar o tipo do checkBox
-
-    var checkBoxSelect = verify_checkBox_incluir();
-    console.log(checkBoxSelect);
-
-
     var configLimit = $('#limit_config').val();
 
+    if (!validar_campos(configLimit)) {
+
+        return;
+    }
     var clasClicado = botaoClicado.attr('class');
     var idBotao = botaoClicado.attr('id');
     var textoBotao = $(this).text();
 
+    console.info('MEU ACESSO A CHAVE', App.tipo_acao[idBotao]);
+
+    // CRIAR FUNCAO PARA REMOVER LIMPAR OS FILTROS
+    if (App.tipo_acao[idBotao] == 1) {
+
+        $('#limit_config').val('');
+        $('#radio-todos').prop('checked', false);
+        $('#radio-selecionado').prop('checked', false);
+        return;
+    }
+
+
+    console.log(App.selecionados);
+
+    //pegar o tipo do checkBox
+    var respCheck = verify_checkBox_incluir();
+    if (!respCheck) return; // verify_checkBox_incluir pode retornar false
+    var [checkBoxSelect, tipoButton] = respCheck;
+    console.log(checkBoxSelect);
+    console.log('retorno so swit', tipoButton);
+
+    if (tipoButton == App.tipoSelection) {
+        if (App.selecionados.length == 0) {
+            toast(`Selecione ao menos um checkbox !!.`, 'error');
+            return
+        }
+    }
+
+
+
+
+
     console.log('BOTÃO CLICADO:', {
-        classe: clasClicado,
-        id: idBotao,
+        // classe: clasClicado,
+        id: App.tipo_acao[idBotao],
         // texto: textoBotao
         value_limite: configLimit,
         contratos_afetar: App.selecionados
     });
+
+    const listDadosNiveis = { // classe: clasClicado,
+        id: App.tipo_acao[idBotao],
+        // texto: textoBotao
+        value_limite: configLimit,
+        contratos_afetar: App.selecionados,
+        c_interno: 417039
+    }
+
+    // insert_limite(listDadosNiveis);
 
     // Aqui você pode definir a ação baseada no botão clicado
     // if (clasClicado) {
@@ -491,12 +532,15 @@ $('input[name="incluir_contrato"]').click(function () {
         this.checked = false;
         ultimoMarcado = null;
         console.log('Botão desmarcado ....');
+        $('.select-checkbox').prop('disabled', false);
 
 
     } else {
         ultimoMarcado = this;
+        console.log('botão seleciodo pego o  id ', this.id);
         console.log('Botão marcado:', this.value);
-        // $('#inputDados').show();
+        this.id == App.tipo_button ? $('.select-checkbox').prop('disabled', true) : $('.select-checkbox').prop('disabled', false);
+        this.id == App.tipo_button ? App.selecionados = [] : App.selecionados;
     }
 
     // Só carrega a lista quando o radio está marcado (checked)
@@ -519,8 +563,6 @@ $('input[name="incluir_contrato"]').click(function () {
 function verify_checkBox_incluir() {
 
     const selectedRadio = document.querySelector('input[name="incluir_contrato"]:checked');
-
-
     if (!selectedRadio) {
 
         toast(`Selecione ao menos uma opção!!.`, 'error');
@@ -532,6 +574,196 @@ function verify_checkBox_incluir() {
 
     const opcaoSelecionada = selectedRadio.value;
 
+    console.log('QUE VALOR TENHO AQUI', selectedRadio.id);
 
-    return switchTipo(selectedRadio.id);
+
+    return [switchTipo(selectedRadio.id), selectedRadio.id];
+}
+
+function validar_campos(configLimit) {
+
+    if (configLimit == '') {
+        toast(`Campo Limite não pode ser vazio!.`, 'error');
+        return false;
+    }
+
+    if (configLimit == 0) {
+        toast(`Campo Limite não pode ter o valor 0!.`, 'error');
+        return false;
+    }
+
+    return true;
+}
+
+
+//FUNCAO PARA ENVIAR OS DADOS A API PARA INSERT 
+
+function insert_limite(listDadosNiveis) {
+
+    const playloadJson = JSON.stringify(listDadosNiveis);
+
+    $.ajax({
+        url: '/api/CadLimite',
+        type: 'POST',
+        data: playloadJson,
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso) {
+                // _atualizarEstadoLocal(id, payloadtext);
+                // toast(`${botao} salva com sucesso!`, 'success');
+                // atualizar_botao(botao);
+                //atualizar tabela
+                // ataulizar_tabela();
+
+            } else {
+                var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
+                toast('Erro ao salvar: ' + (erros || 'tente novamente'), 'error');
+                // atualizar_botao(botao);
+
+            }
+        },
+        error: function () {
+            toast('Falha de conexão ao salvar. Tente novamente.', 'error');
+            // atualizar_botao(botao);
+        },
+        complete: function () {
+
+            // atualizar_botao(botao);
+        }
+    });
+
+}
+
+
+function ataulizar_tabela() {
+
+    if ($.fn.DataTable.isDataTable("#dados_redes")) {
+        $("#dados_redes").DataTable().destroy();
+    }
+    create_table();
+}
+
+$(document).on('click', '.btn-remover', function () {
+    const tipo = $(this).data('tipo');
+    console.log('TEVE O CLICK NO BOTAO REMOVER', tipo);
+
+    const payload = {
+        id: 4,
+        value_limite: 'SEM ALTERAR',
+        contratos_afetar: [tipo],
+        c_interno: 417039
+    };
+
+    $.ajax({
+        url: '/api/CadLimite',
+        type: 'POST',
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso) {
+                toast('Limite alterado com sucesso.', 'success');
+                $tr.find('td').eq(4).text(newValue);
+                cancelEditRow($tr, false);
+            } else {
+                const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
+                toast('Erro ao alterar: ' + (erros || 'tente novamente'), 'error');
+            }
+        },
+        error: function () {
+            toast('Falha de conexão ao enviar a alteração.', 'error');
+        }
+    });
+});
+
+
+
+$(document).on('click', '.btn-alterar', function () {
+    const tipo = $(this).data('tipo');
+    const $tr = $(this).closest('tr');
+    const rowData = tabela_indicadores.row($tr).data(); // PEGO AS ROW PARA LIBERAR 
+    console.log('TEVE O CLICK NO BOTAO ALTERAR', tipo);
+
+    const $editingRow = $('#dados_redes tbody tr.editing');
+    console.log($editingRow);
+    if ($editingRow.length && !$editingRow.is($tr)) {
+        cancelEditRow($editingRow);
+    }
+
+    if ($tr.hasClass('editing')) {
+        return;
+    }
+
+    const $limitCell = $tr.find('td').eq(4);
+    const originalLimit = $limitCell.text().trim();
+    const currentLimit = originalLimit === '-' || originalLimit === 'Carregando!...' ? '' : originalLimit;
+
+    $tr.data('original-limit', originalLimit);
+    $tr.addClass('editing');
+
+    $limitCell.html(`<input type="number" min="1" class="form-control input-limite" value="${currentLimit}" style="width: 100px;">`);
+    $(this).closest('td').html(`
+        <div class="acoes-cell">
+            <button type="button" class="dt-button btn-save-limite" data-tipo="${tipo}">Salvar</button>
+            <button type="button" class="dt-button btn-cancel-limite" data-tipo="${tipo}">Cancelar</button>
+        </div>
+    `);
+});
+
+$(document).on('click', '.btn-cancel-limite', function () {
+    const $tr = $(this).closest('tr');
+    cancelEditRow($tr);
+});
+
+$(document).on('click', '.btn-save-limite', function () {
+    const $tr = $(this).closest('tr');
+    const rowData = tabela_indicadores.row($tr).data();
+    const newValue = $tr.find('.input-limite').val();
+
+    if (newValue === '') {
+        toast('Informe um valor numérico para alterar.', 'error');
+        return;
+    }
+    if (Number(newValue) <= 0) {
+        toast('O valor deve ser maior que zero.', 'error');
+        return;
+    }
+
+    const payload = {
+        id: 5,
+        value_limite: newValue,
+        contratos_afetar: [rowData.rdeljactr],
+        c_interno: 417039
+    };
+
+    $.ajax({
+        url: '/api/CadLimite',
+        type: 'POST',
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.sucesso) {
+                toast('Limite alterado com sucesso.', 'success');
+                $tr.find('td').eq(4).text(newValue);
+                cancelEditRow($tr, false);
+            } else {
+                const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
+                toast('Erro ao alterar: ' + (erros || 'tente novamente'), 'error');
+            }
+        },
+        error: function () {
+            toast('Falha de conexão ao enviar a alteração.', 'error');
+        }
+    });
+});
+
+function cancelEditRow($tr, restoreAction = true) {
+    const originalLimit = $tr.data('original-limit') ?? '-';
+    const rowData = tabela_indicadores.row($tr).data();
+    $tr.find('td').eq(4).text(originalLimit);
+    if (restoreAction) {
+        $tr.find('td').last().html(renderActions(rowData, null, rowData));
+    }
+    $tr.removeData('original-limit').removeClass('editing');
 }
