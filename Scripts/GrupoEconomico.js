@@ -704,14 +704,30 @@ $(document).on('click', '.btn-remover', function () {
     var botaoClicado = $(document.activeElement);
     var idBotao = botaoClicado.attr('id');
 
-    const payload = {
-        idAcao: App.tipo_acao[idBotao],
-        value_limite: 'SEM_ALTERAR',
-        contratos_afetar: [tipo],
-        c_interno: App.tctrid,
-        tctrid: App.tctrid,
-        tctraut: App.tctraut
-    };
+
+    notification_alert().then((aceite) => {
+        if (aceite) {
+            console.log('Liberar envio do formulário');
+            // forms_submit(list);
+            const payload = {
+                idAcao: App.tipo_acao[idBotao],
+                value_limite: 'SEM_ALTERAR',
+                contratos_afetar: [tipo],
+                c_interno: App.tctrid,
+                tctrid: App.tctrid,
+                tctraut: App.tctraut
+            };
+
+            // forms_action(payload);
+        } else {
+            console.log('Cancelado, não faz nada');
+        }
+    });
+
+
+});
+
+function forms_action(payload) {
 
     $.ajax({
         url: '/api/CadLimite',
@@ -734,10 +750,92 @@ $(document).on('click', '.btn-remover', function () {
             toast('Falha de conexão ao enviar a alteração.', 'error');
         }
     });
-});
+}
 
+function notification_alert() {
+    return swal({
+        title: "Aviso Importante",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: `
+                    Você tem a certeza que deseja remover a configuração desse contrato?`
+            }
+        },
 
+        icon: "warning",
+        buttons: ["Cancelar", "Sim, concordo"],
+        dangerMode: true,
+        closeOnClickOutside: false,
+        closeOnEsc: false
+    }).then((willAceite) => {
+        if (willAceite) {
+            console.log('MEU ACEITE');
+            swal({
+                content: {
+                    element: "div",
 
+                    attributes: {
+                        innerHTML: `Solicitação envida!`,
+
+                    }
+                },
+                icon: "success",
+                button: "OK",
+                customClass: {
+                    popup: 'bot'
+                },
+                closeOnClickOutside: false,
+                closeOnEsc: false
+            });
+            return true;
+        } else {
+            info_alerts("Nenhuma ação a ser tomada!");
+            return false;
+        }
+    });
+}
+
+function info_alerts(msg) {
+    swal({
+        title: "Atenção",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: `${msg}`
+            }
+        },
+        icon: "warning",
+        button: "OK"
+    });
+    setTimeout(() => {
+        const m = document.querySelector('.swal-modal');
+
+        const icon = document.querySelector('.swal-icon--warning');
+        if (icon) {
+            icon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 28" 
+                    width="26" height="26" fill="white">
+                    <rect x="9" y="1" width="6" height="16" rx="2"/>
+                    <rect x="9" y="20" width="6" height="7" rx="2"/>
+                </svg>`;
+            icon.style.cssText = `
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background: #B67F11 !important;
+                border: none !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                margin: 0;
+            `;
+        }
+    }, 10);
+}
 $(document).on('click', '.btn-alterar', function () {
     const tipo = $(this).data('tipo');
     const $tr = $(this).closest('tr');

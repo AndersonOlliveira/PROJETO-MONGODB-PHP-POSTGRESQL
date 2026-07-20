@@ -30,10 +30,7 @@ class grupoEconomicoUtilis extends Controller
 
 
     public function search($dados)
-    {
-
-
-        extract($dados);
+    { extract($dados);
 
 
         return $this->modelGrupo->lista_rde_loja($c_cliente_search, $tipo_busca);

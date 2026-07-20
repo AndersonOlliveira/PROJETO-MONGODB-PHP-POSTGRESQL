@@ -94,6 +94,7 @@ class GrupoEconomico extends Model
             } else {
                 $stmt->bindParam(':rede', $c_rede, PDO::PARAM_INT);
             }
+
             if ($stmt->execute()) {
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
