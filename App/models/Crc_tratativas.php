@@ -771,7 +771,7 @@ class Crc_tratativas extends Model
     }
 
 
-    public function registrarOcorrencia($cliId, $tpos, $descricao, $nome)
+    public function registrarOcorrencia($cliId, $tpos, $descricao, $registrarOcorrencia)
     {
 
         $sql = "INSERT INTO public.cliocr(

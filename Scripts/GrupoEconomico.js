@@ -10,10 +10,14 @@ const App = {
     tipo_button: 'radio-todos',
     tipoSelection: 'radio-selecionado',
     nivel_maximo: 3,
+    tipo_selecionados_: 1,
     tipo_acao: {
         'btn-incluir': 2,
-        'btn-desfazer': 1
+        'btn-desfazer': 1,
+        'btn-remover': 4,
+        'btn-save-limite': 5
     },
+    tipo_acao_radio_todos: 3
 }
 
 $(document).ready(function () {
@@ -28,11 +32,15 @@ $(document).ready(function () {
     //INICIA O CAMPO ESCODINDO
     $('#n_clientes').hide();
 
+    $('.info_notification').text(8);
     //INICIO A VARIAVEL 
     App.tctrid = $("#d-id").val();
     App.tctraut = $("#d-tctraut").val();
 
+
 });
+
+
 
 let ultimoMarcado = null;
 // TRATAR O CHECKBOX PARA LIMPAR 
@@ -79,12 +87,24 @@ $('#pesquisar').submit(function (event) {
 
     const [resultCheckd, tipo_selecionado] = verify_checkBox();
 
-
-    console.log(resultCheckd, 'QUE RESULTADO TENHO AQUI DO CHECKBOX');
+    let c_cliente_search;
+    switch (tipo_selecionado) {
+        case 1: // Pesquisar por contrato
+            c_cliente_search = $('#inputDados').val();
+            break;
+        case 5: // Pesquisar por Cod. por pesquisa dos clientes
+            c_cliente_search = $('#n_clientes').val();
+            break;
+        case 2: // Pesquisar por Cod. Rede
+            c_cliente_search = $('#inputDados').val();;
+            break;
+        default:
+            c_cliente_search = null;
+    }
     const list = {
         ctr: App.tctrid, //CONTRATO LOGADO
         tcrt: App.tctraut,
-        c_cliente_search: tipo_selecionado == 1 ? $('#n_clientes').val() : $('#inputDados').val(),
+        c_cliente_search: c_cliente_search,
         tipo_busca: App.tipo_busca_c
     }
 
@@ -139,7 +159,7 @@ function switchTipo(statusLimpo) {
             break;
 
         case 'n_cliente':
-            classe = 1; //CLIENTE SELECT 
+            classe = 5; //CLIENTE SELECT 
             break;
         case 'radio-todos':
             classe = 3;
@@ -240,10 +260,7 @@ $(document).ready(function () {
     //monta a tabela
     create_table();
 
-
-
-
-
+    ocultar_alerta();
 });
 
 
@@ -272,19 +289,19 @@ function create_table() {
             topEnd: [{
                 buttons: [
                     'excel',
-                    {
-                        text: 'Marcar todos',
-                        action: function () {
+                    // {
+                    //     text: 'Marcar todos',
+                    //     action: function () {
 
-                            tabela_indicadores.rows().nodes().to$().find('input[type="checkbox"]').each(function () {
+                    //         tabela_indicadores.rows().nodes().to$().find('input[type="checkbox"]').each(function () {
 
-                                console.log($(this)).val();
-                                App.selecionados.push($(this).val());
-                            });
+                    //             console.log($(this)).val();
+                    //             App.selecionados.push($(this).val());
+                    //         });
 
-                            console.log(App.selecionados);
-                        }
-                    }
+                    //         console.log(App.selecionados);
+                    //     }
+                    // }
                 ]
             }],
         },
@@ -357,16 +374,22 @@ function create_table() {
                 // $('#process_id').val(row.processo_id);
 
                 get_limit_contrato(row.rdeljactr).then(dados => {
-                    if (dados == null || dados === '') {
+                    const actionCell = $(this.node()).find('td').eq(5);
+                    const isEmptyLimit = dados == null || dados === '' || dados === 'VAZIO' || dados === '-';
+
+                    if (isEmptyLimit) {
                         cell.text('-');
+                        actionCell.find('.acoes-cell').hide();
                         return;
                     }
 
                     cell.html(dados);
+                    actionCell.find('.acoes-cell').show();
 
                 }).catch(err => {
                     console.error(err);
                     cell.text('-');
+                    $(this.node()).find('td').eq(5).find('.acoes-cell').hide();
                 });
 
             });
@@ -398,7 +421,7 @@ function renderActions(data, type, row) {
     return `
     <div class="acoes-cell">
         <button type="button" class="tn-alterar dt-button btn-alterar" data-tipo="${data.rdeljactr}" > Alterar </button> 
-        <button type="button" class="btn-removers dt-button btn-remover" data-tipo="${data.rdeljactr}" >  Remover </button> 
+        <button type="button" id="btn-remover" class="btn-removers dt-button btn-remover" data-tipo="${data.rdeljactr}" >  Remover </button> 
     </div>
 `;
 
@@ -508,7 +531,7 @@ $('#cadastrar-limite').on('submit', function (e) {
 
     }
     //SE O CHECKBOX FOR MARCADO PARA INCLUIR A TODOS ELE VAI PERCORRE A TABELA PARA COLOCAR OS DADOS DENTRO DO APP.SELECIONADOS
-    if (checkBoxSelect == 3) {
+    if (checkBoxSelect == App.tipo_acao_radio_todos) {
         App.selecionados = [];
         tabela_indicadores.rows().nodes().to$().find('input.select-checkbox').each(function () {
             const $row = $(this).closest('tr');
@@ -522,9 +545,6 @@ $('#cadastrar-limite').on('submit', function (e) {
     }
 
 
-
-
-
     console.log('BOTÃO CLICADO:', {
         // classe: clasClicado,
         id: App.tipo_acao[idBotao],
@@ -534,14 +554,16 @@ $('#cadastrar-limite').on('submit', function (e) {
     });
 
     const listDadosNiveis = { // classe: clasClicado,
-        id: App.tipo_acao[idBotao],
+        idAcao: App.tipo_acao[idBotao],
         // texto: textoBotao
         value_limite: configLimit,
         contratos_afetar: App.selecionados,
-        c_interno: 417039
+        c_interno: App.tctrid,
+        tctrid: App.tctrid,
+        tctraut: App.tctraut
     }
 
-    // insert_limite(listDadosNiveis);
+    insert_limite(listDadosNiveis);
 
     // Aqui você pode definir a ação baseada no botão clicado
     // if (clasClicado) {
@@ -557,6 +579,7 @@ $('input[name="incluir_contrato"]').click(function () {
     if (ultimoMarcado === this) {
         this.checked = false;
         ultimoMarcado = null;
+        App.selecionados = [];
         console.log('Botão desmarcado ....');
         $('.select-checkbox').prop('disabled', false);
 
@@ -565,6 +588,7 @@ $('input[name="incluir_contrato"]').click(function () {
         ultimoMarcado = this;
         console.log('botão seleciodo pego o  id ', this.id);
         console.log('Botão marcado:', this.value);
+        App.selecionados = [];
         this.id == App.tipo_button ? $('.select-checkbox').prop('disabled', true) : $('.select-checkbox').prop('disabled', false);
         this.id == App.tipo_button ? App.selecionados = [] : App.selecionados;
     }
@@ -631,6 +655,7 @@ function validar_campos(configLimit) {
 function insert_limite(listDadosNiveis) {
 
     const playloadJson = JSON.stringify(listDadosNiveis);
+    limpar_alerts();
 
     $.ajax({
         url: '/api/CadLimite',
@@ -640,10 +665,11 @@ function insert_limite(listDadosNiveis) {
         success: function (resp) {
             if (resp.sucesso) {
                 // _atualizarEstadoLocal(id, payloadtext);
-                // toast(`${botao} salva com sucesso!`, 'success');
-                // atualizar_botao(botao);
-                //atualizar tabela
-                // ataulizar_tabela();
+                toast(`Processos realizado!`, 'success');
+                ataulizar_tabela();
+                apresentar_alerts(resp.dados.info_process);
+                show_alerta();
+                // console.log(resp.dados.info_process);
 
             } else {
                 var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
@@ -675,13 +701,16 @@ function ataulizar_tabela() {
 
 $(document).on('click', '.btn-remover', function () {
     const tipo = $(this).data('tipo');
-    console.log('TEVE O CLICK NO BOTAO REMOVER', tipo);
+    var botaoClicado = $(document.activeElement);
+    var idBotao = botaoClicado.attr('id');
 
     const payload = {
-        id: 4,
-        value_limite: 'SEM ALTERAR',
+        idAcao: App.tipo_acao[idBotao],
+        value_limite: 'SEM_ALTERAR',
         contratos_afetar: [tipo],
-        c_interno: 417039
+        c_interno: App.tctrid,
+        tctrid: App.tctrid,
+        tctraut: App.tctraut
     };
 
     $.ajax({
@@ -695,6 +724,7 @@ $(document).on('click', '.btn-remover', function () {
                 toast('Limite alterado com sucesso.', 'success');
                 $tr.find('td').eq(4).text(newValue);
                 cancelEditRow($tr, false);
+                ataulizar_tabela();
             } else {
                 const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
                 toast('Erro ao alterar: ' + (erros || 'tente novamente'), 'error');
@@ -734,7 +764,7 @@ $(document).on('click', '.btn-alterar', function () {
     $limitCell.html(`<input type="number" min="1" class="form-control input-limite" value="${currentLimit}" style="width: 100px;">`);
     $(this).closest('td').html(`
         <div class="acoes-cell">
-            <button type="button" class="dt-button btn-save-limite" data-tipo="${tipo}">Salvar</button>
+            <button type="button" id="btn-save-limite" class="dt-button btn-save-limite" data-tipo="${tipo}">Salvar</button>
             <button type="button" class="dt-button btn-cancel-limite" data-tipo="${tipo}">Cancelar</button>
         </div>
     `);
@@ -747,6 +777,8 @@ $(document).on('click', '.btn-cancel-limite', function () {
 
 $(document).on('click', '.btn-save-limite', function () {
     const $tr = $(this).closest('tr');
+    var botaoClicado = $(document.activeElement);
+    var idBotao = botaoClicado.attr('id');
     const rowData = tabela_indicadores.row($tr).data();
     const newValue = $tr.find('.input-limite').val();
 
@@ -760,10 +792,12 @@ $(document).on('click', '.btn-save-limite', function () {
     }
 
     const payload = {
-        id: 5,
+        idAcao: App.tipo_acao[idBotao],
         value_limite: newValue,
         contratos_afetar: [rowData.rdeljactr],
-        c_interno: 417039
+        c_interno: App.tctrid,
+        tctrid: App.tctrid,
+        tctraut: App.tctraut
     };
 
     $.ajax({
@@ -776,6 +810,7 @@ $(document).on('click', '.btn-save-limite', function () {
             if (resp.sucesso) {
                 toast('Limite alterado com sucesso.', 'success');
                 $tr.find('td').eq(4).text(newValue);
+                ataulizar_tabela();
                 cancelEditRow($tr, false);
             } else {
                 const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
@@ -788,6 +823,31 @@ $(document).on('click', '.btn-save-limite', function () {
     });
 });
 
+function apresentar_alerts(infos) {
+
+    document.getElementById('notificationButton').addEventListener('click', () => {
+        // Atualiza badge
+        document.getElementById('notificationCount').textContent = infos.length;
+
+        // Atualiza lista
+        const list = document.getElementById('notificationList');
+        list.innerHTML = '';
+        infos.forEach(n => {
+
+            const item = document.createElement('a');
+            item.className = 'dropdown-item';
+            item.textContent = n.message ? n.message : (n.mensagem ? n.mensagem : (typeof n === 'string' ? n : JSON.stringify(n)));
+            list.appendChild(item);
+        });
+    });
+}
+
+function limpar_alerts() {
+
+    document.getElementById('notificationList').innerHTML = '';
+    document.getElementById('notificationCount').textContent = 0;
+}
+
 function cancelEditRow($tr, restoreAction = true) {
     const originalLimit = $tr.data('original-limit') ?? '-';
     const rowData = tabela_indicadores.row($tr).data();
@@ -796,4 +856,15 @@ function cancelEditRow($tr, restoreAction = true) {
         $tr.find('td').last().html(renderActions(rowData, null, rowData));
     }
     $tr.removeData('original-limit').removeClass('editing');
+}
+
+
+function ocultar_alerta() {
+    $('#notificationButton').hide();
+
+}
+
+function show_alerta() {
+    $('#notificationButton').show();
+
 }

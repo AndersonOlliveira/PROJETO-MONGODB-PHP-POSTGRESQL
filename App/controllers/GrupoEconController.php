@@ -58,6 +58,15 @@ class GrupoEconController extends Controller
                 'rota' => 'viewDadosGrupo',
                 'dados'   => $retorno
             ], JSON_UNESCAPED_UNICODE);
+        } else {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 0,
+                'sucesso' => false,
+
+                'dados'   => 'Falha em localizar dados informados!!'
+            ], JSON_UNESCAPED_UNICODE);
         }
     }
     public function search_clientes_limites()
@@ -97,6 +106,18 @@ class GrupoEconController extends Controller
         // PARA CONVERTER OS DADOS VINDO DE FORM DATA
         $dados = json_decode($dados, true);
 
+        $dados_enviados = $this->validaCampos->dadosVeficar($dados);
+        if (isset($dados_enviados['error'])) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $dados_enviados['error']
+            ), 409);
+            die();
+        }
+
+
 
         $retorno_validacao =  $this->validaCampos->validarCamposEnviado($dados);
 
@@ -110,15 +131,7 @@ class GrupoEconController extends Controller
             die();
         }
 
-
-        // $dados['value_limite'] = 0;
-
         $retorno_processamento = $this->process_dados->process_dados_grupo($dados);
-
-        echo "<pre>";
-        echo "QUE RESULTANDO AQUI!";
-
-        print_R($retorno_processamento);
 
         if (isset($retorno_processamento['error'])) {
             header('Content-Type: application/json');
@@ -126,6 +139,25 @@ class GrupoEconController extends Controller
                 'status' => 0,
                 'sucesso' => false,
                 'dados' => $retorno_processamento['error']
+            ), 409);
+            die();
+        }
+
+
+        if (isset($retorno_processamento['info'])) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 2,
+                'sucesso' => true,
+                'dados'   => $retorno_processamento
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'status' => 0,
+                'sucesso' => false,
+                'dados' => $retorno_processamento
             ), 409);
             die();
         }

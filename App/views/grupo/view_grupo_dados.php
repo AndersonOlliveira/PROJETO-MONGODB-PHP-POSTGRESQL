@@ -1,6 +1,34 @@
 <?php require_once('partial/cabecalho.php') ?>
 
 
+<!-- <button type="button" class="btn btn-primary notification_alerts"> -->
+
+<!-- <div class="row">
+    <div class="col-12 col-md-8">.col-12 .col-md-8</div>
+    <div class="col-6 col-md-4">.col-6 .col-md-4</div>
+</div> -->
+<!-- <div class="container-input">
+    <div class="profile-button dt-button">
+        <button type="button" class="bot" id="notificationButton">
+            <img src="../img/alerts.svg" alt="Descrição da imagem" width="30" height="30">
+            <span class="badge badge-light info_notification" id="notificationCount">0</span>
+        </button>
+    </div>
+</div> -->
+<div class="profile-button dropdown">
+    <button
+        type="button"
+        class="bot dropdown-toggle"
+        id="notificationButton"
+        data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="../img/alerts.svg" width="30" height="30">
+        <span class="badge badge-light info_notification" id="notificationCount" width="30" height="30">0</span>
+    </button>
+    <div class="dropdown-menu dropdown-menu-right" id="notificationList" aria-labelledby="notificationButton">
+
+    </div>
+</div>
+
 
 <!-- SE FOR REDE LIBERA OS OPTIONS ABAIXO -->
 <div class="container-input">
@@ -27,7 +55,7 @@
     </div>
 </div>
 <div class="row mt-4">
-    <div class="col-md-8 text-center">
+    <div class="col-md-12 text-center">
         <button type="submit" id="btn-incluir" class="btn btn-primary bot btn-incluir">Incluir</button>
         <button type="submit" id="btn-desfazer" class="btn btn-primary bot btn-desfazer">Limpar Filtros</button>
     </div>

@@ -1,4 +1,6 @@
 <?php
+
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -15,6 +17,9 @@ class grupoEconomicoUtilis extends Controller
     ##[Override]
     public function __construct()
     {
+
+        require_once __DIR__ . '/AuxiliaresGrupo.php';
+
         require_once __DIR__ . '../../../models/grupoEconomico/grupoEconomico.php';
         $this->modelGrupo = new grupoEconomico();
 
@@ -38,63 +43,78 @@ class grupoEconomicoUtilis extends Controller
         return $this->modelGrupo->nivel_cliente_grupo($contrato);
     }
 
-    public function process_dados_grupo($dados)
-    {
 
-        $retorno_tipo = $this->functionsGrupo->getDados_tabela_grupo($dados['id']);
+    public function process_dados_grupo_OLD($dados)
+    {
+        $retorno_tipo = $this->functionsGrupo->getDados_tabela_grupo($dados['idAcao']);
 
         if (isset($retorno_tipo['error'])) {
             return $retorno_tipo;
         }
 
-
-        $dados['value_limite'] = 2;
-        $retorno_value = $this->functionsGrupo->validar_campo_limite($dados['value_limite']);
-
-        if (isset($retorno_value['error'])) {
-            return $retorno_value;
+        // Valida limite apenas se não for ação de "limite null"
+        if ($dados['idAcao'] != AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE_NULL) {
+            $retorno_value = $this->functionsGrupo->validar_campo_limite($dados['value_limite']);
+            if (isset($retorno_value['error'])) {
+                return $retorno_value;
+            }
         }
-        $resultado_insert = [];
+
         $retorno_busca = [];
+        $resultados = [];
         $localizado = false;
-        // $dados['contratos_afetar'] = [];
 
 
 
-        // VERIFICAR SE JÁ TEM CONFIGURAÇÃO PARA  O CONTRATOR 
         if (is_array($dados['contratos_afetar']) && !empty($dados['contratos_afetar'])) {
-            print_r($dados['id']);
-            foreach ($dados['contratos_afetar'] as $key => $contrato_afetar) {
+            foreach ($dados['contratos_afetar'] as $contrato_afetar) {
 
                 $retorno_busca_nivel = $this->modelGrupo->nivel_cliente_grupo($contrato_afetar);
 
-                // Se já existe, adiciona em existentes
-                if (isset($retorno_busca_nivel[0]) && !empty($retorno_busca_nivel[0])) {
+                // Caso já exista limite cadastrado
+                if (isset($retorno_busca_nivel[0]) && $retorno_busca_nivel[0] == AuxiliaresGrupo::VALIDAR_CAMPO_LIMITE) {
                     $retorno_busca[] = [
                         'contrato' => $contrato_afetar,
                         'nivel' => true
                     ];
                     $localizado = true;
 
-                    if ($localizado && $dados['id'] == 5) {
+                    // Se ação for atualizar, permite alteração
+                    if (
+                        $dados['idAcao'] == AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE
+                        || $dados['idAcao'] == AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE_NULL
+                    ) {
 
-                        echo "TENHO O RESULTADO TRUE AQUI!!\n";
-                        $resultado_insert[] = $this->modelGrupo->Upsert_grupo($retorno_tipo,  $contrato_afetar, $dados['value_limite'], $dados['id'], $dados['c_interno']);
+                        $resultados[] = $this->modelGrupo->Upsert_grupo(
+                            $retorno_tipo,
+                            $contrato_afetar,
+                            $dados['value_limite'],
+                            $dados['idAcao'],
+                            $dados['c_interno']
+                        );
+                    } else {
+                        // Se ação for inserir, mas já existe, retorna erro
+                        $resultados[] = [
+                            'error' => true,
+                            'message' => "Contrato {$contrato_afetar} já possui limite cadastrado. Utilize a opção alterar."
+                        ];
                     }
-
-                    if ($localizado && $dados['id'] == 4) {
-
-                        echo "TENHO O RESULTADO TRUE AQUI!!\n";
-                        $resultado_insert[] = $this->modelGrupo->Upsert_grupo($retorno_tipo,  $contrato_afetar, $dados['value_limite'], $dados['id'], $dados['c_interno']);
+                } else {
+                    // Caso não exista limite e ação seja inserir
+                    if ($dados['idAcao'] == AuxiliaresGrupo::TIPO_INSERIR_TODOS) {
+                        $resultados[] = $this->modelGrupo->Upsert_grupo(
+                            $retorno_tipo,
+                            $contrato_afetar,
+                            $dados['value_limite'],
+                            $dados['idAcao'],
+                            $dados['c_interno']
+                        );
                     }
-                    continue;
                 }
-                // Se não existe, insere/ e guarda o resultado
-                if (!$localizado) {
-                    echo "<pre>";
-                    echo "saiu aqui!!";
-                    $resultado_insert[] = $this->modelGrupo->Upsert_grupo($retorno_tipo,  $contrato_afetar, $dados['value_limite'], $dados['id'], $dados['c_interno']);
-                }
+
+                // if($resultados){
+
+                // }
             }
         } else {
             return [
@@ -105,7 +125,95 @@ class grupoEconomicoUtilis extends Controller
 
         return [
             'existentes' => $retorno_busca,
-            'inseridos' => $resultado_insert
+            'info_process' => $resultados,
+            'info' => !empty($resultados)
+        ];
+    }
+    public function process_dados_grupo($dados)
+    {
+        $retorno_tipo = $this->functionsGrupo->getDados_tabela_grupo($dados['idAcao']);
+        if (isset($retorno_tipo['error'])) {
+            return $retorno_tipo;
+        }
+
+        // Valida limite apenas se não for ação de atualizar limite null
+        if ($dados['idAcao'] != AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE_NULL) {
+            $retorno_value = $this->functionsGrupo->validar_campo_limite($dados['value_limite']);
+            if (isset($retorno_value['error'])) {
+                return $retorno_value;
+            }
+        }
+
+
+        $resultados = [];
+        $existentes = [];
+
+        if (is_array($dados['contratos_afetar']) && !empty($dados['contratos_afetar'])) {
+            foreach ($dados['contratos_afetar'] as $contrato_afetar) {
+
+                $retorno_busca_nivel = $this->modelGrupo->nivel_cliente_grupo($contrato_afetar);
+
+                // Caso não exista nenhum registro → INSERIR
+                if ($retorno_busca_nivel === false) {
+                    $resultados[] = $this->modelGrupo->Upsert_grupo(
+                        $retorno_tipo,
+                        $contrato_afetar,
+                        $dados['value_limite'],
+                        $dados['idAcao'],
+                        $dados['c_interno']
+                    );
+                    continue;
+                }
+
+                // Se existe mas está vazio → pode atualizar
+                if ($retorno_busca_nivel[0]['nivel_atual'] === AuxiliaresGrupo::VALIDAR_CAMPO_LIMITE) {
+
+                    $resultados[] = $this->modelGrupo->Upsert_grupo(
+                        $this->functionsGrupo->getDados_tabela_grupo(AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE),
+                        $contrato_afetar,
+                        $dados['value_limite'],
+                        AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE,
+                        $dados['c_interno']
+                    );
+                    continue;
+                }
+
+                if ($dados['idAcao'] != AuxiliaresGrupo::TIPO_INSERIR_TODOS) {
+                    switch ($dados['idAcao']) {
+                        case AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE:
+                        case AuxiliaresGrupo::TIPO_ATUALIZAR_LIMITE_NULL:
+                            $resultados[] = $this->modelGrupo->Upsert_grupo(
+                                $retorno_tipo,
+                                $contrato_afetar,
+                                $dados['value_limite'],
+                                $dados['idAcao'],
+                                $dados['c_interno']
+                            );
+                            break;
+                    }
+                }
+
+                // Se já existe e está preenchido → não pode alterar
+                $existentes[] = [
+                    'contrato' => $contrato_afetar,
+                    'nivel' => $retorno_busca_nivel[0]['nivel_atual']
+                ];
+                $resultados[] = [
+                    'error' => true,
+                    'message' => "Contrato {$contrato_afetar} já possui limite cadastrado ({$retorno_busca_nivel[0]['nivel_atual']}). Utilize a opção alterar."
+                ];
+            }
+        } else {
+            return [
+                'error' => true,
+                'message' => 'contratos está vazio ou não é um array'
+            ];
+        }
+
+        return [
+            'existentes' => $existentes,
+            'info_process' => $resultados,
+            'info' => !empty($resultados)
         ];
     }
 }

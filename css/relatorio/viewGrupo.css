@@ -47,6 +47,26 @@
       margin-top: 20px;
       justify-content: center;
 
+
+  }
+
+  .profile-button {
+      margin-left: auto;
+      /* empurra o botão para o canto direito */
+  }
+
+  .profile-button {
+      top: 10px;
+      right: 10px;
+      padding-right: 10px
+  }
+
+  .profile-button {
+      justify-self: end;
+  }
+
+  .info_notification {
+      color: red;
   }
 
   .minha-div {

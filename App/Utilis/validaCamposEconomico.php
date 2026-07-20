@@ -80,16 +80,19 @@ class validaCamposEconomico
 
     public static function validarParametrosDados($parametros, $chaves)
     {
+
+        //CHAVES VE EM CHAVES
         $dadosError = [];
-
         foreach ($chaves as $chave) {
-
-            if (!array_key_exists($chave, $parametros)) {
+        
+        
+        if (!array_key_exists($chave, $parametros)) {
                 $dadosError[] = "$chave nao foi informado!";
                 continue;
             }
 
-            $parametros[$chave] = trim(strip_tags((string)$parametros[$chave]));
+            // Sanitize string values; if value is array keep structure and sanitize strings recursively
+            $parametros[$chave] = self::sanitizeValue($parametros[$chave]);
         }
 
         if (!empty($dadosError)) {
@@ -117,7 +120,7 @@ class validaCamposEconomico
     public function dadosVeficar($dados)
     {
         // $parametros =  ["idAcao", "tctrid", "status", 'id', 'tctraut'];
-        $parametros =  ["idAcao", "value_limite", "contratos_afetar"];
+        $parametros =  ["idAcao", "value_limite", "contratos_afetar", "c_interno"];
 
         $parametros = self::validarParametrosDados($dados, $parametros);
 
@@ -131,10 +134,27 @@ class validaCamposEconomico
                 return ["error" => "$chave nao foi informado!"];
             }
 
-            $parametros[$chave] = trim(strip_tags($parametros[$chave]));
+            $parametros[$chave] = self::sanitizeValue($parametros[$chave]);
         }
 
         return $parametros;
+    }
+
+    // Recursively sanitize a value: if string -> strip tags and trim; if array -> recurse
+    private static function sanitizeValue($value)
+    {
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                $value[$k] = self::sanitizeValue($v);
+            }
+            return $value;
+        }
+
+        if (is_string($value) || is_numeric($value)) {
+            return trim(strip_tags((string)$value));
+        }
+
+        return $value;
     }
 
     public function getDados_tabela_grupo(int $tipo): array
