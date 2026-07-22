@@ -844,7 +844,8 @@ class Kpiindicadores extends Model
 
         $sql = "SELECT cliid,clinomraz  FROM 
                  cli, ctr 
-                 WHERE cliid = ctrcli AND cliatv = 'S' AND ctratv = 'S' AND ctrint = 'N'
+                 --WHERE cliid = ctrcli AND cliatv = 'S' AND ctratv = 'S' AND ctrint = 'N'
+                  WHERE cliid = ctrcli AND cliatv = 'S' AND ctratv = 'S'
                  GROUP BY cliid,clinomraz";
 
         try {

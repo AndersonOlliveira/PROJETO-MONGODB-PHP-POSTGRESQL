@@ -9,6 +9,7 @@
     <link href="../../../css/bootstrap/docs.css" rel="stylesheet">
     <link href="../../../css/flatpickr/flatpickr.min.css" rel="stylesheet">
     <link href="../../../css/select/select2.min.css" rel="stylesheet">
+    <link href="./../../css/jquery/jquery-ui.min.css" rel="stylesheet">
     <link href="../../../css/Relatorio/viewGrupo.css?v= <?= time(); ?>" rel="stylesheet">
 </head>
 <?php $tctrid = isset($_GET['tctrid']) ? $_GET['tctrid'] : 417039; ?>

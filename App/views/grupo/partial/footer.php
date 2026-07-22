@@ -1,4 +1,5 @@
 <script type="text/javascript" src="../../../Scripts/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../../Scripts/jquery/jquery-ui.min.js"></script>
 
 <!-- SELECT BIBLIOTECA -->
 <script type="text/javascript" src="../../../Scripts/select/select2.min.js"></script>

@@ -175,13 +175,17 @@ function switchTipo(statusLimpo) {
     return classe;
 }
 
-
 // LISTA DE CLIENTES
 function get_lista_cliente() {
 
     $.ajax({
-        url: '/api/ListCliente',
+        url: '../kpi/kpiindicadores.chp?r=ListCliente',
+        data: {
+            'tctrid': App.tctrid,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
+
         dataType: 'json',
         success: function (resp) {
             if (resp.status == 2) {
@@ -189,27 +193,85 @@ function get_lista_cliente() {
                 const dados = resp.dados.map(function (item) {
                     return {
                         id: item.ctrid,
-                        text: item.clinomraz
+                        label: item.clinomraz,
+                        value: item.clinomraz
                     };
                 });
 
+                $("#n_clientes").autocomplete({
+                    source: dados,
+                    minLength: 2,
+                    select: function (event, ui) {
 
-                if ($('#n_clientes').hasClass("select2-hidden-accessible")) {
-                    $('#n_clientes').select2('destroy');
-                }
+                        $(this).val(ui.item.value);
+
+                        // Grava o ID na memória do jQuery (data-selected-id)
+                        $(this).data('selected-id', ui.item.id);
+
+                        // Opcional: Atualiza o atributo visualmente no HTML (para inspeção)
+                        $(this).attr('data-selected-id', ui.item.id);
 
 
-                $('#n_clientes').html('<option></option>');
-
-
-                $('#n_clientes').select2({
-                    placeholder: 'Selecione um cliente',
-                    width: '100%',
-                    data: dados
+                        return false;
+                    }
                 });
+
+
+                // // 2. Seleciona o elemento datalist e limpa buscas anteriores
+                // const $datalist = $('#clientes-list');
+                // $datalist.empty();
+
+                // // 3. Alimenta o datalist com os novos dados recebidos
+                // dados.forEach(function (cliente) {
+                //     // Armazenamos o ID no atributo data-id para recuperar depois
+                //     $datalist.append(`<option data-id="${cliente.id}" value="${cliente.text}">`);
+                // });
+
+
+                // if ($('#n_clientes').hasClass("select2-hidden-accessible")) {
+                //     $('#n_clientes').select2('destroy');
+                // }
+
+                // $('#n_clientes').html('<option></option>');
+
+                // $('#n_clientes').select2({
+                //     placeholder: "Selecione o cliente",
+                //     width: '100%',
+                //     data: dados,
+                //     allowClear: true
+                //     // templateSelection: function (data) {
+                //     //     if (data.id === '') { // adjust for custom placeholder values
+                //     //         return 'Custom styled placeholder text';
+                //     //     }
+
+                //     //     return data.text;
+                //     // }
+                // });
             }
         }
     });
+}
+
+
+function somenteNumeros(num) {
+    if (num === null || num === undefined) return false;
+
+    // suportar tanto elemento input quanto string
+    var valor = (typeof num === 'string') ? num : (num.value !== undefined ? String(num.value) : String(num));
+    valor = valor.trim();
+
+    // considerar válido apenas dígitos (nenhum outro caractere)
+    var apenasNumeros = /^\d+$/;
+    if (!apenasNumeros.test(valor)) {
+        // se for elemento input, limpar o valor
+        try {
+            if (num && num.value !== undefined) num.value = "";
+        } catch (e) {}
+        toast('Informe somente o número', 'error');
+        return false;
+    }
+
+    return true;
 }
 
 function forms_submit(solicit) {

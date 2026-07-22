@@ -70,18 +70,37 @@ class GrupoEconomico extends Model
 			            SELECT rdenom,rdeid,rdeljaid,rdeljactr
 						FROM  rdelja , rde where rdeljarde = rdeid 
 			        )
-					SELECT REDE_LOJA.rdenom,
+					SELECT 
+                    --REDE_LOJA.rdenom,
 					REDE_LOJA.rdeid,
 					REDE_LOJA.rdeljaid,
 					REDE_LOJA.rdeljactr,
-					cli.cliid
+				    cli.cliid,
+					ctr.ctrapl as rdenom
 					FROM cli INNER JOIN ctr ON cli.cliid = ctr.ctrcli
 					INNER JOIN REDE_LOJA ON REDE_LOJA.rdeljactr = ctr.ctrid
 					WHERE ctr.ctrid = :contrato ";
             } else {
-                $sql = "SELECT rdenom,rdeid,rdeljaid,rdeljactr
-                       FROM  rdelja , rde where 
-                       rdeid = :rede and rdeljarde = rdeid limit 3 ";
+                // $sql = "SELECT rdenom,rdeid,rdeljaid,rdeljactr
+                //        FROM  rdelja , rde where 
+                //        rdeid = :rede and rdeljarde = rdeid limit 3 "; 
+
+                $sql = "WITH REDE_NAME AS (
+			            SELECT ctrapl,
+						ctrid
+						FROM cli
+						INNER JOIN ctr ON cli.cliid = ctr.ctrcli 
+			        )
+                     SELECT
+					--  rdenom,
+					  rdeid,
+					  rdeljaid,
+					  rdeljactr,
+					  REDE_NAME.ctrapl AS rdenom
+                      FROM  rdelja 
+					  INNER JOIN rde ON rde.rdeid = rdelja.rdeljarde
+					  INNER JOIN REDE_NAME ON rdelja.rdeljactr = REDE_NAME.ctrid
+					  where rdeid = :rede ";
             }
 
 
