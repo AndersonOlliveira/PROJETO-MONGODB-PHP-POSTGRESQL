@@ -54,7 +54,7 @@
         </label>
     </div>
 </div>
-<div class="row mt-4">
+<div class="container-input">
     <div class="col-md-12 text-center">
         <button type="submit" id="btn-incluir" class="btn btn-primary bot btn-incluir">Incluir</button>
         <button type="submit" id="btn-desfazer" class="btn btn-primary bot btn-desfazer">Limpar Filtros</button>

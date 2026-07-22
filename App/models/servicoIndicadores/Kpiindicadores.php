@@ -716,7 +716,8 @@ class Kpiindicadores extends Model
 
 
         $sql = "SELECT jbus.id as usuario_id,jbus.status as status_user, 
-              CONCAT(jbus.n_nome_user, '-', jba.n_area) AS user_area
+              CONCAT(jbus.n_nome_user, '-', jba.n_area) AS user_area,
+              jbus.n_nome_user 
               FROM cadastro_job.jobusuarios jbus
               INNER JOIN cadastro_job.jobarea jba ON (jba.id_area = jbus.id_area)";
 
@@ -832,16 +833,19 @@ class Kpiindicadores extends Model
         }
     }
 
+
     public function get_list_clients()
     {
+        // $conexaobd = $this->conection->getInstance();
 
         $sql = "";
+        $result = [];
 
 
-        $sql = "SELECT cliid,clinomraz,ctrid FROM 
+        $sql = "SELECT cliid,clinomraz  FROM 
                  cli, ctr 
                  WHERE cliid = ctrcli AND cliatv = 'S' AND ctratv = 'S' AND ctrint = 'N'
-                 GROUP BY cliid,clinomraz,ctrid";
+                 GROUP BY cliid,clinomraz";
 
         try {
 
@@ -849,7 +853,15 @@ class Kpiindicadores extends Model
 
             if ($stmt->execute()) {
 
-                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $a = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($a as  $key => $items) {
+                    $items['ctrid'] = self::get_list_clients_conctract($items['cliid']);
+
+                    $result[] = $items;
+                }
+                // return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $result;
             }
         } catch (PDOException $e) {
             $this->errorHandler->manipuladorDeErros(
@@ -864,6 +876,42 @@ class Kpiindicadores extends Model
         }
     }
 
+    public function get_list_clients_conctract($id)
+    {
+        // $conexaobd = $this->conection->getInstance();
+
+        $sql = "";
+
+
+        $sql = "SELECT ctrid  FROM 
+                 cli, ctr 
+                 WHERE cliid = ctrcli AND cliid =:id_buscado";
+
+        try {
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_buscado', $id, PDO::PARAM_INT);
+
+            if ($stmt->execute()) {
+
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                return $result['ctrid'];
+            } else {
+                return null;
+            }
+        } catch (PDOException $e) {
+            $this->errorHandler->manipuladorDeErros(
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                $this->arquivoLog
+            );
+
+            return $error[] = ['error' => "Falha em Solicitar os dados Clientes, cod error: {$e->getCode()}"];
+        }
+    }
     public function users($id)
     {
         $sql = "";

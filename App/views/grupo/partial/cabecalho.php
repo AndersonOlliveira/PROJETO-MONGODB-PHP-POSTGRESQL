@@ -42,6 +42,13 @@
 
         </a>
 
+        <a id="" class="btn-top primary tacn voltar_menu"
+            href="/viewGrupoEconocio"
+            title="Serviços">
+            <div class="lkpr">Início</div>
+
+        </a>
+
         <a class="btn-top danger tacn voltar_menu"
             href="/srv/srvsai.chp?tctrid=<?php print $tctrid; ?>&tctraut=<?php print $tctraut; ?>"
             title="Sair do sistema">

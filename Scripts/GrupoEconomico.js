@@ -718,9 +718,7 @@ $(document).on('click', '.btn-remover', function () {
                 tctraut: App.tctraut
             };
 
-            // forms_action(payload);
-        } else {
-            console.log('Cancelado, não faz nada');
+            forms_action(payload);
         }
     });
 
@@ -737,9 +735,9 @@ function forms_action(payload) {
         dataType: 'json',
         success: function (resp) {
             if (resp.sucesso) {
-                toast('Limite alterado com sucesso.', 'success');
-                $tr.find('td').eq(4).text(newValue);
-                cancelEditRow($tr, false);
+                toast('Limite Removido com sucesso.', 'success');
+                // $tr.find('td').eq(4).text(newValue);
+                // cancelEditRow($tr, false);
                 ataulizar_tabela();
             } else {
                 const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
@@ -770,7 +768,7 @@ function notification_alert() {
         closeOnEsc: false
     }).then((willAceite) => {
         if (willAceite) {
-            console.log('MEU ACEITE');
+
             swal({
                 content: {
                     element: "div",
