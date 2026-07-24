@@ -507,8 +507,10 @@ function get_limit_contrato(id_contrato) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
+            cache: false,
             data: {
-                id_contrato
+                id_contrato,
+                _: Date.now()
             },
             dataType: 'json',
             success: function (resp) {
@@ -754,11 +756,15 @@ function insert_limite(listDadosNiveis) {
 
 
 function ataulizar_tabela() {
-
     if ($.fn.DataTable.isDataTable("#dados_redes")) {
         $("#dados_redes").DataTable().destroy();
     }
-    create_table();
+    try {
+        create_table();
+    } catch (e) {
+        console.error("Erro ao recriar tabela:", e);
+        toast('Erro ao atualizar a tabela.', 'error');
+    }
 }
 
 $(document).on('click', '.btn-remover', function () {
@@ -797,10 +803,12 @@ function forms_action(payload) {
         dataType: 'json',
         success: function (resp) {
             if (resp.sucesso) {
+
                 toast('Limite Removido com sucesso.', 'success');
+                ataulizar_tabela();
                 // $tr.find('td').eq(4).text(newValue);
                 // cancelEditRow($tr, false);
-                ataulizar_tabela();
+
             } else {
                 const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
                 toast('Erro ao alterar: ' + (erros || 'tente novamente'), 'error');
@@ -935,8 +943,7 @@ $(document).on('click', '.btn-cancel-limite', function () {
 
 $(document).on('click', '.btn-save-limite', function () {
     const $tr = $(this).closest('tr');
-    var botaoClicado = $(document.activeElement);
-    var idBotao = botaoClicado.attr('id');
+    var idBotao = $(this).attr('id'); // corrigido: pega o ID do botão clicado
     const rowData = tabela_indicadores.row($tr).data();
     const newValue = $tr.find('.input-limite').val();
 
@@ -958,6 +965,8 @@ $(document).on('click', '.btn-save-limite', function () {
         tctraut: App.tctraut
     };
 
+    console.log("Payload enviado:", payload);
+
     $.ajax({
         url: '/api/CadLimite',
         type: 'POST',
@@ -968,14 +977,16 @@ $(document).on('click', '.btn-save-limite', function () {
             if (resp.sucesso) {
                 toast('Limite alterado com sucesso.', 'success');
                 $tr.find('td').eq(4).text(newValue);
-                ataulizar_tabela();
+
                 cancelEditRow($tr, false);
+                ataulizar_tabela();
             } else {
                 const erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
                 toast('Erro ao alterar: ' + (erros || 'tente novamente'), 'error');
             }
         },
-        error: function () {
+        error: function (xhr, status, error) {
+            console.error("Erro AJAX:", status, error);
             toast('Falha de conexão ao enviar a alteração.', 'error');
         }
     });

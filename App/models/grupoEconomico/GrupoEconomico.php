@@ -133,7 +133,9 @@ class GrupoEconomico extends Model
     public function tipo_tratativa_grupo()
     {
 
-        $sql = "SELECT tpoid FROM public.tpo WHERE UPPER(unaccent(tpodsc))  =  UPPER(unaccent(trim('" . AuxiliaresGrupo::BUSCA_ID_GRUPO_ECONOMICO . "')))";
+        // $sql = "SELECT tpoid FROM public.tpo WHERE UPPER(unaccent(tpodsc))  =  UPPER(unaccent(trim('" . AuxiliaresGrupo::BUSCA_ID_GRUPO_ECONOMICO . "')))";
+//  PARA AMBIENTE PRODUCAO USAR funcao sem acentos 
+         $sql = "SELECT tpoid FROM public.tpo WHERE UPPER(sem_acento(tpodsc))  =  UPPER(sem_acento(trim('" . AuxiliaresGrupo::BUSCA_ID_GRUPO_ECONOMICO . "')))";
 
         try {
             $stmt = $this->db->prepare($sql);
@@ -342,6 +344,8 @@ class GrupoEconomico extends Model
         $stmt = null;
         $error = [];
         $tabela = $config['tabela'];
+
+        
 
         try {
             switch ($tipo) {

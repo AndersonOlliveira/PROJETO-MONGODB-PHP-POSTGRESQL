@@ -8,11 +8,16 @@ const App = {
     dadosFiltradosHistoricoObs: [], // subconjunto após filtros OBS
     paginaAtual: 1,
     porPagina: 50,
+    new_limite: 4000,
+    limite_linhas_p: 20,
+    limite_linhas_exibir: 40, // ou 100
+    detalhamentoVisivel: false,
     linhaSelecionada: null,
     drawerAberto: false,
     abaAtiva: 'tratativa',
     historicos: {}, // cache por n_nro
     crt: '',
+    tctraut: '',
     status: true,
     clientesSelecionado: '',
     clientesSelecionadoPropesct: '',
@@ -29,42 +34,9 @@ const App = {
 $(document).ready(function () {
     // PEGO O LOGIN E APROVEITO DE FORMA GLOBAL DENTRO DO CODIGO
     App.crt = $('#d-id').val();
+    App.tctraut = $('#d-tctraut').val();
 
-    listArchivesJobs();
-
-    //CHAMA FUNCAO PARA LISTA AS AREAS DISPONIVEIS
-    get_lista_area();
-    //PENSAR EM CHAMAR NA HORA QUE TIVER O CLICK DENTRO DO CADASTRO
-    //CHAMA FUNCAO PARA LISTA AS AREAS DISPONIVEIS
-    get_lista_user_area();
-
-    //CHAMA FUNCAO PARA LISTA AS CLIENTES DISPONIVEIS
-    get_lista_cliente();
-
-    //CHAMA FUNCAO PARA LISTA DE TIPOS DISPONIVEIS
-    get_lista_tipo();
-
-    //CHAMA FUNCAO PARA LISTA DE STATUS DISPONIVEIS
-    get_lista_status();
-
-    //CHAMA FUNCAO PARA LISTA DE PERFIL P/JOB DISPONIVEIS
-    get_lista_perfil();
-    //   buscar_Info_Responsavel_Logado();
-
-    $('#btn-buscar').on('click', aplicarFiltros);
-    $('#f-busca').on('keypress', e => {
-        if (e.which === 13) aplicarFiltros();
-    });
-    $('#btn-fechar-drawer').on('click', fecharDrawer);
-    $(document).on('click', '.drawer-tab', function () {
-        mudarAba($(this).data('tab'));
-    });
-
-    //PADRAO O INPUT FICA ESCONDIDO 
-    $("#clientes_inputs").hide();
-
-    //   $('#btn-salvar-tratativa').on('click', salvarTratativa);
-    // $('#btn-csv').on('click', exportarCSV);
+    chamar_auxiliares();
 
 });
 
@@ -80,6 +52,10 @@ function listArchivesJobs() {
 
     $.ajax({
         url: '/api/ListJobs',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -154,6 +130,8 @@ function listArchivesJobsHistorico(id) {
         url: '/api/ListJobsHis',
         data: {
             'tabela': id,
+            'tctrid': App.crt,
+            'tctraut': App.tctraut,
         },
         type: 'GET',
         headers: {
@@ -215,6 +193,8 @@ function listArchivesJobsHistoricoObs(id) {
         url: '/api/ListJobsHisObs',
         data: {
             'tabela': id,
+            'tctrid': App.crt,
+            'tctraut': App.tctraut,
         },
         type: 'GET',
         headers: {
@@ -254,11 +234,13 @@ function mostrarErro(msg) {
     $('#contagem').text('');
 }
 
-console.log($('.dt-info').length);
-console.log($('.dataTables_info').length);
+
 // ── RENDERIZAÇÃO ──────────────────────────────────────────────
 function renderTabela() {
     atualizarCardsResumoJobs();
+
+
+
 
     if ($.fn.DataTable.isDataTable('#table-relatorio-indicadores')) {
         $('#table-relatorio-indicadores').DataTable().clear().destroy();
@@ -267,15 +249,14 @@ function renderTabela() {
     tabela_indicadores = $('#table-relatorio-indicadores').DataTable({
         destroy: true,
         processing: true,
-        // select: true,
+
         paging: true,
         pagingType: "full_numbers",
         scrollX: true,
         searching: true,
         ordering: true,
-        responsive: false,
-
-        // info: true,
+        autoWidth: true,
+        responsive: true,
         layout: {
             top: {
                 search: {
@@ -284,9 +265,70 @@ function renderTabela() {
             },
             topEnd: [{
                 buttons: [
-                    ['excel'],
+                    'excel',
+                    {
+                        text: 'Exibir/Ocultar Detalhamento',
+                        className: '',
+                        action: function (e, dt, node, config) {
+                            var colunasIndices = [1, 4, 6, 12];
+
+                            // var todosOsDados = dt.rows().data().toArray(); //pego a lista dos dados 
+
+
+
+
+                            var estadoAtual = dt.column(colunasIndices[0]).visible();
+
+
+                            App.detalhamentoVisivel = !estadoAtual;
+
+                            colunasIndices.forEach(function (indice) {
+                                dt.column(indice).visible(!estadoAtual);
+                            });
+
+                            var celulasColuna5 = dt.column(1, 4, 5, 6, 12).nodes();
+
+
+                            dt.columns.adjust();
+                            if (dt.responsive) {
+                                dt.responsive.recalc();
+                            }
+
+                            var tabela = $('#table-relatorio-indicadores');
+
+
+                            if (!estadoAtual) {
+                                console.log('PRIMERO CLICK');
+
+
+                                tabela.addClass('detalhamento-expandido');
+                                dt.button(node).text('Ocultar Detalhamento');
+                                // $(celulasColuna5).css({
+                                //     'width': '300px',
+                                //     'max-width': '2300px',
+                                //     'white-space': 'normal',
+                                //     'word-break': 'break-word',
+                                //     'border-color': 'rede'
+                                // });
+                                $(celulasColuna5).addClass('detalhamento-expandido');
+                            } else {
+                                tabela.removeClass('detalhamento-expandido');
+                                ataulizar_tabela();
+                                dt.button(node).text('Exibir Detalhamento');
+                                $(celulasColuna5).css({
+                                    'width': '',
+                                    'max-width': '',
+                                    'white-space': '',
+                                    'word-break': ''
+                                });
+                            }
+
+                            dt.draw();
+                        }
+                    },
                 ],
             }],
+
         },
         language: {
             info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
@@ -305,7 +347,17 @@ function renderTabela() {
             [0, "desc"]
         ],
         data: App.dadosFiltrados,
-
+        columnDefs: [{
+            targets: [1, 4, 6, 12],
+            visible: false,
+            searchable: false,
+            render: function (data, type, row) {
+                if (!App.detalhamentoVisivel) {
+                    return quebrarTexto(data, type, row, App.new_limite);
+                }
+                return quebrarTexto(data, type, row, App.new_limite); // texto puro
+            }
+        }],
 
         columns: [
 
@@ -316,7 +368,8 @@ function renderTabela() {
                 data: 'titulo_email',
                 defaultContent: '-',
                 render: function (data, type, row) {
-                    return quebrarTexto(data, type, row);
+                    return quebrarTexto(data, type, row, App.limite_linhas_exibir);
+                    // return quebrarTexto(data, type, row);
 
                 }
             },
@@ -324,13 +377,17 @@ function renderTabela() {
                 data: 'nome_cliente',
                 defaultContent: '-',
                 render: function (data, type, row) {
-                    return quebrarTexto(data, type, row);
+                    return quebrarTexto(data, type, row, App.limite_linhas_p);
 
                 }
             },
             {
                 data: 'solicitante',
                 defaultContent: '-',
+                render: function (data, type, row) {
+                    return quebrarTexto(data, type, row, App.limite_linhas_p);
+
+                }
 
             },
             {
@@ -343,26 +400,8 @@ function renderTabela() {
                 searchable: true,
                 render: function (data, type, row) {
 
-                    const executorName = (row.dados_executor?.n_nome_user || 'Sem nome').trim();
+                    return drop(data, type, row);
 
-                    if (type !== 'display')
-                        return executorName;
-                    return `
-                    
-                            <div class="dropdown dropdown-dinamico">
-                                    <button class="btn btn-sm btn-light dropdown-toggle tacn tam" data-bs-toggle="dropdown" data-bs-flip="false">
-                                        ${executorName}
-                                    </button>
-                                        <ul class="dropdown-menu p-2">
-                                        <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-                                        <li><p class="dropdown-header fw-bold text-dark">Selecione Executor</p></li>
-                                        <li><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <div class="lista-executantes">
-                                            <li class="text-muted small px-2">Carregando...</li>
-                                        </div>
-                                    </ul>
-                                </div> `;
                 }
             },
 
@@ -375,8 +414,10 @@ function renderTabela() {
                 data: 'n_perfil',
                 defaultContent: '-',
                 render: function (data, type, row) {
-                    return data.toUpperCase();
+                    // return data.toUpperCase();
+                    return quebrarTexto(data.toUpperCase(), type, row, App.limite_linhas_exibir);
                 }
+
             },
             {
                 data: 'n_status',
@@ -408,7 +449,7 @@ function renderTabela() {
                 data: 'detalhamento',
                 defaultContent: '-',
                 render: function (data, type, row) {
-                    return quebrarTexto(data, type, row);
+                    return quebrarTexto(data, type, row, App.limite_linhas_exibir);
 
                 }
             },
@@ -485,6 +526,7 @@ function renderTabela() {
                 .draw();
         }
     });
+
     $('#f-mes').on('change', function () {
         let filtroMes = this.value;
 
@@ -510,13 +552,19 @@ function renderTabela() {
         }
     });
 
+    // $('#toggle-coluna').on('click', function () {
+    //     // Pega a coluna de índice 2
+    //     var coluna = tabela.column(2);
+
+    //     // Altera para o oposto do estado atual (se visível esconde, se oculta mostra)
+    //     coluna.visible(!coluna.visible());
+    // });
 
     const dadosFiltradosVisiveis = tabela_indicadores.rows({
         search: 'applied',
         page: 'current'
     }).data().toArray();
 
-    console.log(App.filtrosAreas, 'DADOS PARA OS FILTROS');
 
     listaOption(dadosFiltradosVisiveis);
     listaOptionExecutante(App.filtrosExecutane);
@@ -536,7 +584,7 @@ function corteEstrito(texto, limite = 10) {
     return texto.match(new RegExp('.{1,' + limite + '}', 'g')).join('\n');
 }
 
-function quebrarTexto(texto, limite = 20) {
+function quebrarTexto(texto, type, row, limite) {
     if (!texto) return ''; // Evita erros se o campo vier vazio ou nulo
 
     const palavras = texto.split(' ');
@@ -563,7 +611,7 @@ function quebrarTexto(texto, limite = 20) {
 }
 
 function renderDetalhamento(data, type, row) {
-    const retorno_texto = quebrarTexto(data, 20);
+    const retorno_texto = quebrarTexto(data, App.limite_linhas_p);
     return retorno_texto;
 }
 
@@ -644,7 +692,6 @@ function listaOptionArea(dadosFiltradosAreas) {
     });
 }
 
-
 function listaOptionMeses(dadosFiltradosAreas) {
     const statusSelects = document.getElementById('f-mes');
 
@@ -658,7 +705,7 @@ function listaOptionMeses(dadosFiltradosAreas) {
     const mesesUnicos = new Set();
     dadosFiltradosAreas.forEach(el => {
         if (el.data_solicitacao) {
-            console.log(el.data_solicitacao);
+
             const mes = el.data_solicitacao.split("-")[1];
             mesesUnicos.add(mes);
         }
@@ -666,7 +713,7 @@ function listaOptionMeses(dadosFiltradosAreas) {
 
 
     Array.from(mesesUnicos).sort().forEach(mes => {
-        console.log(mes);
+
         const options = document.createElement("option");
         options.className = "mes";
         options.value = mes;
@@ -675,9 +722,31 @@ function listaOptionMeses(dadosFiltradosAreas) {
     });
 }
 
+
+function lista_meses(mes) {
+    const mesesMap = {
+        '01': 'Janeiro',
+        '02': 'Fevereiro',
+        '03': 'Março',
+        '04': 'Abril',
+        '05': 'Maio',
+        '06': 'Junho',
+        '07': 'Julho',
+        '08': 'Agosto',
+        '09': 'Setembro',
+        '10': 'Outubro',
+        '11': 'Novembro',
+        '12': 'Dezembro'
+    };
+
+    return mesesMap[mes];
+
+
+}
+
 // ── RENDERIZAÇÃO  HISTORICO──────────────────────────────────────────────
 function renderTabelaHistorico() {
-    console.log('ACESSANDO A ROTA');
+
 
 
     const apresentar_lista = $('#historico-lista-apresentar');
@@ -769,13 +838,15 @@ function renderOptionStatus(data, type, row) {
     classe = switchStatus(statusLimpo);
 
 
+
+
     return `<div class="dropdown dropdown-dinamico-status">
-                      <button class="btn btn-sm btn-light ${classe}  dropdown-toggle" data-bs-toggle="dropdown" data-bs-flip="false">
-                         ${data ?? '-'}
+                      <button class="btn btn-sm btn-light ${classe} dropdown-toggle bto" data-bs-toggle="dropdown" data-bs-flip="false">
+                         ${data.toUpperCase() ?? '-'}
                     </button>
                       <ul class="dropdown-menu p-2">
                             <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
-                            <li><h6 class="dropdown-header fw-bold text-dark px-2">Selecione Status</h6></li>
+                            <li><p class="dropdown-header fw-bold text-dark px-2 ">Selecione Status</p></li>
                             <li><a class="dropdown-item items-status" href="#" data-id="0">Todos</a></li>
                              <li><hr class="dropdown-divider"></li>
                             <div class="lista-status">
@@ -804,12 +875,9 @@ function renderTabelaHistoricoObs() {
     App.dadosFiltradosHistoricoObs.forEach(function (item) {
 
 
-        console.log(item.n_status);
-
         let classeBadge = switchStatus(item.n_status);
 
 
-        console.log(classeBadge);
 
         apresentar_lista.append(`
             <div class="hist-item" style="border-left: 4px solid var(--primary); padding: 10px; margin-bottom: 10px; background: #f8f9fa; border-radius: 4px;">
@@ -840,15 +908,23 @@ function removerAcentos(texto) {
     return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 }
 
+
 function renderData(data, type, row) {
     const date = data;
     if (!date) return '-';
+
+
+
     const infoDate = calcularDias(date);
+
+
     const content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
                     <span class="infodiasdate"> Solicitado a ${infoDate}D</span>
                 </span>`;
+
     return date + content;
 }
+
 
 function renderDataIncio(data, type, row) {
 
@@ -856,7 +932,7 @@ function renderDataIncio(data, type, row) {
                     <span class="infodiasdate"> Informe data de inicio</span>
                 </span>`;
 
-    let divDate = `<input type="date" class="form-control-d items-date d-data-inicio" data-id-tabela="${row['id_cadjob']}" >`;
+    let divDate = `<input type="date" class="form-control-d items-date d-data-inicio tacn" data-id-tabela="${row['id_cadjob']}" >`;
 
 
     let date = calcularDias(data);
@@ -871,10 +947,10 @@ function renderDataIncio(data, type, row) {
 
 function renderDataFim(data, type, row) {
     let content = `<span style="display:flex;flex-direction:column;line-height:1.10;">
-                    <span class="infodiasdate"> Informe data de termino</span>
+                    <span class="infodiasdate"> Informe data de término</span>
                 </span>`;
 
-    let divDate = `<input type="date" class="form-control-d items-date d-data-fim" data-id-tabela="${row['id_cadjob']}" >`;
+    let divDate = `<input type="date" class="form-control-d items-date d-data-fim tacn" data-id-tabela="${row['id_cadjob']}" >`;
 
 
     let date = calcularDias(data);
@@ -1069,6 +1145,8 @@ $(document).ready(function () {
             listaValida.tipo = tipo;
             listaValida.ctr = App.crt;
             listaValida.status = App.status;
+            listaValida.tctraut = App.tctraut;
+            listaValida.tctrid = App.crt;
             delete listaValida.area;
             salvarDados(listaValida, $("#d-area").val());
         }
@@ -1092,8 +1170,13 @@ $(document).ready(function () {
             listaValida.id = listaValida.area
             listaValida.ctr = App.crt;
             listaValida.status = App.status;
+            listaValida.tctraut = App.tctraut;
+            listaValida.tctrid = App.crt;
             delete listaValida.nome;
             delete listaValida.area;
+
+            console.log(listaValida);
+            console.log('staValida');
             salvarDados(listaValida, $("#d-usuario").val());
         }
     });
@@ -1215,6 +1298,7 @@ function salvarDados(playload, botao) {
                 atualizar_botao(botao);
                 //atualizar tabela
                 ataulizar_tabela();
+                chamar_auxiliares();
 
             } else {
                 var erros = JSON.stringify(resp.mensagem) ?? JSON.stringify(resp.dados);
@@ -1252,7 +1336,7 @@ function UpDados(playload, botao) {
     const playloadJson = JSON.stringify(playload);
 
     $.ajax({
-        url: '/api/UpdadosJobs',
+        url: 'kpiindicadores.chp?r=UpdadosJobs',
         type: 'PUT',
         data: playloadJson,
         dataType: 'json',
@@ -1286,7 +1370,11 @@ function UpDados(playload, botao) {
 function get_lista_area() {
 
     $.ajax({
-        url: '/api/ListArea',
+        url: 'kpiindicadores.chp?r=ListArea',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         headers: {
@@ -1313,6 +1401,10 @@ function get_lista_user_area() {
 
     $.ajax({
         url: '/api/ListUserArea',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         headers: {
@@ -1341,6 +1433,10 @@ function get_lista_status() {
 
     $.ajax({
         url: '/api/ListStatus',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         headers: {
@@ -1353,6 +1449,7 @@ function get_lista_status() {
 
             if (resp.status == 2) {
                 montar_select_status(resp.dados)
+
             } else {
                 toast('Outro status:', resp.message, 'error');
             }
@@ -1368,6 +1465,10 @@ function get_lista_perfil() {
 
     $.ajax({
         url: '/api/ListPerfil',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         success: function (resp) {
@@ -1388,8 +1489,13 @@ function get_lista_perfil() {
                     $('#n_perfil').select2('destroy');
                 }
 
+                if ($('#n_perfils').hasClass("select2-hidden-accessible")) {
+                    $('#n_perfils').select2('destroy');
+                }
+
 
                 $('#n_perfil').html('<option></option>');
+                $('#n_perfils').html('<option></option>');
 
 
                 $('#n_perfil').select2({
@@ -1398,8 +1504,35 @@ function get_lista_perfil() {
                     width: '100%',
                     data: dados
                 });
+
+                $('#n_perfils').select2({
+                    placeholder: 'Selecione um Perfil',
+                    width: '100%',
+                    data: dados,
+                    tags: true, // Permite digitar e criar novas opções que não estão na lista
+                    createTag: function (params) {
+                        var term = $.trim(params.term);
+
+                        // Se o usuário não digitou nada, não cria tag vazia
+                        if (term === '') {
+                            return null;
+                        }
+
+                        // Retorna o formato correto que o Select2 precisa para a nova opção
+                        return {
+                            id: term,
+                            text: term,
+                            newTag: true // Marcação útil para você saber que é um registro novo
+                        }
+                    }
+                });
             }
+
+
+
         }
+
+
     });
 }
 
@@ -1407,6 +1540,10 @@ function get_lista_tipo() {
 
     $.ajax({
         url: '/api/ListTipo',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         headers: {
@@ -1435,9 +1572,12 @@ function get_lista_tipo() {
 
 // LISTA DE CLIENTES
 function get_lista_cliente() {
-
     $.ajax({
         url: '/api/ListCliente',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         success: function (resp) {
@@ -1469,12 +1609,15 @@ function get_lista_cliente() {
         }
     });
 }
-
 // LISTA DE CLIENTES PROPESCT
 function get_lista_cliente_propesct() {
 
     $.ajax({
         url: '/api/ListPropesct',
+        data: {
+            'tctrid': App.crt,
+            'tctraut': App.tctraut
+        },
         type: 'GET',
         dataType: 'json',
         success: function (resp) {
@@ -1502,8 +1645,13 @@ function get_lista_cliente_propesct() {
                     data: dados
                 });
             }
+
+
         }
+
+
     });
+
 }
 
 
@@ -1608,6 +1756,7 @@ $("#cad_job").submit(function (event) {
 
 
     const padrao = $('#cliente_padrao').val();
+
     let n_info_cliente = '';
     let n_info_perfil = '';
 
@@ -1718,7 +1867,7 @@ function validarInterno(usandoInput, tipo) {
     const tipoId = Number(tipo);
 
     if (!jobId) {
-        alert('Informe o Tipo de Job.');
+        info_alerts('Informe o Tipo de Job.');
         $('#myCheckbox').prop('disabled', false);
         $('#cliente_padrao').val('');
         $('#myCheckboxProspect').prop('disabled', false).show();
@@ -1764,7 +1913,7 @@ function validarCliente(usandoInput) {
         }
 
         if (!clienteInput || clienteInput === "") {
-            alert('Informe o cliente ou selecione um Prospect.');
+            info_alerts('Informe o cliente ou selecione um Prospect.');
             return null;
         }
 
@@ -1773,7 +1922,7 @@ function validarCliente(usandoInput) {
     } else {
 
         if (!App.clientesSelecionado || !App.clientesSelecionado.id) {
-            alert('Selecione um cliente.');
+            info_alerts('Selecione um cliente.');
             return null;
         }
 
@@ -1788,19 +1937,20 @@ function validarPerfil(usandoInput, clienteInput) {
     let result = ''
     if (usandoInput) {
         if (!clienteInput) {
-            alert('Informe o cliente.');
+            info_alerts('Informe o cliente.');
             return;
         }
         result = (App.clienteTeste ? App.clienteTeste + '$' : '') + clienteInput;
     } else {
         if (!App.clientesSelecionado || !App.clientesSelecionado.id) {
-            alert('Selecione um cliente.');
+            info_alerts('Selecione um cliente.');
             return;
         }
         result = App.clientesSelecionado.id + '$' + App.clientesSelecionado.text;
     }
 
     return result;
+
 }
 
 function datePicker() {
@@ -1815,24 +1965,81 @@ function datePicker() {
 // === AREA PARA MONTAR OS SELECT DINAMICOS  ========= ////
 //MONTO SELECT PARA A VICULAR A AREA A PESSOA
 function montar_select(dados) {
-    const tipo_selects = document.getElementById('d-tipo-area');
-    tipo_selects.innerHTML = '';
-    const todosOption = document.createElement("option");
-    todosOption.value = "0";
-    todosOption.text = "Todos";
-    tipo_selects.appendChild(todosOption);
+    // const tipo_selects = document.getElementById('d-tipo-area');
+    // tipo_selects.innerHTML = '';
+    // const todosOption = document.createElement("option");
+    // todosOption.value = "0";
+    // todosOption.text = "Todos";
+    // tipo_selects.appendChild(todosOption);
 
-    dados.forEach((items) => {
-        const option = document.createElement("option");
-        option.value = items.id_area;
-        option.text = items.n_area;
-        tipo_selects.appendChild(option);
+    // dados.forEach((items) => {
+    //     const option = document.createElement("option");
+    //     option.value = items.id_area;
+    //     option.text = items.n_area;
+    //     tipo_selects.appendChild(option);
+    // });
+
+    $('#n_area').empty();
+    $('#d-tipo-area').empty();
+    const dados_arreas = dados.map(function (item) {
+        const n_areaUpper = item.n_area.toUpperCase();
+
+        return {
+            id: item.id_area,
+            text: n_areaUpper
+        };
     });
 
+
+    if ($('#n_area').hasClass("select2-hidden-accessible")) {
+        $('#n_area').select2('destroy');
+    }
+    if ($('#d-tipo-area').hasClass("select2-hidden-accessible")) {
+        $('#d-tipo-area').select2('destroy');
+    }
+
+
+
+
+    $('#n_area').html('<option></option>');
+    $('#d-tipo-area').html('<option></option>');
+
+    $('#n_area').select2({
+        placeholder: 'Selecione uma Área',
+        width: '100%',
+        data: dados_arreas,
+        tags: true, // Permite digitar e criar novas opções que não estão na lista
+        createTag: function (params) {
+            var term = $.trim(params.term);
+
+            // Se o usuário não digitou nada, não cria tag vazia
+            if (term === '') {
+                return null;
+            }
+
+            // Retorna o formato correto que o Select2 precisa para a nova opção
+            return {
+                id: term,
+                text: term,
+                newTag: true // Marcação útil para você saber que é um registro novo
+            }
+        }
+    });
+
+    $('#d-tipo-area').select2({
+        placeholder: 'Selecione uma área',
+        // class: 'form-control',
+        width: '100%',
+        data: dados_arreas
+    });
 }
+
 
 //MONTO SELECT PARA CADASTRO DO JOB VICULAR SOLICITANTE 
 function montar_selec_user_area(dados) {
+
+    $('#d-tipo-user-area-solicitante').empty();
+    $('#n_usuario').empty();
     const tipo_selects = document.getElementById('d-tipo-user-area-solicitante');
     tipo_selects.innerHTML = '';
     const todosOption = document.createElement("option");
@@ -1848,11 +2055,51 @@ function montar_selec_user_area(dados) {
         tipo_selects.appendChild(option);
     });
 
+    const dados_users = dados.map(function (item) {
+        const n_userNameUpper = item.n_nome_user.toUpperCase();
+
+        return {
+            id: item.id_status,
+            text: n_userNameUpper
+        };
+    });
+
+    if ($('#n_usuario').hasClass("select2-hidden-accessible")) {
+        $('#n_usuario').select2('destroy');
+    }
+    $('#n_usuario').html('<option></option>');
+
+    $('#n_usuario').select2({
+        placeholder: 'Selecione o Úsuario',
+        width: '100%',
+        data: dados_users,
+        tags: true, // Permite digitar e criar novas opções que não estão na lista
+        createTag: function (params) {
+            var term = $.trim(params.term);
+
+            // Se o usuário não digitou nada, não cria tag vazia
+            if (term === '') {
+                return null;
+            }
+
+            // Retorna o formato correto que o Select2 precisa para a nova opção
+            return {
+                id: term,
+                text: term,
+                newTag: true // Marcação útil para você saber que é um registro novo
+            }
+        }
+    });
+
+
 }
 
 
 //MONTO SELECT PARA CADASTRO DO TIPO VICULAR SOLICITANTE 
 function montar_selec_tipo(dados) {
+
+    $('#d-tipo-job').empty();
+    // $('#n_usuario').empty();
     const tipo_selects = document.getElementById('d-tipo-job');
     tipo_selects.innerHTML = '';
     const todosOption = document.createElement("option");
@@ -1868,9 +2115,14 @@ function montar_selec_tipo(dados) {
         tipo_selects.appendChild(option);
     });
 
+
+
 }
 //MONTO SELECT PARA CADASTRO DO STATUS VICULAR SOLICITANTE 
 function montar_select_status(dados) {
+    $('#d-tipo-job-status').empty();
+    $('#n_status').empty();
+
     const tipo_selects = document.getElementById('d-tipo-job-status');
     tipo_selects.innerHTML = '';
     const todosOption = document.createElement("option");
@@ -1884,6 +2136,42 @@ function montar_select_status(dados) {
         option.value = items.id_status;
         option.text = items.n_status;
         tipo_selects.appendChild(option);
+    });
+    const dados_status = dados.map(function (item) {
+        const n_statusUpper = item.n_status.toUpperCase();
+
+        return {
+            id: item.id_status,
+            text: n_statusUpper
+        };
+    });
+
+
+    if ($('#n_status').hasClass("select2-hidden-accessible")) {
+        $('#n_status').select2('destroy');
+    }
+    $('#n_status').html('<option></option>');
+
+    $('#n_status').select2({
+        placeholder: 'Selecione uma Status',
+        width: '100%',
+        data: dados_status,
+        tags: true, // Permite digitar e criar novas opções que não estão na lista
+        createTag: function (params) {
+            var term = $.trim(params.term);
+
+            // Se o usuário não digitou nada, não cria tag vazia
+            if (term === '') {
+                return null;
+            }
+
+            // Retorna o formato correto que o Select2 precisa para a nova opção
+            return {
+                id: term,
+                text: term,
+                newTag: true // Marcação útil para você saber que é um registro novo
+            }
+        }
     });
 
 }
@@ -1945,6 +2233,10 @@ $(document).ready(function () {
 
         $.ajax({
             url: '/api/ListUserArea',
+            data: {
+                'tctrid': App.crt,
+                'tctraut': App.tctraut
+            },
             type: 'GET',
             dataType: 'json',
             headers: {
@@ -1973,7 +2265,6 @@ $(document).ready(function () {
     });
 
     // Evento ao fechar o dropdown
-
     $(document).on('hide.bs.dropdown', '.dropdown-dinamico', function () {
         var $divDropdown = $(this);
         var $td = $divDropdown.closest('td');
@@ -1994,6 +2285,7 @@ $(document).ready(function () {
             'padding-right': ''
         });
     });
+
     //Evento para quando o usuário clicar em um nome da lista 
     $(document).on('click', '.item-executor, .item-executante', function (e) {
         e.preventDefault();
@@ -2003,13 +2295,22 @@ $(document).ready(function () {
         var nomeSelecionado = $(this).text();
         var tabela_row = $linkClicado.closest('.dropdown-menu').find('.tabela-row').val();
 
+        if (!idSelecionado || !nomeSelecionado.trim()) {
+            toast('Por favor, selecione um usuário válido antes de enviar.', 'error');
+            return false;
+        }
+
+
 
         const playload = {
             tabela: tabela_row,
             executante_id: idSelecionado,
             tipo: 4,
-            crt: App.crt
+            crt: App.crt,
+            tctrid: App.crt,
+            tctraut: App.tctraut,
         }
+
         UpDados(playload);
 
     });
@@ -2027,7 +2328,9 @@ function montar_lista_user_status_datatable(dados, containerElement) {
     }
     dados.forEach((items) => {
         const li = document.createElement("li");
-        li.innerHTML = `<a class="dropdown-item item-status" href="#" data-id-status="${items.id_status}">${items.n_status}</a>`;
+        const n_statusUpper = items.n_status;
+
+        li.innerHTML = `<a class="dropdown-item item-status" href="#" data-id-status="${items.id_status}">${n_statusUpper.toUpperCase()}</a>`;
         containerElement.appendChild(li);
     });
 }
@@ -2065,6 +2368,7 @@ function redimensionarTdDropdown($divDropdown) {
 
     console.warn('CLASSE TD', $td);
 }
+
 $(document).ready(function () {
 
     $(document).on('show.bs.dropdown', '.dropdown-dinamico-status', function () {
@@ -2079,6 +2383,10 @@ $(document).ready(function () {
 
         $.ajax({
             url: '/api/ListStatus',
+            data: {
+                'tctrid': App.crt,
+                'tctraut': App.tctraut
+            },
             type: 'GET',
             dataType: 'json',
             headers: {
@@ -2127,6 +2435,18 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on('hide.bs.dropdown', '.dropdown-dinamico-status', function () {
+
+
+        var $td = $(this).closest('td');
+        $td.css({
+            'padding-top': '10px',
+            'padding-left': '10px',
+            'padding-bottom': '10px',
+            'padding-right': '10px'
+        });
+    });
+
 
     $(document).on('click', '.items-status, .item-status', function (e) {
         e.preventDefault();
@@ -2139,7 +2459,9 @@ $(document).ready(function () {
             tabela: tabela_row,
             status_id: idSelecionado,
             tipo: 3,
-            crt: App.crt
+            crt: App.crt,
+            tctrid: App.crt,
+            tctraut: App.tctraut,
         }
 
         UpDados(playload);
@@ -2160,7 +2482,9 @@ $(document).on('change', '.d-data-inicio', function (e) {
         tabela: idSelecionadoTabela,
         data_inicio: dataSelecionada,
         tipo: 1,
-        crt: App.crt
+        crt: App.crt,
+        tctrid: App.crt,
+        tctraut: App.tctraut,
     }
 
 
@@ -2180,13 +2504,53 @@ $(document).on('change', '.d-data-fim', function (e) {
         tabela: idSelecionadoTabela,
         data_fim: dataSelecionada,
         tipo: 2,
-        crt: App.crt
+        crt: App.crt,
+        tctrid: App.crt,
+        tctraut: App.tctraut,
     }
 
     UpDados(playloads);
 
 });
 
+function drop_old(data, type, row) {
+
+    return ` <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Dropdown button
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else here</a></li>
+  </ul>
+</div>`;
+
+}
+
+// TRATAR O DROPDOW DO NOME DO USUARIO
+function drop(data, type, row) {
+    const executorName = (row.dados_executor?.n_nome_user || 'Sem nome').trim();
+
+    if (type !== 'display')
+        return quebrarTexto(executorName, null, null, App.limite_linhas_exibir);
+    return ` <div class="dropdown dropdown-dinamico" data-bs-toggle="dropdown">
+                                    <button class="btn btn-sm btn-light dropdown-toggle tacn tam" data-bs-toggle="dropdown" data-bs-boundary="viewport">
+                                        ${quebrarTexto(executorName,null,null,App.limite_linhas_p)}
+                                    </button>
+                                        <div class="dropdown-menu">
+                                        <input type="hidden" value="${row.id_cadjob}" class="tabela-row">
+                                        <li><p class="dropdown-header fw-bold text-dark">Selecione Executor</p></li>
+                                        <di><a class="dropdown-item item-executor" href="#" data-id="0">Todos</a></li>
+                                        <div><hr class="dropdown-divider"></div>
+                                        <div class="lista-executantes">
+                                            <div class="text-muted small px-2">Carregando...</div>
+                                        </div>
+                                    </div>
+                                </div> `;
+
+
+}
 
 $(document).on('click', '.btn-list-dados', function (e) {
 
@@ -2223,6 +2587,8 @@ $("#obs_job").submit(function (event) {
         listaValida.campos = listaValida.obs
         listaValida.tipo = tipo;
         listaValida.ctr = App.crt;
+        listaValida.tctraut = App.tctraut;
+        listaValida.tctrid = App.crt;
         listaValida.status = App.status;
         delete listaValida.obs;
 
@@ -2236,11 +2602,7 @@ $("#obs_job").submit(function (event) {
 $("#cad_perfil").submit(function (event) {
     event.preventDefault();
 
-
     var perfilInformado = $('#n_perfils').val();
-
-
-    console.log(perfilInformado);
 
     const tipo = tipos($("#d-perfil").val());
     const listaValida = {
@@ -2255,9 +2617,10 @@ $("#cad_perfil").submit(function (event) {
         listaValida.tipo = tipo;
         listaValida.ctr = App.crt;
         listaValida.status = App.status;
+        listaValida.tctraut = App.tctraut;
+        listaValida.tctrid = App.crt;
         delete listaValida.perfil;
-
-        console.log(listaValida, 'RESULTADO');
+        console.warn(listaValida);
 
         salvarDados(listaValida, $("#d-perfil").val());
     }
@@ -2323,14 +2686,17 @@ $('#cad_status').submit(function (e) {
         listaValida.tipo = tipo;
         listaValida.ctr = App.crt;
         listaValida.status = App.status;
+        listaValida.tctraut = App.tctraut;
+        listaValida.tctrid = App.crt;
         delete listaValida.nome_status;
 
         salvarDados(listaValida, 'Status');
     }
+
+
+
+
 });
-
-
-
 
 function current() {
     const date_day = new Date();
@@ -2343,23 +2709,84 @@ function current() {
 }
 
 
-function lista_meses(mes) {
-    const mesesMap = {
-        '01': 'Janeiro',
-        '02': 'Fevereiro',
-        '03': 'Março',
-        '04': 'Abril',
-        '05': 'Maio',
-        '06': 'Junho',
-        '07': 'Julho',
-        '08': 'Agosto',
-        '09': 'Setembro',
-        '10': 'Outubro',
-        '11': 'Novembro',
-        '12': 'Dezembro'
-    };
+function info_alerts(msg) {
+    swal({
+        title: "Atenção",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: `${msg}`
+            }
+        },
+        icon: "warning",
+        button: "OK"
+    });
+    setTimeout(() => {
+        const m = document.querySelector('.swal-modal');
 
-    return mesesMap[mes];
+        const icon = document.querySelector('.swal-icon--warning');
+        if (icon) {
+            icon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 28" 
+                    width="26" height="26" fill="white">
+                    <rect x="9" y="1" width="6" height="16" rx="2"/>
+                    <rect x="9" y="20" width="6" height="7" rx="2"/>
+                </svg>`;
+            icon.style.cssText = `
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background: #B67F11 !important;
+                border: none !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                margin: 0;
+            `;
+        }
+    }, 10);
+}
 
 
+function chamar_auxiliares() {
+    listArchivesJobs();
+
+    //CHAMA FUNCAO PARA LISTA AS AREAS DISPONIVEIS
+    get_lista_area();
+    //PENSAR EM CHAMAR NA HORA QUE TIVER O CLICK DENTRO DO CADASTRO
+    //CHAMA FUNCAO PARA LISTA AS AREAS DISPONIVEIS
+    get_lista_user_area();
+
+    //CHAMA FUNCAO PARA LISTA AS CLIENTES DISPONIVEIS
+    get_lista_cliente();
+
+    //CHAMA FUNCAO PARA LISTA DE TIPOS DISPONIVEIS
+    get_lista_tipo();
+
+    //CHAMA FUNCAO PARA LISTA DE STATUS DISPONIVEIS
+    get_lista_status();
+
+    //CHAMA FUNCAO PARA LISTA DE PERFIL P/JOB DISPONIVEIS
+    get_lista_perfil();
+    //   buscar_Info_Responsavel_Logado();
+
+    $('#btn-buscar').on('click', aplicarFiltros);
+    $('#f-busca').on('keypress', e => {
+        if (e.which === 13) aplicarFiltros();
+    });
+    $('#btn-fechar-drawer').on('click', fecharDrawer);
+    $(document).on('click', '.drawer-tab', function () {
+        mudarAba($(this).data('tab'));
+    });
+
+    //PADRAO O INPUT FICA ESCONDIDO 
+    $("#clientes_inputs").hide();
+
+    if ($('#d-id').val() != 417038 || $('#d-id').val() != 391849) {
+
+        $('body').addClass('user-restrito');
+    }
 }
