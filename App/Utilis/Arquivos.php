@@ -67,12 +67,12 @@ class Arquivos
 	{
 
 
-		echo '<pre>';
+		// echo '<pre>';
 
 
-		echo  "meus dados enviados\n";
-		print_r($dados);
-		die();
+		// echo  "meus dados enviados\n";
+		// print_r($dados);
+		// die();
 
 
 		$valor = 0;		## somo os valores e gero um valos

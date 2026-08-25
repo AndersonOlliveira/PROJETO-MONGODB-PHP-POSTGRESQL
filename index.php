@@ -30,13 +30,32 @@
             try {
 
                 logInfo('Executando o Loop da Aplicação...');
-                sleep(2);
+                sleep($tempo_esperara);
 
                 $app->processar($id, $quantidade);
 
                 logInfo("Aguardando {$tempo_esperara} segundos para a próximo interação...");
                 sleep($tempo_esperara);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
+
+                logInfo(
+                    "ERRO: " . $e->getMessage()
+                );
+
+                logInfo(
+                    "Arquivo: " . $e->getFile() .
+                        " | Linha: " . $e->getLine()
+                );
+
+                logInfo(
+                    "Trace: " . $e->getTraceAsString()
+                );
+
+                logInfo(
+                    "Aguardando {$tempo_esperara} segundos antes de tentar novamente..."
+                );
+
+                // sleep($tempo_esperara);
 
                 logInfo("Erro ao executar a aplicação: " . $e->getMessage());
                 sleep($tempo_esperara);

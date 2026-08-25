@@ -558,6 +558,31 @@ class new_arquivo extends Controller
 
         echo "chamei dentro do tramento";
     }
+    
+        private static function latin1ize($data)
+{
+    if (is_array($data)) {
+        foreach ($data as $key => $value) {
+            $data[$key] = self::latin1ize($value);
+        }
+    } elseif (is_string($data)) {
+        return trim(
+            mb_convert_encoding(
+                $data,
+                'ISO-8859-1',
+                'UTF-8'
+            )
+        );
+    }
+
+    return $data;
+}
+
+
+    public  function convertToLatin1($data)
+    {
+        return self::latin1ize($data);
+    }
 
 
     public function gerar_ar($idJob)
@@ -572,137 +597,156 @@ class new_arquivo extends Controller
         $transacoes = $this->CapturaDadosTransacoesJob->execute($idJob);
 
 
-        //  echo "<pre>";
-        //  echo "minhas transacoes\n";
+        echo "<pre>";
+        echo "minhas transacoes\n";
+        print_R($transacoes); 
+        
+        echo "<pre>";
+        echo "minhas colunasEsperadas\n";
+        print_R($colunasEsperadas);  echo "<pre>";
+        echo "minhas job\n";
+        print_R($job);  echo "<pre>";
+   
 
-        // print_R($transacoes);
-
-        // // echo "<pre>";
-
-        // // print_R($job);
-
-        // die();
+       // if (file_exists("$dir/JOB_$idJob.zip")) {
+			// 	unlink("$dir/JOB_$idJob.zip");
+			// }
+			// if (file_exists("$dir/JOB_$idJob.csv")) {
+			// 	unlink("$dir/JOB_$idJob.csv");
+			// }
+			// if (is_dir("$dir/JOB_$idJob")) {
+			// 	// remove todos os arquivos dentro
+			// 	array_map('unlink', glob("$dir/JOB_$idJob/*"));
+			// 	rmdir("$dir/JOB_$idJob");
+			// }
+			// die();
 
         if ($transacoes) {
 
-            $dir = $this->Config->env('path_arquivos_interno');
+            $dir = $this->Config->env('path_arquivos');
 
-
-
-
+            // if (file_exists("$dir/JOB_$idJob.zip")) {
+			// 	unlink("$dir/JOB_$idJob.zip");
+			// }
+			// if (file_exists("$dir/JOB_$idJob.csv")) {
+			// 	unlink("$dir/JOB_$idJob.csv");
+			// }
+			// if (is_dir("$dir/JOB_$idJob")) {
+			// 	// remove todos os arquivos dentro
+			// 	array_map('unlink', glob("$dir/JOB_$idJob/*"));
+			// 	rmdir("$dir/JOB_$idJob");
+			// }
+			// die();
+            
             if (!file_exists("$dir/JOB_$idJob.zip")) {
 
-                $conteudoArquivoPrincipal = "";
+               $conteudoArquivoPrincipal = "";
+				// mkdir("$dir/JOB_$idJob/", 0755, true);
 
-                mkdir("$dir/JOB_$idJob/", 0755, true);
+				$nomeArquivoPrincipal = "$dir/JOB_$idJob/CONSOLIDADA__" . $job['nome_arquivo'];
 
-                $nomeArquivoPrincipal = "$dir/JOB_$idJob/SAIDA_PRINCIPAL__" . $job['nome_arquivo'];
+				// $conteudoArquivoPrincipal .= "CPF/CNPJ;" . utf8_encode($job['header_arquivo']) . "\n";
+				$conteudoArquivoPrincipal .= implode(';', $colunasEsperadas) . ";";
 
+				$conteudoArquivoPrincipal .= self::garantirUtf8($job['header_arquivo']) . "\n";
 
-                // $conteudoArquivoPrincipal .= "CPF/CNPJ;" . utf8_encode($job['header_arquivo']) . "\n";
-                $conteudoArquivoPrincipal .= implode(';', $colunasEsperadas) . "\n";
+                echo "<pre>";
+                print_r("NOME COMPLENTO");
+                print_R($conteudoArquivoPrincipal);
 
-                $conteudoArquivoPrincipal .= self::garantirUtf8($job['header_arquivo']) . "\n";
-
-                #ajuste para limpar as strings do header do arquivo
-                $conteudoArquivoPrincipal = preg_replace('/[\d]+/', '', $conteudoArquivoPrincipal);
+                die();
+				#ajuste para limpar as strings do header do arquivo
+                $conteudoArquivoPrincipal = preg_replace('/[\d]+/', '', mb_strtoupper($conteudoArquivoPrincipal, 'UTF-8'));
                 // die();
+               
 
-                $fpPrincipal = fopen($nomeArquivoPrincipal, 'a');
-                //pra gerar um utf8
                 file_put_contents($nomeArquivoPrincipal, "\xEF\xBB\xBF");
 
                 $tCount = 0;
-                $plugins = array();
+				$plugins = array();
+				foreach ($transacoes as $registro) {
+
+					if (trim($registro['resposta']) != "" && $registro['resposta'] != null) {
+						// $conteudoArquivoPrincipal .= utf8_encode($registro['resposta']) . "\n";
+						$conteudoArquivoPrincipal .= self::convertToLatin1($registro['resposta']) . "\n";
+					} else {
+						$conteudoArquivoPrincipal .= self::convertToLatin1($registro['campo_aquisicao'])  . ";\n";
+						// $conteudoArquivoPrincipal .= utf8_encode($registro['campo_aquisicao']) . ";\n";
+					}
+
+					if (($tCount % 2000) == 0 && $tCount > 0) {
+
+						$conteudoArquivoPrincipal = LimpaString::limpaConteudoArquivo($conteudoArquivoPrincipal);
+
+						file_put_contents($nomeArquivoPrincipal, $conteudoArquivoPrincipal, FILE_APPEND);
+						unset($conteudoArquivoPrincipal);
+						$conteudoArquivoPrincipal = "";
+					}
+
+					$respPlugins = $this->CapturaRespostasPluginsTransacao->execute_old($registro['transacao_id']);
 
 
-                foreach ($transacoes as $registro) {
+                    print_R("MEUS DADOS? DO PUGLIN?");
+                    print_R($respPlugins);
 
 
-                    if (trim($registro['resposta']) != "" && $registro['resposta'] != null) {
-                        echo "<pre>";
-                        echo "MEU campo_aquisicao\n";
-                        print_R($registro['campo_aquisicao']);
-                        echo "MEU RESULTADO\n";
+					if ($respPlugins) {
 
-                        print_R($registro['resposta']);
-                        echo "MEU resposta\n";
-                        print_R($registro['resposta']);
+						foreach ($respPlugins as $resp) {
 
-                        // $conteudoArquivoPrincipal .= utf8_encode($registro['resposta']) . "\n";
-                        $conteudoArquivoPrincipal .= self::garantirUtf8($registro['resposta']) . "\n";
-                    } else {
-                        $conteudoArquivoPrincipal .= self::garantirUtf8($registro['campo_aquisicao'])  . "\n";
-                        // $conteudoArquivoPrincipal .= utf8_encode($registro['campo_aquisicao']) . ";\n";
+                             $campo_tratadao = str_replace(' ', '', str_replace("-", "_", self::garantirUtf8($resp['nome_campo'])));
 
-                    }
+							$nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $resp['plugin'] .'___' . $campo_tratadao. "__" . $job['nome_arquivo'];
+                            print_R($nomeArquivoPlugin);
+							if (!file_exists($nomeArquivoPlugin)) {
+								// file_put_contents(self::garantirUtf8($nomeArquivoPlugin), "CPF/CNPJ;" . self::garantirUtf8($resp['header_arquivo'])  . "\n", FILE_APPEND); // grava header
+								$headerCols = array_map('trim', explode(';', trim($resp['header_arquivo'], ';')));
+
+								$cabecalhoFinal = array_merge($colunasEsperadas, $headerCols);
+								$linhaCabecalho = implode(';', $cabecalhoFinal) . "\n";
+								$linhaCabecalho = mb_convert_encoding($linhaCabecalho, 'UTF-8', 'Windows-1252');
 
 
+								if (!file_exists($nomeArquivoPlugin)) {
+									file_put_contents($nomeArquivoPlugin, "\xEF\xBB\xBF"); // grava BOM
+								}
 
+								// Grava no arquivo
+								file_put_contents(self::garantirUtf8($nomeArquivoPlugin), strtoupper($linhaCabecalho), FILE_APPEND);
+								$conteudoArquivoPlg[$resp['plugin']] = "";
+								$plugins[] = $resp['plugin'];
+							}
+						}
 
-                    if (($tCount % 2000) == 0 && $tCount > 0) {
+						foreach ($respPlugins as $resp) {
 
-                        $conteudoArquivoPrincipal = $this->limpaString->limpaConteudoArquivo($conteudoArquivoPrincipal);
+                            $campo_tratadao = str_replace(' ', '', str_replace("-", "_", self::garantirUtf8($resp['nome_campo'])));
 
-                        file_put_contents($nomeArquivoPrincipal, $conteudoArquivoPrincipal, FILE_APPEND);
-                        unset($conteudoArquivoPrincipal);
-                        // fwrite($fpPrincipal, $conteudoArquivoPrincipal);
+							$nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $resp['plugin'] .'___' . $campo_tratadao. "__" . $job['nome_arquivo'];
 
-                        $conteudoArquivoPrincipal = "";
-                    }
+							// $nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $resp['plugin'] . "__" . $job['nome_arquivo'];
+							if (trim($resp['resposta']) != "" && $resp['resposta'] != null) {
+								$conteudoArquivoPlg[$resp['plugin']] .= self::garantirUtf8($resp['resposta']) . "\n";
+							}
+						}
+					}
 
-                    $respPlugins = $this->CapturaRespostasPluginsTransacao->execute($registro['transacao_id']);
+					$tCount++;
+				}
 
-                    if ($respPlugins) {
+				file_put_contents($nomeArquivoPrincipal, $conteudoArquivoPrincipal, FILE_APPEND);
 
-                        foreach ($respPlugins as $resp) {
+				if (count($plugins) > 0) {
+					foreach ($plugins as $plg) {
 
-                            $nomeArquivoPlugin = $this->enconde->convertEncode("$dir/JOB_$idJob/SAIDA_PLUGIN_" . $resp['plugin'] . "__" . $job['nome_arquivo']);
+						$nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $plg . "__" . $job['nome_arquivo'];
+						file_put_contents($nomeArquivoPlugin, $conteudoArquivoPlg[$plg], FILE_APPEND);
+					}
+				}
 
-                            if (!file_exists($nomeArquivoPlugin)) {
-                                // $header_plugin = self::garantirUtf8($resp['header_arquivo']) . "\n";
-                                $headerCols = array_map('trim', explode(';', trim($resp['header_arquivo'], ';')));
+                echo "<pre>";
+                print_r($conteudoArquivoPrincipal);
 
-                                $cabecalhoFinal = array_merge($colunasEsperadas, $headerCols);
-                                $linhaCabecalho = implode(';', $cabecalhoFinal) . "\n";
-
-
-
-                                $linhaCabecalho = mb_convert_encoding($linhaCabecalho, 'UTF-8', 'Windows-1252');
-
-                                if (!file_exists($nomeArquivoPlugin)) {
-                                    file_put_contents($nomeArquivoPlugin, "\xEF\xBB\xBF"); // grava BOM
-                                }
-
-                                // Grava no arquivo
-                                file_put_contents(self::garantirUtf8($nomeArquivoPlugin), $linhaCabecalho, FILE_APPEND);
-                                $conteudoArquivoPlg[$resp['plugin']] = "";
-                                $plugins[] = $resp['plugin'];
-                            }
-                        }
-
-                        foreach ($respPlugins as $resp) {
-
-                            $nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $resp['plugin'] . "__" . $job['nome_arquivo'];
-                            if (trim($resp['resposta']) != "" && $resp['resposta'] != null) {
-                                $conteudoArquivoPlg[$resp['plugin']] .= self::garantirUtf8($resp['resposta']) . "\n";
-                            }
-                        }
-                    }
-
-                    $tCount++;
-                }
-
-
-                file_put_contents($nomeArquivoPrincipal, $conteudoArquivoPrincipal, FILE_APPEND);
-
-                if (count($plugins) > 0) {
-                    foreach ($plugins as $plg) {
-
-                        $nomeArquivoPlugin = "$dir/JOB_$idJob/SAIDA_PLUGIN_" . $plg . "__" . $job['nome_arquivo'];
-                        file_put_contents(self::garantirUtf8($nomeArquivoPlugin), $conteudoArquivoPlg[$plg], FILE_APPEND);
-                    }
-                }
 
                 // ZIP
                 // exec("cd $dir; zip JOB_$idJob.zip JOB_$idJob/* -P '" . $job['contrato'] . "';");
@@ -711,6 +755,667 @@ class new_arquivo extends Controller
             return "Sucesso";
         }
     }
+
+     private static function utf8ize($data)
+    {
+
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = self::utf8ize($value);
+            }
+        } elseif (is_string($data)) {
+            return trim(mb_convert_encoding($data, 'UTF-8', 'UTF-8'));
+        }
+        return $data;
+    }
+    private static function utf8izeWin($data)
+    {
+
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = self::utf8izeWin($value);
+            }
+        } elseif (is_string($data)) {
+            return trim(mb_convert_encoding($data, 'UTF-8', 'Windows-1252'));
+        }
+        return $data;
+    }
+    public static function convertEncode($data)
+    {
+        $data_utf8 = self::utf8ize($data);
+        return $data_utf8;
+    }
+
+    public static function convertEncodeWin($data)
+    {
+        $data_utf8 = self::utf8izeWin($data);
+        return $data_utf8;
+    }
+
+    
+
+    // public function lste (){
+    //      require_once 'Config.php';
+    // require_once 'CapturaDadosJob.php';
+    // require_once 'CapturaDadosTransacoesJob.php';
+    // require_once 'CapturaRespostasPluginsTransacao.php';
+    // require_once 'CapturaCamposConsultas.php';
+    // require_once 'LimpaString.php';
+
+    // // =========================================================
+    // // 1. DADOS DO JOB
+    // // =========================================================
+
+    // $job = CapturaDadosJob::execute($idJob);
+
+    // if (!$job) {
+    //     echo "Job não encontrado.";
+    //     return "Erro";
+    // }
+
+    // $colunasEsperadas = CapturaCamposConsultas::Consultation_description(
+    //     $job['campos_aquisicao']
+    // );
+
+    // // =========================================================
+    // // 2. TRANSAÇÕES
+    // // =========================================================
+
+    // $transacoes = CapturaDadosTransacoesJob::execute($idJob);
+
+    // if (!$transacoes) {
+    //     echo "Nenhuma transação encontrada.";
+    //     return "Sem transações";
+    // }
+
+    // // =========================================================
+    // // 3. DIRETÓRIO
+    // // =========================================================
+
+    // $dir = Config::env('path_arquivos');
+
+    // $pastaJob = $dir . "/JOB_" . $idJob;
+
+    // if (!is_dir($pastaJob)) {
+    //     mkdir($pastaJob, 0755, true);
+    // }
+
+    // // =========================================================
+    // // 4. CABEÇALHO DO ARQUIVO PRINCIPAL
+    // // =========================================================
+
+    // $headerArquivo = self::garantirUtf8(
+    //     $job['header_arquivo']
+    // );
+
+    // // Remove números isolados no final das colunas
+    // $headerArquivo = preg_replace(
+    //     '/\s*\d+\s*(?=;|$)/',
+    //     '',
+    //     $headerArquivo
+    // );
+
+    // // Colunas vindas do header do arquivo
+    // $colunasHeaderArquivo = array_map(
+    //     'trim',
+    //     explode(
+    //         ';',
+    //         trim($headerArquivo, ';')
+    //     )
+    // );
+
+    // // =========================================================
+    // // 5. MONTA AS COLUNAS DO ARQUIVO PRINCIPAL
+    // // =========================================================
+
+    // $colunasPrincipal = array_merge(
+    //     $colunasEsperadas,
+    //     $colunasHeaderArquivo
+    // );
+
+    // // Remove vazios
+    // $colunasPrincipal = array_values(
+    //     array_filter(
+    //         $colunasPrincipal,
+    //         function ($coluna) {
+    //             return trim($coluna) !== '';
+    //         }
+    //     )
+    // );
+
+    // // =========================================================
+    // // 6. REMOVE DUPLICIDADE DAS COLUNAS PRINCIPAIS
+    // // =========================================================
+
+    // $colunasPrincipalUnicas = [];
+    // $colunasJaAdicionadas = [];
+
+    // foreach ($colunasPrincipal as $coluna) {
+
+    //     $coluna = trim($coluna);
+
+    //     $chave = mb_strtoupper(
+    //         $coluna,
+    //         'UTF-8'
+    //     );
+
+    //     if ($chave === '') {
+    //         continue;
+    //     }
+
+    //     if (!isset($colunasJaAdicionadas[$chave])) {
+
+    //         $colunasPrincipalUnicas[] = $coluna;
+    //         $colunasJaAdicionadas[$chave] = true;
+    //     }
+    // }
+
+    // $colunasPrincipal = $colunasPrincipalUnicas;
+
+    // // =========================================================
+    // // 7. MAPA DAS COLUNAS DO PRINCIPAL
+    // //
+    // // Exemplo:
+    // //
+    // // CPF   => 0
+    // // NOME  => 1
+    // // CIDADE => 2
+    // // =========================================================
+
+    // $mapaColunasPrincipal = [];
+
+    // foreach ($colunasPrincipal as $indice => $coluna) {
+
+    //     $chave = mb_strtoupper(
+    //         trim($coluna),
+    //         'UTF-8'
+    //     );
+
+    //     if ($chave !== '') {
+    //         $mapaColunasPrincipal[$chave] = $indice;
+    //     }
+    // }
+
+    // // =========================================================
+    // // 8. NOME DO ARQUIVO PRINCIPAL
+    // // =========================================================
+
+    // $nomeArquivoPrincipal =
+    //     $pastaJob .
+    //     "/ARQUIVO_CONSOLIDADO__" .
+    //     $job['nome_arquivo'];
+
+    // // =========================================================
+    // // 9. CRIA CABEÇALHO DO ARQUIVO PRINCIPAL
+    // // =========================================================
+
+    // $cabecalhoPrincipal =
+    //     implode(';', $colunasPrincipal) . "\n";
+
+    // // Cria arquivo com BOM
+    // file_put_contents(
+    //     $nomeArquivoPrincipal,
+    //     "\xEF\xBB\xBF" . $cabecalhoPrincipal
+    // );
+
+    // // =========================================================
+    // // 10. CONTROLE DOS PLUGINS
+    // // =========================================================
+
+    // $plugins = [];
+
+    // // Guarda conteúdo temporário dos plugins
+    // $conteudoPlugins = [];
+
+    // // Guarda cabeçalho dos plugins
+    // $cabecalhosPlugins = [];
+
+    // // =========================================================
+    // // 11. PROCESSA AS TRANSAÇÕES
+    // // =========================================================
+
+    // $contador = 0;
+
+    // $bufferPrincipal = '';
+
+    // foreach ($transacoes as $registro) {
+
+    //     echo "<pre>";
+    //     print_r(
+    //         "PROCESSANDO TRANSAÇÃO: " .
+    //         $registro['transacao_id']
+    //     );
+
+    //     // =====================================================
+    //     // 12. CRIA LINHA BASE DO PRINCIPAL
+    //     //
+    //     // Começa vazia:
+    //     //
+    //     // CPF;NOME;CIDADE;...
+    //     // ;;;...
+    //     // =====================================================
+
+    //     $linhaPrincipal = array_fill(
+    //         0,
+    //         count($colunasPrincipal),
+    //         ''
+    //     );
+
+    //     // =====================================================
+    //     // 13. RESPOSTA PRINCIPAL
+    //     // =====================================================
+
+    //     if (
+    //         isset($registro['resposta']) &&
+    //         trim($registro['resposta']) !== ''
+    //     ) {
+
+    //         $respostaPrincipal = self::garantirUtf8(
+    //             $registro['resposta']
+    //         );
+
+    //         $valoresPrincipal = array_map(
+    //             'trim',
+    //             explode(
+    //                 ';',
+    //                 trim($respostaPrincipal, ";\r\n")
+    //             )
+    //         );
+
+    //         /*
+    //          * IMPORTANTE:
+    //          *
+    //          * Aqui mantemos o comportamento antigo:
+    //          * a resposta principal segue a ordem das
+    //          * colunas principais.
+    //          */
+
+    //         foreach (
+    //             $valoresPrincipal as $indice => $valor
+    //         ) {
+
+    //             if (
+    //                 isset($linhaPrincipal[$indice])
+    //             ) {
+    //                 $linhaPrincipal[$indice] = $valor;
+    //             }
+    //         }
+
+    //     } elseif (
+    //         isset($registro['campo_aquisicao']) &&
+    //         trim($registro['campo_aquisicao']) !== ''
+    //     ) {
+
+    //         $respostaAquisicao =
+    //             self::garantirUtf8(
+    //                 $registro['campo_aquisicao']
+    //             );
+
+    //         $valoresAquisicao = array_map(
+    //             'trim',
+    //             explode(
+    //                 ';',
+    //                 trim($respostaAquisicao, ";\r\n")
+    //             )
+    //         );
+
+    //         foreach (
+    //             $valoresAquisicao as $indice => $valor
+    //         ) {
+
+    //             if (
+    //                 isset($linhaPrincipal[$indice])
+    //             ) {
+    //                 $linhaPrincipal[$indice] = $valor;
+    //             }
+    //         }
+    //     }
+
+    //     // =====================================================
+    //     // 14. BUSCA RESPOSTAS DOS PLUGINS
+    //     // =====================================================
+
+    //     $respPlugins =
+    //         CapturaRespostasPluginsTransacao::execute(
+    //             $registro['transacao_id']
+    //         );
+
+    //     // =====================================================
+    //     // 15. PROCESSA CADA PLUGIN
+    //     // =====================================================
+
+    //     if ($respPlugins) {
+
+    //         foreach ($respPlugins as $resp) {
+
+    //             $nomePlugin = trim(
+    //                 $resp['plugin']
+    //             );
+
+    //             if ($nomePlugin === '') {
+    //                 continue;
+    //             }
+
+    //             // =================================================
+    //             // 16. CABEÇALHO DO PLUGIN
+    //             // =================================================
+
+    //             $headerPluginOriginal =
+    //                 self::garantirUtf8(
+    //                     $resp['header_arquivo']
+    //                 );
+
+    //             // Caso não tenha header
+    //             if (
+    //                 $headerPluginOriginal === '-' ||
+    //                 trim($headerPluginOriginal) === ''
+    //             ) {
+
+    //                 if (
+    //                     isset($resp['resposta']) &&
+    //                     trim($resp['resposta']) !== ''
+    //                 ) {
+
+    //                     $valoresTemporarios = explode(
+    //                         ';',
+    //                         trim(
+    //                             $resp['resposta'],
+    //                             ";\r\n"
+    //                         )
+    //                     );
+
+    //                     $quantidadeColunas =
+    //                         count($valoresTemporarios);
+
+    //                     $headerPluginOriginal =
+    //                         implode(
+    //                             ';',
+    //                             array_map(
+    //                                 function ($i) {
+    //                                     return "COLUNA" . $i;
+    //                                 },
+    //                                 range(
+    //                                     1,
+    //                                     $quantidadeColunas
+    //                                 )
+    //                             )
+    //                         );
+    //                 }
+    //             }
+
+    //             // =================================================
+    //             // 17. TRANSFORMA HEADER DO PLUGIN EM ARRAY
+    //             // =================================================
+
+    //             $headerCols = array_map(
+    //                 'trim',
+    //                 explode(
+    //                     ';',
+    //                     trim(
+    //                         $headerPluginOriginal,
+    //                         ';'
+    //                     )
+    //                 )
+    //             );
+
+    //             // Remove vazios
+    //             $headerCols = array_values(
+    //                 array_filter(
+    //                     $headerCols,
+    //                     function ($coluna) {
+    //                         return trim($coluna) !== '';
+    //                     }
+    //                 )
+    //             );
+
+    //             // =================================================
+    //             // 18. CRIA ARQUIVO DO PLUGIN
+    //             // =================================================
+
+    //             if (!isset($plugins[$nomePlugin])) {
+
+    //                 $plugins[$nomePlugin] = true;
+
+    //                 $nomeArquivoPlugin =
+    //                     $pastaJob .
+    //                     "/SAIDA_PLUGIN_" .
+    //                     $nomePlugin .
+    //                     "__" .
+    //                     $job['nome_arquivo'];
+
+    //                 $cabecalhoPlugin =
+    //                     implode(
+    //                         ';',
+    //                         $headerCols
+    //                     ) . "\n";
+
+    //                 file_put_contents(
+    //                     $nomeArquivoPlugin,
+    //                     "\xEF\xBB\xBF" .
+    //                     $cabecalhoPlugin
+    //                 );
+
+    //                 $conteudoPlugins[$nomePlugin] = '';
+
+    //                 $cabecalhosPlugins[$nomePlugin] =
+    //                     $headerCols;
+    //             }
+
+    //             // =================================================
+    //             // 19. MAPA DO PLUGIN -> PRINCIPAL
+    //             // =================================================
+
+    //             $mapaPlugin = [];
+
+    //             foreach (
+    //                 $headerCols as $indicePlugin => $coluna
+    //             ) {
+
+    //                 $chave = mb_strtoupper(
+    //                     trim($coluna),
+    //                     'UTF-8'
+    //                 );
+
+    //                 if ($chave === '') {
+    //                     continue;
+    //                 }
+
+    //                 if (
+    //                     isset(
+    //                         $mapaColunasPrincipal[$chave]
+    //                     )
+    //                 ) {
+
+    //                     $mapaPlugin[$indicePlugin] =
+    //                         $mapaColunasPrincipal[$chave];
+
+    //                 } else {
+
+    //                     $mapaPlugin[$indicePlugin] =
+    //                         null;
+    //                 }
+    //             }
+
+    //             // =================================================
+    //             // 20. PROCESSA RESPOSTA DO PLUGIN
+    //             // =================================================
+
+    //             if (
+    //                 !isset($resp['resposta']) ||
+    //                 trim($resp['resposta']) === ''
+    //             ) {
+    //                 continue;
+    //             }
+
+    //             $respostaPlugin =
+    //                 self::garantirUtf8(
+    //                     $resp['resposta']
+    //                 );
+
+    //             $valoresPlugin = array_map(
+    //                 'trim',
+    //                 explode(
+    //                     ';',
+    //                     trim(
+    //                         $respostaPlugin,
+    //                         ";\r\n"
+    //                     )
+    //                 )
+    //             );
+
+    //             // =================================================
+    //             // 21. MONTA LINHA DO ARQUIVO DO PLUGIN
+    //             // =================================================
+
+    //             $linhaPlugin = [];
+
+    //             foreach ($headerCols as $indice => $coluna) {
+
+    //                 $linhaPlugin[$indice] =
+    //                     isset($valoresPlugin[$indice])
+    //                         ? $valoresPlugin[$indice]
+    //                         : '';
+    //             }
+
+    //             $conteudoPlugins[$nomePlugin] .=
+    //                 implode(
+    //                     ';',
+    //                     $linhaPlugin
+    //                 ) . "\n";
+
+    //             // =================================================
+    //             // 22. COLOCA O RESULTADO DO PLUGIN NO PRINCIPAL
+    //             // =================================================
+
+    //             foreach (
+    //                 $valoresPlugin as $indicePlugin => $valor
+    //             ) {
+
+    //                 // Plugin não possui essa posição
+    //                 if (
+    //                     !isset(
+    //                         $mapaPlugin[$indicePlugin]
+    //                     )
+    //                 ) {
+    //                     continue;
+    //                 }
+
+    //                 $indicePrincipal =
+    //                     $mapaPlugin[$indicePlugin];
+
+    //                 // Cabeçalho não existe no principal
+    //                 if (
+    //                     $indicePrincipal === null
+    //                 ) {
+    //                     continue;
+    //                 }
+
+    //                 // Coloca valor na coluna correta
+    //                 $linhaPrincipal[
+    //                     $indicePrincipal
+    //                 ] = $valor;
+    //             }
+    //         }
+    //     }
+
+    //     // =====================================================
+    //     // 23. MONTA LINHA FINAL DO PRINCIPAL
+    //     // =====================================================
+
+    //     $bufferPrincipal .=
+    //         implode(
+    //             ';',
+    //             $linhaPrincipal
+    //         ) . "\n";
+
+    //     $contador++;
+
+    //     // =====================================================
+    //     // 24. GRAVA EM BLOCOS DE 2000
+    //     // =====================================================
+
+    //     if (
+    //         $contador % 2000 === 0
+    //     ) {
+
+    //         file_put_contents(
+    //             $nomeArquivoPrincipal,
+    //             $bufferPrincipal,
+    //             FILE_APPEND
+    //         );
+
+    //         $bufferPrincipal = '';
+
+    //         echo "<pre>";
+    //         print_r(
+    //             "Gravados " .
+    //             $contador .
+    //             " registros..."
+    //         );
+    //     }
+    // }
+
+    // // =========================================================
+    // // 25. GRAVA O RESTANTE DO PRINCIPAL
+    // // =========================================================
+
+    // if ($bufferPrincipal !== '') {
+
+    //     file_put_contents(
+    //         $nomeArquivoPrincipal,
+    //         $bufferPrincipal,
+    //         FILE_APPEND
+    //     );
+    // }
+
+    // // =========================================================
+    // // 26. GRAVA OS ARQUIVOS DOS PLUGINS
+    // // =========================================================
+
+    // foreach (
+    //     $conteudoPlugins as $nomePlugin => $conteudo
+    // ) {
+
+    //     if ($conteudo === '') {
+    //         continue;
+    //     }
+
+    //     $nomeArquivoPlugin =
+    //         $pastaJob .
+    //         "/SAIDA_PLUGIN_" .
+    //         $nomePlugin .
+    //         "__" .
+    //         $job['nome_arquivo'];
+
+    //     file_put_contents(
+    //         $nomeArquivoPlugin,
+    //         $conteudo,
+    //         FILE_APPEND
+    //     );
+    // }
+
+    // // =========================================================
+    // // 27. FINAL
+    // // =========================================================
+
+    // echo "<pre>";
+    // print_r("========================================");
+    // print_r("GERAÇÃO FINALIZADA");
+    // print_r("ARQUIVO PRINCIPAL:");
+    // print_r($nomeArquivoPrincipal);
+    // print_r("TOTAL DE TRANSAÇÕES:");
+    // print_r($contador);
+
+    // print_r("PLUGINS:");
+
+    // foreach ($plugins as $plugin => $valor) {
+    //     print_r($plugin);
+    // }
+
+    // print_r("========================================");
+
+    // return "Sucesso";
+    // }
 
 
     public static function garantirUtf8($texto)
