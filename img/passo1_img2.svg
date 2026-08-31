@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="909" height="236.822" viewBox="0 0 909 236.822">
+  <defs>
+    <filter id="Rectangle_10" x="0" y="0" width="909" height="236.822" filterUnits="userSpaceOnUse">
+      <feOffset dy="4" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="22" result="blur"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_8" data-name="Group 8" transform="translate(-334 -510)">
+    <g transform="matrix(1, 0, 0, 1, 334, 510)" filter="url(#Rectangle_10)">
+      <rect id="Rectangle_10-2" data-name="Rectangle 10" width="777" height="104.822" rx="10" transform="translate(66 62)" fill="#fff"/>
+    </g>
+    <text id="Selecione_o_ano:" data-name="Selecione o ano:" transform="translate(423.457 586.66)" fill="#1e1e1e" font-size="12" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="12">Selecione o ano:</tspan></text>
+    <rect id="Rectangle_19" data-name="Rectangle 19" width="164.196" height="17.592" rx="3" transform="translate(587.653 582.995)" fill="#ededed"/>
+    <path id="Rectangle_17" data-name="Rectangle 17" d="M0,0H777a0,0,0,0,1,0,0V57.438a10,10,0,0,1-10,10H10a10,10,0,0,1-10-10V0A0,0,0,0,1,0,0Z" transform="translate(400 609.384)" fill="#ededed"/>
+    <text id="_2026" data-name="2026" transform="translate(587.653 586.66)" fill="#7a7a7a" font-size="8" font-family="Inter-Regular, Inter" letter-spacing="0.05em"><tspan x="-10" y="8">2026</tspan></text>
+    <text id="Média_Volumetria_Mês:_R_XX.xxx_xx" data-name="Média Volumetria/Mês: R$ XX.xxx,xx" transform="translate(423.457 620.379)" fill="#1e1e1e" font-size="10" font-family="Inter-Regular, Inter"><tspan x="0" y="10">Média Volumetria</tspan><tspan y="10">/Mês: R$ XX.xxx,xx</tspan></text>
+    <text id="Fatura_Média_Mês:_R_XX.xxx_xx" data-name="Fatura Média/Mês: R$ XX.xxx,xx" transform="translate(423.457 654.098)" fill="#1e1e1e" font-size="10" font-family="Inter-Regular, Inter"><tspan x="0" y="10">Fatura Média</tspan><tspan y="10">/Mês: R$ XX.xxx,xx</tspan></text>
+    <rect id="Rectangle_11" data-name="Rectangle 11" width="214.041" height="33.719" transform="translate(962.958 609.384)" fill="#00005f"/>
+    <path id="Rectangle_18" data-name="Rectangle 18" d="M0,0H214.041a0,0,0,0,1,0,0V23.719a10,10,0,0,1-10,10H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" transform="translate(962.958 643.103)" fill="#00005f"/>
+    <text id="Volume_Anual:_R_XX.xxx_xx" data-name="Volume Anual: R$ XX.xxx,xx" transform="translate(986.415 620.379)" fill="#fff" font-size="10" font-family="Inter-Regular, Inter"><tspan x="0" y="10">Volume Anual: </tspan><tspan y="10">R$ XX.xxx,xx</tspan></text>
+    <text id="Fatura_Anual:_R_XX.xxx_xx" data-name="Fatura Anual: R$ XX.xxx,xx" transform="translate(986.415 654.098)" fill="#fff" font-size="10" font-family="Inter-Regular, Inter"><tspan x="0" y="10">Fatura Anual: </tspan><tspan y="10">R$ XX.xxx,xx</tspan></text>
+    <line id="Line_4" data-name="Line 4" x2="562.958" transform="translate(400 644.569)" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
+    <line id="Line_5" data-name="Line 5" x2="214.041" transform="translate(962.958 644.569)" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+    <path id="Polygon_2" data-name="Polygon 2" d="M5.055,1.112a1,1,0,0,1,1.617,0l3.9,5.363a1,1,0,0,1-.809,1.588h-7.8a1,1,0,0,1-.809-1.588Z" transform="translate(728.392 587.393)" fill="#7a7a7a"/>
+  </g>
+</svg>

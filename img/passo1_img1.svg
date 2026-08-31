@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="909" height="167.185" viewBox="0 0 909 167.185">
+  <defs>
+    <filter id="Rectangle_5" x="0" y="0" width="909" height="167.185" filterUnits="userSpaceOnUse">
+      <feOffset dy="4" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="22" result="blur"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_7" data-name="Group 7" transform="translate(-334 -417.906)">
+    <g transform="matrix(1, 0, 0, 1, 334, 417.91)" filter="url(#Rectangle_5)">
+      <rect id="Rectangle_5-2" data-name="Rectangle 5" width="777" height="35.185" rx="10" transform="translate(66 62)" fill="#fff"/>
+    </g>
+    <text id="Busca_por_período" data-name="Busca por período" transform="translate(423.457 490.901)" fill="#1e1e1e" font-size="12" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="12">Busca por período</tspan></text>
+    <rect id="Rectangle_6" data-name="Rectangle 6" width="164.196" height="17.592" rx="3" transform="translate(587.653 488.702)" fill="#ededed"/>
+    <rect id="Rectangle_7" data-name="Rectangle 7" width="164.196" height="17.592" rx="3" transform="translate(775.306 488.702)" fill="#ededed"/>
+    <rect id="Rectangle_8" data-name="Rectangle 8" width="82.098" height="17.592" rx="3" transform="translate(962.958 488.702)" fill="#00005f"/>
+    <rect id="Rectangle_9" data-name="Rectangle 9" width="93.826" height="17.592" rx="3" transform="translate(1068.513 488.702)" fill="#75758e"/>
+    <text id="De:" transform="translate(599.381 492.367)" fill="#7a7a7a" font-size="8" font-family="Inter-Regular, Inter"><tspan x="0" y="8">De:</tspan></text>
+    <text id="Até:" transform="translate(788.5 492.367)" fill="#7a7a7a" font-size="8" font-family="Inter-Regular, Inter"><tspan x="0" y="8">Até:</tspan></text>
+    <text id="Buscar" transform="translate(962.958 490.901)" fill="#fff" font-size="10" font-family="Inter-Medium, Inter" font-weight="500"><tspan x="-16" y="10">Buscar</tspan></text>
+    <text id="Limpar_filtros" data-name="Limpar filtros" transform="translate(1074.377 490.901)" fill="#fff" font-size="10" font-family="Inter-Medium, Inter" font-weight="500"><tspan x="-31" y="10">Limpar filtros</tspan></text>
+    <g id="ri:calendar-fill" transform="translate(729.125 492.367)">
+      <rect id="ri:calendar-fill_Frame_Background_" data-name="ri:calendar-fill [Frame Background]" width="10.995" height="10.995" fill="none"/>
+      <path id="Vector" d="M0,4.581H9.163V8.7a.458.458,0,0,1-.458.458H.458A.458.458,0,0,1,0,8.7ZM6.872.916H8.7a.458.458,0,0,1,.458.458V3.665H0V1.374A.458.458,0,0,1,.458.916H2.291V0h.916V.916H5.956V0h.916Z" transform="translate(0.916 0.458)" fill="#7a7a7a"/>
+    </g>
+    <g id="ri:calendar-fill-2" data-name="ri:calendar-fill" transform="translate(916.778 492.367)">
+      <rect id="ri:calendar-fill_Frame_Background_2" data-name="ri:calendar-fill [Frame Background]" width="10.995" height="10.995" fill="none"/>
+      <path id="Vector-2" data-name="Vector" d="M0,4.581H9.163V8.7a.458.458,0,0,1-.458.458H.458A.458.458,0,0,1,0,8.7ZM6.872.916H8.7a.458.458,0,0,1,.458.458V3.665H0V1.374A.458.458,0,0,1,.458.916H2.291V0h.916V.916H5.956V0h.916Z" transform="translate(0.916 0.458)" fill="#7a7a7a"/>
+    </g>
+  </g>
+</svg>

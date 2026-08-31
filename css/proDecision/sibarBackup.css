@@ -1,0 +1,243 @@
+
+    /* CSS PARA O MENU LATERAL */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+    #bdSidebar {
+    width: 200px !important;
+    height: 100vh;
+    background-color: #8A9EA5 !important;
+    display: flex !important;
+    flex-direction: column;
+    padding: 0 !important;
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    overflow: hidden;
+    border: none; 
+    border-right: 6px solid transparent !important; /* Base transparente para o gradiente aplicar sobre ela */
+    border-image: linear-gradient(to bottom, #E73C2C, #F7BA1E, #35A853, #4285F4) 1 !important;
+    }
+
+    .modal-header {
+        background: #00005F !important;
+        color: white;
+    }
+
+    #bdSidebar .sidebar-scroll-area {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    #bdSidebar .sidebar-scroll-area::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    #bdSidebar .sidebar-scroll-area::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+    }
+
+    /* body {
+        margin-left: 200px;
+    } */
+
+    /* ── Logo ── */
+    #bdSidebar .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 16px 16px;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    #bdSidebar .navbar-brand .brand-logo-wrapper {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #bdSidebar .navbar-brand .brand-logo-wrapper img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+    }
+
+    #bdSidebar .navbar-brand .brand-name {
+        font-size: 1.15rem;
+        font-weight: 400;
+        color: #F8F9FC;
+        letter-spacing: .2px;
+        line-height: 1;
+    }
+
+    #bdSidebar .navbar-brand .brand-light {
+        font-weight: 700;
+    }
+
+    #bdSidebar hr {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        margin: 0 14px 4px;
+        flex-shrink: 0;
+    }
+
+    /* ── Nav principal ── */
+    #bdSidebar .mynav {
+        list-style: none;
+        padding: 6px 8px;
+        margin: 0;
+    }
+
+    #bdSidebar .mynav .nav-item {
+        margin-bottom: 2px;
+    }
+
+    #bdSidebar .mynav .nav-item a {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 10px;
+        border-radius: 7px;
+        color: rgba(248, 249, 255, 0.65);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 18px;
+        transition: background .15s, color .15s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #bdSidebar .mynav .nav-item a:hover {
+        background: rgb(247, 246, 246);
+        color: #000000;
+    }
+
+    #bdSidebar .mynav .nav-item a.active {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: #F8F9FC;
+        color: #8A9EA5 !important;
+        font-weight: 600;
+        border-radius: 7px;
+        width: calc(100% - 8px);
+        margin: 0 4px;
+        padding: 9px 10px;
+        box-sizing: border-box;
+        white-space: nowrap;
+    }
+
+    #bdSidebar .mynav .nav-item a i {
+        width: 16px;
+        min-width: 16px;
+        text-align: center;
+        font-size: 13px;
+        flex-shrink: 0;
+        color: inherit;
+    }
+
+    #bdSidebar .mynav .nav-item a.active i {
+        color: #4f4f50;
+    }
+
+    /* ── Perfil ── */
+    .sidebar-profile {
+        flex-shrink: 0;
+        padding: 10px 16px 6px;
+    }
+
+    .sidebar-profile .profile-label {
+        font-size: 9px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.35);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+
+    .sidebar-profile a {
+        display: block;
+        color: rgba(255, 255, 255, 0.55);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 16px;
+        padding: 3px 0;
+        transition: color .15s;
+    }
+
+    .sidebar-profile a:hover {
+        color: #F8F9FC;
+    }
+
+    /* ── Usuário logado ── */
+    .sidebar-user {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 14px 30px;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .sidebar-user .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #F8F9FC;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #00005F;
+        flex-shrink: 0;
+        text-transform: uppercase;
+    }
+
+    .sidebar-user .user-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .sidebar-user .user-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: #F8F9FC;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user .user-id {
+        font-size: 11px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.4);
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .img_Menu_Progestor {
+        display: none !important;
+    }
+    /* FINAL CSS PARA O MENU LATERAL */

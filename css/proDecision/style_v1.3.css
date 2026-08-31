@@ -1,0 +1,268 @@
+ 
+    /* ---- variáveis -------------------------------------------- */
+    :root {
+        --c-navy: #1e2d5a;
+        --c-blue: #2e4fa3;
+        --c-accent: #4a6fd4;
+        --c-green: #638C22;
+        --c-orange: #B67F11;
+        --c-red: #E3595C;
+        --c-bg: #f2f5fa;
+        --c-white: #ffffff;
+        --c-border: #e2e8f0;
+        --c-text: #1e293b;
+        --c-muted: #64748b;
+        --c-hover: #e4ecf9;
+        --c-row-odd: #f8fafc;
+        --c-row-evn: #eef2f8;
+        --radius: 8px;
+        --shadow: 0 1px 10px rgba(15, 31, 75, .07);
+        --shadow-md: 0 4px 20px rgba(15, 31, 75, .12);
+        --font: 'Inter', sans-serif;
+    }
+
+    /* ---- reset / base ----------------------------------------- */
+    body {
+        background: var(--c-bg) !important;
+        font-family: var(--font);
+        font-size: 13px;
+        color: var(--c-text);
+    }
+
+ 
+ /* =============================================
+       VIEW SUPERIOR — barra topo
+       ============================================= */
+
+    .pg-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 0 18px;
+        background: #ffffff;
+        border-bottom: 1px solid #dde3ed;
+        min-height: 44px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Grupo de botões agrupados */
+    .pg-btn-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .pg-btn-group .btn-nav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        background: #ebebeb;
+        border: none;
+        border-radius: 4px;
+        color: #4b4b4b;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .15s;
+    }
+
+    .pg-btn-group .btn-nav:hover {
+        background: #d4d4d4;
+    }
+
+    /* Setas dos botões ◄ ► */
+    .btn-nav .arrow {
+        width: 0;
+        height: 0;
+        display: block;
+    }
+
+    .btn-nav .arrow-left {
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-right: 8px solid #6e6e6e;
+    }
+
+    .btn-nav .arrow-right {
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 8px solid #6e6e6e;
+    }
+
+    /* Botão Sair */
+    .btn-sair {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        background: #ebebeb;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .15s;
+        padding: 0;
+    }
+
+    .btn-sair:hover {
+        background: #d4d4d4;
+    }
+
+    .btn-sair svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    /* Divisor vertical */
+    .pg-topbar-divider {
+        width: 1px;
+        height: 20px;
+        background: #dde3ed;
+        flex-shrink: 0;
+    }
+
+    /* Logo proScore */
+    .pg-topbar .logo-proscore img {
+        height: 28px;
+        object-fit: contain;
+    }
+
+    /* ── Apps grid button ── */
+    .pg-apps-btn {
+        position: relative;
+    }
+
+    .pg-apps-trigger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        background: #ebebeb;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background .15s;
+        padding: 0;
+    }
+
+    .pg-apps-trigger:hover {
+        background: #d4d4d4;
+    }
+
+    .pg-apps-trigger svg {
+        width: 14px;
+        height: 14px;
+        fill: #4b4b4b;
+    }
+
+    .pg-apps-dropdown {
+        display: none;
+        position: absolute;
+        top: 34px;
+        right: 0;
+        background: #fff;
+        border: 1px solid #dde3ed;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(15, 31, 75, .12);
+        width: 260px;
+        padding: 12px;
+        z-index: 9999;
+    }
+
+    .pg-apps-dropdown.open {
+        display: block;
+    }
+
+    .pg-apps-dropdown-title {
+        font-size: 9px;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        margin-bottom: 10px;
+        padding: 0 4px;
+    }
+
+    .pg-apps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+    }
+
+    .pg-app-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 4px;
+        border-radius: 7px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .15s;
+    }
+
+    .pg-app-item:hover {
+        background: #f0f4fb;
+    }
+
+    .pg-app-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        /* background: #1e2d5a; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pg-app-icon img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        filter: none;
+        /* filter: brightness(0) invert(1); */
+    }
+
+    .pg-app-icon.pg-app-current {
+        /* background: #1e3a8a; */
+        outline: 2px solid #4a6fd4;
+    }
+
+    .pg-app-name {
+        font-size: 10px;
+        color: #334155;
+        text-align: center;
+        line-height: 1.2;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Estado vazio / loading */
+    .pg-apps-empty {
+        font-size: 11px;
+        color: #94a3b8;
+        text-align: center;
+        padding: 12px 0;
+    }
+
+    /* ── Oculta elementos legados ── */
+    .h2Progestor {
+        display: none !important;
+    }
+
+    nav.menu-nav {
+        display: none !important;
+    }
+
+    nav.menu-nav+hr {
+        display: none !important;
+    }
+
+
+
+
+    

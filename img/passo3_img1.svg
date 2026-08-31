@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="824.25" height="173.094" viewBox="0 0 824.25 173.094">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="uiw:paper-clip_Frame_Clip_Content_Mask_" data-name="uiw:paper-clip [Frame Clip Content Mask]" width="10.156" height="10.156" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Group_13" data-name="Group 13" transform="translate(-400 -482.094)">
+    <g id="Ellipse_2" data-name="Ellipse 2" transform="translate(400 628.188)" fill="none" stroke="#7a7a7a" stroke-width="1">
+      <circle cx="5.469" cy="5.469" r="5.469" stroke="none"/>
+      <circle cx="5.469" cy="5.469" r="4.969" fill="none"/>
+    </g>
+    <g id="Rectangle_21" data-name="Rectangle 21" transform="translate(521.094 482.094)" fill="none" stroke="#7a7a7a" stroke-width="0.5">
+      <path d="M0,0H663.406a3,3,0,0,1,3,3V22a3,3,0,0,1-3,3H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" stroke="none"/>
+      <path d="M.5.25H663.406A2.75,2.75,0,0,1,666.156,3V22a2.75,2.75,0,0,1-2.75,2.75H.5a.25.25,0,0,1-.25-.25V.5A.25.25,0,0,1,.5.25Z" fill="none"/>
+    </g>
+    <g id="Rectangle_22" data-name="Rectangle 22" transform="translate(400 590.688)" fill="none" stroke="#7a7a7a" stroke-width="0.5">
+      <rect width="787.5" height="25" rx="3" stroke="none"/>
+      <rect x="0.25" y="0.25" width="787" height="24.5" rx="2.75" fill="none"/>
+    </g>
+    <rect id="Rectangle_7" data-name="Rectangle 7" width="787.5" height="50" transform="translate(400 507.094)" fill="#ededed"/>
+    <rect id="Rectangle_8" data-name="Rectangle 8" width="125" height="25" rx="3" transform="translate(400 482.094)" fill="#00005f"/>
+    <rect id="Rectangle_23" data-name="Rectangle 23" width="100" height="17.969" rx="3" transform="translate(521.094 625.063)" fill="#75758e"/>
+    <text id="Enviar_arquivo_.CSV_contendo_as_seguintes_especificações_" data-name="Enviar arquivo .CSV contendo as seguintes especificações " transform="translate(414.063 514.125)" fill="#7a7a7a" font-size="8" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="8">Enviar arquivo .CSV contendo as seguintes especificações</tspan><tspan x="0" y="18"></tspan></text>
+    <text id="Codificação_UTF-8_Tamanho_máximo_de_0_registros_por_arquivo" data-name="Codificação UTF-8 Tamanho máximo de 0 registros por arquivo" transform="translate(411.719 526.625)" fill="#7a7a7a" font-size="8" font-family="Inter-Regular, Inter"><tspan x="0" y="8">Codificação UTF-8</tspan><tspan x="0" y="19">Tamanho máximo de </tspan><tspan y="19" fill="#e3595c">0</tspan><tspan y="19"> registros por arquivo</tspan></text>
+    <text id="Quantidade_de_Jobs_Simultâneos_Permitidos:_0_Jobs_Simultâneos_em_Processamento:_0" data-name="Quantidade de Jobs Simultâneos Permitidos: 0 Jobs Simultâneos em Processamento: 0" transform="translate(695.313 526.625)" fill="#7a7a7a" font-size="8" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="8">Quantidade de Jobs Simultâneos Permitidos: </tspan><tspan y="8" fill="#00005f">0</tspan><tspan x="0" y="19">Jobs Simultâneos em Processamento:</tspan><tspan y="19" fill="#00005f"> 0</tspan></text>
+    <text id="Não_enviar_cabeçalho_Campos_obrigatórios" data-name="Não enviar cabeçalho (*) Campos obrigatórios" transform="translate(956.25 526.625)" fill="#7a7a7a" font-size="8" font-family="Inter-MediumItalic, Inter" font-weight="500" font-style="italic"><tspan x="0" y="8">Não enviar cabeçalho</tspan><tspan x="0" y="18" xml:space="preserve">  </tspan><tspan y="18" fill="#e3595c">(*) Campos obrigatórios</tspan></text>
+    <text id="Nenhum_arquivo_selecionado" data-name="Nenhum arquivo selecionado" transform="translate(537.5 488.344)" fill="#7a7a7a" font-size="10" font-family="Inter-MediumItalic, Inter" font-weight="500" font-style="italic"><tspan x="0" y="10">Nenhum arquivo selecionado</tspan></text>
+    <text id="Pesquisar..." transform="translate(416.406 596.938)" fill="#7a7a7a" font-size="10" font-family="Inter-MediumItalic, Inter" font-weight="500" font-style="italic"><tspan x="0" y="10">Pesquisar...</tspan></text>
+    <text id="Consulta_-_proFlag" data-name="Consulta - proFlag" transform="translate(416.406 628.188)" fill="#7a7a7a" font-size="10" font-family="Inter-MediumItalic, Inter" font-weight="500" font-style="italic"><tspan x="0" y="10">Consulta - proFlag</tspan></text>
+    <text id="Escolha_o_arquivo_CSV" data-name="Escolha o arquivo CSV" transform="translate(421.094 489.125)" fill="#fff" font-size="8" font-family="Inter-SemiBoldItalic, Inter" font-weight="600" font-style="italic"><tspan x="0" y="8">Escolha o arquivo CSV</tspan></text>
+    <text id="Consultar_layout" data-name="Consultar layout" transform="translate(534.375 628.188)" fill="#fff" font-size="11" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="-25" y="11">Consultar </tspan><tspan x="-16" y="24">layout</tspan></text>
+    <text id="_Escolha_a_s_consulta_s_:" data-name="*Escolha a(s) consulta(s):" transform="translate(400 571.938)" fill="#1e1e1e" font-size="11" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="11">*Escolha a(s) consulta(s): </tspan></text>
+    <g id="uiw:paper-clip_Clip_Content_" data-name="uiw:paper-clip (Clip Content)" transform="translate(406.25 489.125)" clip-path="url(#clip-path)">
+      <rect id="uiw:paper-clip_Frame_Background_" data-name="uiw:paper-clip [Frame Background]" width="10.156" height="10.156" fill="none"/>
+      <path id="Vector" d="M.9,4.357a.347.347,0,0,1-.5,0,.358.358,0,0,1,0-.5L3.463.762A3.123,3.123,0,0,1,5.54,0,3.21,3.21,0,0,1,7.666.925a3.118,3.118,0,0,1,.967,2.309A3.07,3.07,0,0,1,7.966,5.2L3.648,9.644a2.1,2.1,0,0,1-1.442.51A2.2,2.2,0,0,1,0,7.915,2.377,2.377,0,0,1,.586,6.369l3.8-3.88a1.64,1.64,0,0,1,.907-.565,1.264,1.264,0,0,1,1.117.383,1.282,1.282,0,0,1,.345,1.048,1.39,1.39,0,0,1-.349.776L2.914,7.71a.347.347,0,0,1-.495,0,.358.358,0,0,1,0-.5L5.893,3.651a.659.659,0,0,0,.168-.368A.578.578,0,0,0,5.4,2.624a1.053,1.053,0,0,0-.509.358L1.1,6.845A1.646,1.646,0,0,0,.7,7.916,1.5,1.5,0,0,0,2.234,9.447a1.386,1.386,0,0,0,.944-.326L7.442,4.729a2.35,2.35,0,0,0,.491-1.494,2.412,2.412,0,0,0-.745-1.792A2.521,2.521,0,0,0,5.505.712a2.425,2.425,0,0,0-1.583.582Z" transform="translate(0.762 0)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

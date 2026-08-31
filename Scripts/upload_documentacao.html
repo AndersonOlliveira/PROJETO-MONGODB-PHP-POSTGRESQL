@@ -1,0 +1,63 @@
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$('#seuInputFile').on('change', function(event) {
+	    // Pega o arquivo selecionado
+	    var arquivo = event.target.files[0]; 
+	    
+	    if (arquivo) {
+	        var reader = new FileReader();
+	        
+	        // Define o que fazer quando a leitura terminar
+	        reader.onload = function(e) {
+	            var base64Completo = e.target.result; // String Base64 com o prefixo data:
+	            upload_documentacao(base64Completo);
+	        }
+
+	        // Lê o arquivo como URL de dados (Base64)
+        	reader.readAsDataURL(arquivo);
+	    }
+	});
+
+});
+
+function upload_documentacao(base64Completo){
+
+	let formData = new FormData();
+	formData.append('tctrid', "412866");
+	formData.append('tctraut', "98ac4410a8382712d11f385258b6d3d8");
+	formData.append('cnsid', "581751855");
+	formData.append('descricao', "teste");
+	formData.append('base64Completo', base64Completo);
+
+	$.ajax({
+		url: "/prodecision/api/upload_documentacao.php",
+	    type: 'POST',
+	    data:  formData,
+	    processData: false,
+	    contentType: false,
+	    async: true,
+	    statusCode: {
+	    	200: function(response) {
+	    		alert(response.mensagem);
+		    },
+		    422: function(response) {
+		    	$.each( response.responseJSON.errors, function( key, value ) {
+		    		//erros
+		    	  	console.log(key+value);
+				});
+		    },
+		    401:function(response) {
+		      alert(response.responseText);
+		    },
+		    500: function(response) {
+		      alert(response.responseText);
+		    } 
+		}
+	});
+}
+</script>
+
+<input type="file" id="seuInputFile">

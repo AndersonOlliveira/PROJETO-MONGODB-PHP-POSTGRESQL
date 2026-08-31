@@ -14,7 +14,7 @@ class Controller
     //  public function index()
     // {
     //     $usuarios = $this->model->all();
-    //     foreach ($usuarios as $u) {
+    //     foreach ($usuarios as $u) {view
     //         echo "Nome: " . $u->nome . "<br>";
     //  }
 

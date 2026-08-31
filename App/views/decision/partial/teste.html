@@ -1,0 +1,67 @@
+ <div class="container-fluid " style="max-width: 900px;">
+							<!-- Barra Principal (Filtro e Botão) -->
+								<div class="d-flex align-items-center justify-content-between barra-filtro shadow-sm">
+								
+								<!-- Campo de Entrada -->
+								<div class="flex-grow-1 me-3">
+									<input 
+									type="text" 
+									class="form-control input-filtro" 
+									placeholder="Filtrar consultas"
+									aria-label="Filtrar consultas"
+									>
+								</div>
+
+								<!-- Botão com gatilho nativo do Bootstrap para colapso (Collapse) -->
+								<button 
+									class="btn btn-mostrar-filtros d-flex align-items-center gap-2" 
+									type="button" 
+									data-bs-toggle="collapse" 
+									data-bs-target="#painelFiltros" 
+									aria-expanded="false" 
+									aria-controls="painelFiltros"
+								>
+									<i class="bi bi-funnel"></i>
+									<span>Mostrar Filtros</span>
+									<i class="bi bi-chevron-down"></i>
+								</button>
+
+								</div>
+
+								<!-- Conteúdo dos Filtros -->
+								<div class="collapse mt-3" id="painelFiltros">
+								<div class="card card-body painel-filtros-expandido p-4 shadow-sm">
+									
+									<div class="row g-3">
+									<!-- Campo 1 -->
+									<div class="col-md-4">
+										<label class="form-label small fw-bold text-secondary">Período</label>
+										<input type="date" class="form-control form-control-sm">
+									</div>
+									
+									<!-- Campo 2 -->
+									<div class="col-md-4">
+										<label class="form-label small fw-bold text-secondary">Status</label>
+										<select class="form-select form-control-sm">
+										<option selected>Todos</option>
+										<option>Ativo</option>
+										<option>Pendente</option>
+										<option>Cancelado</option>
+										</select>
+									</div><!-- class="col-md-4"> -->
+									<!-- Campo 3 -->
+									<div class="col-md-4">
+										<label class="form-label small fw-bold text-secondary">Registro</label>
+										<input type="text" class="form-control form-control-sm" placeholder="Buscar por nome...">
+									</div>
+									</div>
+
+									<!-- Botões de Ação do Painel Interno -->
+									<div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+									<button type="button" class="btn btn-sm btn-link text-secondary text-decoration-none">Limpar Filtros</button>
+									<button type="button" class="btn btn-sm text-white" style="background-color: #78909c;">Filtrar</button>
+									</div>
+								</div>
+
+							
+					</div>

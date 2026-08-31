@@ -1,0 +1,54 @@
+<?php
+
+ini_set("default_charset", "UTF-8");
+
+require_once dirname(__FILE__) . '/includes.php';
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+spl_autoload_register(function ($class) {
+
+    $class = str_replace('\\', DIRECTORY_SEPARATOR, $class);
+
+    $arquivo = dirname(__FILE__) . '/' . $class . '.php';
+
+    if (file_exists($arquivo)) {
+        require_once $arquivo;
+    }
+});
+
+
+if (!isset($_REQUEST["r"])) {
+
+    $classe = $rotas["proDecision"]["classe"];
+    $metodo = $rotas["proDecision"]["metodo"];
+
+} elseif (isset($rotas[$_REQUEST["r"]])) {
+
+    $classe = $rotas[$_REQUEST["r"]]["classe"];
+    $metodo = $rotas[$_REQUEST["r"]]["metodo"];
+
+} else {
+
+    header('HTTP/1.0 404 Not Found');
+    echo "<h1>404 - Not Found</h1>";
+    exit();
+}
+
+
+// O autoload irá carregar a classe automaticamente
+$classe = new $classe;
+
+try {
+
+    $classe->{$metodo}();
+
+} catch (Exception $e) {
+
+    header('HTTP/1.0 500 Internal Server Error');
+    echo "<h1>500 Internal Server Error - {$e->getMessage()}</h1>";
+}
+?>

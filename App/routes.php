@@ -76,6 +76,12 @@ return [
     '/api/search_limite_nivel' => ['GrupoEconController', 'search_clientes_limites'],
     '/api/CadLimite' => ['GrupoEconController', 'cad_clientes_limites'],
 
+
+    # ROTA PARA PRODECION ESTRUTURA 
+    '/proDecision' => ['DecisonController', 'index_descision'],
+    '/proDecisionAcao' => ['DecisonController', 'index_acao'],
+    '/proDecisionComite' => ['DecisonController', 'index_comite'],
+    '/proDecisionStatus' => ['DecisonController', 'index_status']
     //     $rotas["dados_finger_push"] = array(
     //     "classe" => "ProgestorDocController",
     //     "metodo" => "dados_finger",

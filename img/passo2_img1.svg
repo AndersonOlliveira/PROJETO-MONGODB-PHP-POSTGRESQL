@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="446.54" height="203.286" viewBox="0 0 446.54 203.286">
+  <defs>
+    <filter id="Rectangle_22" x="0" y="0" width="226.068" height="203.286" filterUnits="userSpaceOnUse">
+      <feOffset dy="4" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="22" result="blur"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Rectangle_24" x="220.472" y="0" width="226.068" height="203.286" filterUnits="userSpaceOnUse">
+      <feOffset dy="4" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="22" result="blur-2"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Rectangle_30" x="110.236" y="0" width="226.068" height="203.286" filterUnits="userSpaceOnUse">
+      <feOffset dy="4" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="22" result="blur-3"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur-3"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_11" data-name="Group 11" transform="translate(-337 -447)">
+    <g transform="matrix(1, 0, 0, 1, 337, 447)" filter="url(#Rectangle_22)">
+      <rect id="Rectangle_22-2" data-name="Rectangle 22" width="94.068" height="71.286" rx="10" transform="translate(66 62)" fill="#fff"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 337, 447)" filter="url(#Rectangle_24)">
+      <rect id="Rectangle_24-2" data-name="Rectangle 24" width="94.068" height="71.286" rx="10" transform="translate(286.47 62)" fill="#fff"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 337, 447)" filter="url(#Rectangle_30)">
+      <rect id="Rectangle_30-2" data-name="Rectangle 30" width="94.068" height="71.286" rx="10" transform="translate(176.24 62)" fill="#fff"/>
+    </g>
+    <g id="f7:doc-fill" transform="translate(414.758 553.094)" opacity="0.8">
+      <rect id="f7:doc-fill_Frame_Background_" data-name="f7:doc-fill [Frame Background]" width="14.698" height="14.698" fill="none" opacity="0.8"/>
+      <path id="Vector" d="M0,11.263V1.932A1.7,1.7,0,0,1,1.907,0h2.83V4.515A1.014,1.014,0,0,0,5.893,5.678h4.454v5.586A1.7,1.7,0,0,1,8.44,13.189H1.907A1.7,1.7,0,0,1,0,11.263ZM5.573,4.5V.067a1.539,1.539,0,0,1,.8.517l3.4,3.451a1.663,1.663,0,0,1,.51.8H5.912A.3.3,0,0,1,5.573,4.5Z" transform="translate(2.176 0.755)" fill="#1e1e1e"/>
+    </g>
+    <g id="f7:doc-fill-2" data-name="f7:doc-fill" transform="translate(635.23 553.094)" opacity="0.8">
+      <rect id="f7:doc-fill_Frame_Background_2" data-name="f7:doc-fill [Frame Background]" width="14.698" height="14.698" fill="none" opacity="0.8"/>
+      <path id="Vector-2" data-name="Vector" d="M0,11.263V1.932A1.7,1.7,0,0,1,1.907,0h2.83V4.515A1.014,1.014,0,0,0,5.893,5.678h4.454v5.586A1.7,1.7,0,0,1,8.44,13.189H1.907A1.7,1.7,0,0,1,0,11.263ZM5.573,4.5V.067a1.539,1.539,0,0,1,.8.517l3.4,3.451a1.663,1.663,0,0,1,.51.8H5.912A.3.3,0,0,1,5.573,4.5Z" transform="translate(2.176 0.755)" fill="#1e1e1e"/>
+    </g>
+    <text id="Arquivos_Finalizados" data-name="Arquivos Finalizados" transform="translate(433.866 550.625)" fill="#1e1e1e" font-size="8" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="8">Arquivos</tspan><tspan x="0" y="16">Finalizados</tspan></text>
+    <text id="Quantidade_de_Arquivos" data-name="Quantidade de Arquivos" transform="translate(654.338 550.625)" fill="#1e1e1e" font-size="8" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="8">Quantidade</tspan><tspan x="0" y="16">de Arquivos</tspan></text>
+    <text id="Registros_em_Andamento" data-name="Registros em Andamento" transform="translate(544.102 550.625)" fill="#1e1e1e" font-size="8" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="0" y="8">Registros em</tspan><tspan x="0" y="16">Andamento</tspan></text>
+    <text id="_206" data-name="206" transform="translate(414.758 525.289)" fill="#638c22" font-size="20" font-family="Inter-Bold, Inter" font-weight="700"><tspan x="0" y="19">206</tspan></text>
+    <text id="_800" data-name="800" transform="translate(635.23 525.289)" fill="#e3595c" font-size="20" font-family="Inter-Bold, Inter" font-weight="700"><tspan x="0" y="19">800</tspan></text>
+    <text id="_512" data-name="512" transform="translate(524.994 525.289)" fill="#b67f11" font-size="20" font-family="Inter-Bold, Inter" font-weight="700"><tspan x="0" y="19">512</tspan></text>
+    <g id="tabler:clock-filled" transform="translate(522.79 551.625)">
+      <rect id="tabler:clock-filled_Frame_Background_" data-name="tabler:clock-filled [Frame Background]" width="16.903" height="16.903" fill="none"/>
+      <path id="Vector-3" data-name="Vector" d="M10.564.944A7.043,7.043,0,1,1,0,7.271l0-.228,0-.228A7.043,7.043,0,0,1,10.564.944ZM7.043,2.817a.7.7,0,0,0-.7.622l0,.082V7.043l.006.092a.7.7,0,0,0,.139.336l.061.07L8.658,9.654l.066.058a.7.7,0,0,0,.863,0l.066-.058.058-.066a.7.7,0,0,0,0-.863l-.058-.066L7.747,6.75V3.521l0-.082a.7.7,0,0,0-.7-.622Z" transform="translate(1.409 1.409)" fill="#4b4b4b"/>
+    </g>
+  </g>
+</svg>
