@@ -25,9 +25,8 @@
                 <div class="pg-metrics-row">
                  <div class="container" style="max-width: 900px;">
 							<!-- Barra Principal (Filtro e Botão) -->
-								<div class="d-flex align-items-center justify-content-between barra-filtro shadow-sm">
+							<!-- 								
 								
-								<!-- Campo de Entrada -->
 								<div class="flex-grow-1 me-3">
 									<input 
 									type="text" 
@@ -37,7 +36,7 @@
 									>
 								</div>
 
-								<!-- Botão com gatilho nativo do Bootstrap para colapso (Collapse) -->
+							
 								<button 
 									class="btn btn-mostrar-filtros d-flex align-items-center gap-2" 
 									type="button" 
@@ -51,7 +50,7 @@
 									<i class="bi bi-chevron-down"></i>
 								</button>
 
-								</div>
+								</div> -->
 
 								<!-- Conteúdo dos Filtros -->
 								<div class="collapse mt-3" id="painelFiltros">
@@ -107,7 +106,7 @@
                                         <th>#id</th>
                                         <th>Log</th>
                                         <th>Consulta</th>
-                                        <th>CPF/CNPJ</th>
+                                        <th>Registro</th>
                                         <th>Score</th>
                                         <th>Decision</th>
                                         <th>Ações</th>
@@ -228,7 +227,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="re_ModalLabel">Reconsultar</h1>
+        <h1 class="modal-title fs-5" id="re_ModalLabel">Documentos</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -236,6 +235,7 @@
           <div class="mb-3">
             <label for="formFile" class="form-label">Envie documentos para reconsultar</label>
             <input class="form-control" type="file" id="formFile">
+            <input class="form-control" type="hidden" id="id_cns_arquivo">
           </div>
           <button type="submit" class="btn btn-primary">Enviar Arquivo</button>
         </form>
@@ -271,9 +271,10 @@
 </a>
 
 
-<form target="_blank" action="https://beta.proscore.com.br/cns/pdf.php" method="post" id="form_salvar" style="display:none;">
-<!-- <form target="_blank" action="/cns/pdf.php" method="post" id="form_salvar" style="display:none;"> -->
+<!-- <form target="_blank" action="https://beta.proscore.com.br/cns/pdf.php" method="post" id="form_salvar" style="display:none;"> -->
+<form target="_blank" action="/cns/pdf.php" method="post" id="form_salvar" style="display:none;">
     <input type="hidden" name="conteudo_salvar" id="conteudo_salvar" />
+    <input type="hidden" name="id_cns_enviado" id="id_cns_enviado" />
     <input type="hidden" name="arquivo_nome" id="arquivo_nome" />
 </form>
 

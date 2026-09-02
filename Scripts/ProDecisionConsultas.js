@@ -7,7 +7,7 @@ const App_consultas = {
     dados: JSON.parse(localStorage.getItem('dados_clientes')) || [], //LISTA COM O RETORNO
     selecionados: [],
     url_consulta : 'https://beta.proscore.com.br/prodecision/api/listar_consultas.php',
-    url_consulta_beta : '/prodecision/api/listar_consultas.php',
+    url_consulta_beta : 'https://beta.proscore.com.br/prodecision/api/listar_consultas.php',
     url_doc : 'https://beta.proscore.com.br/prodecision/api/exibir_dados_consulta.php',
     url_upload : "https://beta.proscore.com.br/prodecision/api/upload_documentacao.php",
     url_agentes : "https://beta.proscore.com.br/prodecision/api/listar_agentes_comite_consulta.php",
@@ -166,11 +166,41 @@ var colunas = [];
 if (idTabela == '#lista_status'){
 
   colunas = [ 
-            {data: 'log', defaultContent: '-'}, 
-            { data: 'setor', defaultContent: '-'},
-            {data: 'usuario', defaultContent: '-' },
-            {data: 'justificativa', defaultContent:'-'},
-            { data: 'status' , defaultContent: '-'},]
+            {data: 'log', defaultContent: '-',
+            data: null,
+                orderable: false,
+                render: function (data,type,row,metea){
+                    var texto = data.log;  
+                    return quebrarTexto(texto,type,row,metea)
+                }
+            },
+            { data: 'cnsid' , defaultContent: '-'}, 
+            {data: 'consulta', defaultContent: '-'}, 
+            { data: 'documento', defaultContent: '-'},
+            {data: 'score', defaultContent: '-' ,
+                 data: null,
+            orderable: false,
+            render: function (data, type, row, meta) {
+                return switch_pontuacao(data, type, row, meta);
+            }
+        
+            },
+            {data: 'decisao', defaultContent:'-',
+                data: null,
+                orderable: false,
+                    render: function (data, type, row, meta) {
+                return switch_color(data, type, row, meta);
+            }
+            },
+            { data: 'status' , defaultContent: '-',
+                data: null,
+                orderable: false,
+                  render: function (data, type, row) {
+            return render_status(data, type, row);
+        }
+            },
+           
+        ]
 }
   else if (idTabela == '#lista_consulta' || idTabela == '#lista_acao' ) {
  colunas = [
@@ -183,9 +213,16 @@ if (idTabela == '#lista_status'){
     //   }
     //   },
         { data: 'cnsid', defaultContent: '-' },
-        { data: 'data_consulta', defaultContent: '-' },
+        { data: 'data_consulta', defaultContent: '-' ,
+             data: null,
+            orderable: false,
+            render: function (data,type,row,metea){
+                 var texto = data.data_consulta;  
+                return quebrarTexto(texto,type,row,metea)
+            } 
+        },
       
-        { data: 'consulta', defaultContent: '-' },
+        { data: 'consulta', defaultContent: '-'},
         { data: 'documento', defaultContent: '-',
             data: null,
             orderable: false,
@@ -225,8 +262,8 @@ if (idTabela == '#lista_status'){
 else if (idTabela == '#lista_comite_chat') {
     console.log('lista para minha tabela de chat')
    colunas = [
-       { data: 'data_consulta', defaultContent: '-' },
         { data: 'cnsid', defaultContent: '-' },
+        // { data: 'data_consulta', defaultContent: '-' },
         { data: 'consulta', defaultContent: '-' },
         { data: 'documento', defaultContent: '-' },
         { data: 'status', defaultContent: '-' },
@@ -265,7 +302,15 @@ else if (idTabela == "#lista_comite"){
 
       }
       },
-       { data: 'data_consulta', defaultContent: '-' },
+       { data: 'data_consulta', defaultContent: '-',
+         data: null,
+            orderable: false,
+            render: function (data,type,row,metea){
+                 var texto = data.data_consulta;  
+                return quebrarTexto(texto,type,row,metea)
+            } 
+
+        },
         // { data: 'cnsid', defaultContent: '-' },
         { data: 'consulta', defaultContent: '-' },
         { data: 'documento', defaultContent: '-' },
@@ -308,6 +353,24 @@ else if (idTabela == "#lista_comite"){
                 : 'em análise';
         }
     });
+}else if (idTabela == "#lista_status_msg"){
+
+  colunas = [ 
+            {data: 'log', defaultContent: '-'}, 
+            {data: 'usuario', defaultContent: '-' },
+            { data: 'setor', defaultContent: '-'},
+            { data: 'status' , defaultContent: '-',
+                data:null,
+                orderable: false,
+                serverSide: false,
+                render: function(data,type,row){
+                     return switch_status_consulta(data, type, row);
+                } 
+            },
+            {data: 'justificativa', defaultContent:'-'},]
+     
+            $("#modal_status_msg").modal('show');
+    // console.log('estou chegando aqui');
 }
     console.log('para montar' , dados);
 
@@ -479,6 +542,32 @@ function switch_color(data, type, row, meta) {
     }
 }
 
+function switch_status_consulta(data, type, row, meta) {
+    var decisao = row && row.status ? row.status : null;
+
+    const de = decisao.toString().toLowerCase();
+
+     switch (de) {
+      
+        case 'aprovar':
+            return `<span class="statusC baixo">${de}</span>`;
+         case 'recusar':
+            return `<span class="statusC alto">${de}</span>`;
+        case 'cancelado':
+            return `<span class="statusC moderado">${de}</span>`; 
+        case 'cancelar':
+            return `<span class="statusC alto">${de}</span>`;
+        case 'em analise':
+            return `<span class="statusC muito">${de}</span>`;
+        case 'aprovado':
+            return `<span class="statusC muito">${de}</span>`;
+             case 'reprovar':
+            return `<span class="statusC baixo">${de}</span>`;
+        default:
+            return `<span class="statusC processamento">${de}</span>`;
+    }
+}
+
 
 function switch_pontuacao(data, type, row, meta) {
     const pontuacao = row && row.score ? row.score : null;
@@ -525,14 +614,35 @@ function renderActions(data, type, row) {
      <button type="button" class="btn-doc-lista btn-action" data-tipo-cns="${cnsid}" title="Listar Documentos enviados"> 
         <img src="img/icons8-baixar-24.png" width="14" height="14" class="icon" alt="">
     </button> 
+    <button type="button" class="btn-enviar-documentos btn-action" data-tipo-cns-documento="${cnsid}" title="Enviar Documentos"> 
+        <img src="img/icons8-upload-para-nuvem-32.png" width="14" height="14" class="icon" alt="">
+    </button> 
     
     <button type="button" class="btn-reconsultar btn-action" data-tipo="" title="Reconsultar"> 
         <img src="img/icons8-laço-oval-48.png" width="14" height="14" class="icon" alt="">
     </button> 
+
+     <button type="button" class="btn-decision btn-action" data-tipo-cns="${cnsid}" title="Decision"> 
+        <img src="img/decision_icone.png" width="25" height="25" class="icon" alt="Decision">
+    </button> 
 </div>
 `;
 
+}function render_status(data, type, row) {
+    const rowData = encodeURIComponent(JSON.stringify(row));
+    return `
+    <div class="acoes-cell"> 
+      <button type="button" class="btn-status-dados btn-action" data-tipo-status-dados="${rowData}" title="Status"> 
+        <img src="img/relogio.png" width="14" height="14" class="icon" alt="">
+    </button> 
+    </div>`;
+
 }
+
+
+// $(document).on('click', '.btn-status-dados', function () {
+   
+// });
 
 
 function navegarParaAcao(rowDataString) {
@@ -555,15 +665,19 @@ function navegarParaAcao(rowDataString) {
 function render_doc_consulta(data, type, row) {
     const cnsid = row.cnsid; 
     return `
+     <div class="acoes-cell"> 
      <span >${row.documento}</span>
      <button  style="display:flex;flex-direction:column;line-height:1.10;" type="button" class="btn-doc btn-action" data-tipo-cns="${cnsid}"title="Doc"> 
       <img src="img/escrito.png" width="14" height="14" class="icon" alt="">
-    </button>`;
+    </button> </div>`
+    ;
 
 }
      
 
 function quebrarTexto(texto, type, row, limite) {
+    // console.log("texot reenviado",  texto)
+    
     if (!texto) return ''; // Evita erros se o campo vier vazio ou nulo
 
     const palavras = texto.split(' ');
@@ -727,7 +841,6 @@ function listar_consultas_chat(){
 	    	200: function(response) {
                 console.log(response.registros);
                 r = response.registros; 
-                console.log("RTETORENO DO MEU CHATE:::????");
                 
                 dadosAgrupados = {};
 
@@ -789,6 +902,58 @@ function listar_consultas_chat(){
       $("#modal_action").modal('show');
  });
 
+// CRIAR FUNCOES PARA ABIR OS MODAIS DE FORMA AUTOMATICA
+  $('#lista_status').on('click', '.btn-status-dados', function() {
+    const dadosLinha = JSON.parse(decodeURIComponent($(this).attr('data-tipo-status-dados')));
+
+    var dados_msg = dadosLinha.mensagens;
+    console.log('minha mensagens', dados_msg);
+
+    
+
+    create_table_consultas('#lista_status_msg', dados_msg);
+
+
+
+
+
+
+    // tipo-status-dados  
+    
+    // var codCnscomite = $(this).data('tipo-status-dados');
+    // console.log(codCnscomite);
+    //  console.log('TENHO O CLICK NO ACAO PARA APARECER OS DADOS DE  APROVADO ');
+
+    // const escapeHtml = valor => $('<div>').text(valor == null ? '-' : String(valor)).html();
+    // const linhas = Object.keys(dadosLinha).map(chave => `
+    //     <tr>
+    //         <th>${escapeHtml(chave)}</th>
+    //         <td>${escapeHtml(dadosLinha[chave])}</td>
+    //     </tr>`).join('');
+
+    // let $modal = $('#modal-dados-linha');
+    // if (!$modal.length) {
+    //     $('body').append(`
+    //         <div class="modal fade" id="modal-dados-linha" tabindex="-1" role="dialog" aria-hidden="true">
+    //             <div class="modal-dialog modal-lg" role="document">
+    //                 <div class="modal-content">
+    //                     <div class="modal-header">
+    //                         <h5 class="modal-title">Dados da consulta</h5>
+    //                         <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+    //                     </div>
+    //                     <div class="modal-body"><table class="table table-sm table-striped mb-0"><tbody></tbody></table></div>
+    //                 </div>
+    //             </div>
+    //         </div>`);
+    //     $modal = $('#modal-dados-linha');
+    // }
+
+    // $modal.find('tbody').html(linhas || '<tr><td>Nenhum dado encontrado.</td></tr>');
+    // $modal.modal('show');
+
+    //   $("#modal_action").modal('show');
+ });
+
  $('#lista_consulta').on('click', '.btn-comite', function() {
 
      console.log('TENHO O CLICK NO BTN COMITE');
@@ -824,7 +989,7 @@ function listar_consultas_chat(){
     var iframeUrls = App_consultas.url_doc +
         "?tctrid=" + encodeURIComponent(App_consultas.tctrid) +
         "&tctraut=" + encodeURIComponent(App_consultas.tctraut) +
-        "&cnsid=" + encodeURIComponent(581751855);
+        "&cnsid=" + encodeURIComponent(cns);
 
     console.log('URL IFRAME:', iframeUrls);
 
@@ -833,6 +998,7 @@ function listar_consultas_chat(){
     console.log('iframe encontrado:', iframeUrls.length);
 
     iframe.attr('src', iframeUrls);
+    $('#id_cns_enviado').val(cns);
 
     console.log('iframe src:', iframe.prop('src'));
 
@@ -849,10 +1015,25 @@ function listar_consultas_chat(){
 
 
  });
+
  $('#lista_consulta').on('click', '.btn-reconsultar', function() {
 
-     console.log('TENHO O CLICK NO ACAO');
+    alert('Funcionalidade está desabilitada no momento');
+     
+      
+}); $('#lista_consulta').on('click', '.btn-decision', function() {
 
+    alert('Funcionalidade está desabilitada no momento');
+     
+      
+});
+
+ $('#lista_consulta').on('click', '.btn-enviar-documentos', function() {
+
+     console.log('TENHO O CLICK NO ACAO');
+     console.log($(this).data("tipo-cns-documento"));
+
+      $("#id_cns_arquivo").val($(this).data("tipo-cns-documento"));
       $("#modal_reconsultar").modal('show');
      
       
@@ -865,16 +1046,18 @@ $("#click_salvar_pdf").click(function(e) {
     console.log('TENHO O CLICK NO ACAO - GERANDO PDF');
     
     
-    var cnsId = "581751855"; 
+    var cnsId = $('#id_cns_enviado').val();
     var iframeUrl = App_consultas.url_doc +
         "?tctrid=" + encodeURIComponent(App_consultas.tctrid) +
         "&tctraut=" + encodeURIComponent(App_consultas.tctraut) +
         "&cnsid=" + encodeURIComponent(cnsId);
 
+        console.log('id do cns:', cnsId);
+
      $("#arquivo_nome").val("proScore_consulta_" + cnsId + ".pdf");
      var conteudoIframe = $("iframe").contents().find("body").html();
 
-        var htmlCodificado = btoa(unescape(encodeURIComponent(conteudoIframe)));
+    var htmlCodificado = btoa(unescape(encodeURIComponent(conteudoIframe)));
 
    $("#conteudo_salvar").val(htmlCodificado);
     $("#form_salvar").submit();
@@ -911,9 +1094,13 @@ $('#form_comite').on('submit', function(event) {
         insert_motivo_agentes(valorAtual,text,$("#id_comite_motvo").val())
 
 });
+
 $('#envio_arquivo').on('submit', function(event) {
         event.preventDefault();
-            console.log("Dados capturados no submit:", dados);
+    
+    console.log("Dados capturados no submit:", dados);
+
+    var id_cns_arquivo = $("#id_cns_enviado").val();
 
     var campoArquivo = $('#formFile')[0]; 
     var arquivo = campoArquivo.files[0]; 
@@ -927,7 +1114,7 @@ $('#envio_arquivo').on('submit', function(event) {
         // Define o que fazer quando a leitura terminar
         reader.onload = function(e) {
             var base64Completo = e.target.result; // String Base64 com o prefixo data:
-            upload_documentacao(base64Completo);
+            upload_documentacao(base64Completo,id_cns_arquivo);
         }
  
         // Lê o arquivo como URL de dados (Base64)
@@ -936,19 +1123,19 @@ $('#envio_arquivo').on('submit', function(event) {
 });
  
  
-function upload_documentacao(base64Completo){
+function upload_documentacao(base64Completo,id_cns_arquivo){
  
     let formData = new FormData();
 
     formData.append('tctrid', App_consultas.tctrid);
     formData.append('tctraut', App_consultas.tctraut);
-    formData.append('cnsid', "581751855");
+    formData.append('cnsid', id_cns_arquivo);
     formData.append('descricao', "teste");
     formData.append('base64Completo', base64Completo);
 
     for (const [chave, valor] of formData.entries()) {
-  console.log(`${chave}: ${valor}`);
-}
+     console.log(`${chave}: ${valor}`);
+    }
     
     // return
 $.ajax({
@@ -1703,6 +1890,8 @@ function lista_status_cnid(cnsid){
 	});
 }
 
+var dadosAgrupados_acoes = {};
+
 function lista_status_all(){
 
 	let formData = new FormData();
@@ -1719,9 +1908,41 @@ function lista_status_all(){
 	    statusCode: {
 	    	200: function(response) {
 		   
-                console.log(response);
+                console.log(' LISTA COM OS STATUS',response.acoes);
+
+            acoes = response.acoes || [];
+
+                   dadosAgrupados_acoes = {};
+
+        acoes.forEach(function(item) {
+
+            const idCnsid = String(item.cnsid || '').trim();
+
+            if (!dadosAgrupados_acoes[idCnsid]) {
+
+                dadosAgrupados_acoes[idCnsid] = {
+                    cnsid: item.cnsid,
+                    log: item.log,
+                    documento: item.documento,
+                    consulta: item.consulta,
+                    score: item.score,
+                    decisao: item.decisao,
+                    status: item.status,
+                    justificativa: item.justificativa,
+                    setor: item.setor,
+                    
+                    mensagens: []
+                };
+            }
+
+            dadosAgrupados_acoes[idCnsid].mensagens.push(item);
+        });
+
+        const dadosTabelaAcoes = Object.values(dadosAgrupados_acoes);
+
+        console.log('DADOS AGRUPADOS PARA A TABELA DE AÇÕES:', dadosTabelaAcoes);
                 // if(response.acoes){
-                 create_table_consultas('#lista_status',response.acoes);
+                 create_table_consultas('#lista_status',dadosTabelaAcoes);
                 // }
             },
 		    422: function(response) {
@@ -1854,6 +2075,12 @@ function listStatus(dados) {
                 data: 'setor',
             }, {
                 data: 'status',
+                 data: null,
+                orderable: false,
+                  render: function (data, type, row) {
+            return switch_status_consulta(data, type, row);
+            }
+
             },
            
              {
@@ -1880,31 +2107,39 @@ $('#lista_comite_chat').on('click', '.btn-mensagens', function() {
         return;
     }
 
-    let html = '';
+        let html = '';
+        const mensagens = Array.isArray(consulta.mensagens)
+                ? consulta.mensagens
+                : [];
 
-    consulta.mensagens.forEach(function(item) {
+        mensagens.forEach(function(item, index) {
+                const mensagem = item.mensagem || item.message || item.texto || item.decisao || '-';
+                const usuario = item.usuario || item.nome || '';
+                const data = item.data_analise || item.data_consultas || item.data_consulta || '';
+                const setores = item.setor || item.data_consultas || item.data_consulta || '';
+                const justificativa = item.justificativa || '-';
+                const status = item.status || '-';
 
-        html += `
-            <div class="chat-mensagem">
-                <div class="chat-remetente">
-                   ${item.setor || '-'}
-                </div>
 
-                <div class="chat-texto">
-                    ${item.consulta || '-'}
-                </div> 
-                <div class="chat-texto">
-                    ${item.justificativa || '-'}
-                </div> <div class="chat-texto">
-                    ${item.status || '-'}
-                </div></div> <div class="chat-texto">
-                    ${item.data_consulta || '-'}
-                </div>
-            </div>
-        `;
-    });
 
-    $('#chat-mensagens').html(html);
+                html += `
+                        <div class="container_ ${index % 2 ? 'darker' : ''}">
+                                <p>Status:${status}</p>
+                                <p>Usuário: ${usuario ? `<small>${usuario}</small>` : ''}</p>
+                                <p>Setor: ${setores ? `<small>${setores}</small>` : ''}</p>
+                           
+                                <p>Justificativa: ${justificativa ? `<small>${justificativa}</small>` : ''}</p>
+                                ${data ? `<span class="time-right">${ajustar_data(data)}</span>` : ''}
+                        </div>`;
+        });
+
+        $('#chat-mensagens')
+                .css({
+                        'max-height': '400px',
+                        'overflow-y': 'auto',
+                        'overflow-x': 'hidden'
+                })
+                .html(html || '<p>Nenhuma mensagem encontrada.</p>');
 
     $('#chat-documento').text(
         consulta.documento || '-'
@@ -1916,3 +2151,23 @@ $('#lista_comite_chat').on('click', '.btn-mensagens', function() {
 
     $('#modal-chat').modal('show');
 });
+
+function ajustar_data(data_enviada){
+
+    const dataString = data_enviada.replace(/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}:\d{2}:\d{2})/, '$3-$2-$1T$4');
+
+    // Substitui o espaço por 'T' para garantir a compatibilidade do formato ISO
+    const data = new Date(dataString.replace(" ", "T"));
+
+    // Formata para o padrão brasileiro (DD/MM/AAAA HH:MM:SS)
+    const dataFormatada = data.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+    });
+
+    return dataFormatada;
+}

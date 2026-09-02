@@ -320,7 +320,10 @@
     /* wrapper DataTables gerado pelo plugin */
     #lista_consulta_wrapper,
     #lista_comite_wrapper ,
-    #lista_acao_wrapper {
+    #lista_acao_wrapper ,
+    #lista_status_wrapper, 
+    #lista_statuss_wrapper, 
+    #lista_status_msg_wrapper {
         width: 100% !important;
         font-size: 12px !important;
         border-radius: 0 !important;
@@ -335,16 +338,25 @@
         -webkit-overflow-scrolling: touch;
     }
 
+     .dt-column-header{
+        text-align: center !important;
+        
+     }
     /* ---- scroll horizontal para a tabela (responsivo) ---------*/
     .dt-scroll-body,
     .teste .col-sm-12 {
+        /* background-color: red !important; */
         overflow-x: auto !important;
+        /* position:center */
         /* -webkit-overflow-scrolling: touch; */
     } 
 
     #lista_consulta.dataTable, 
-    #lista_comite.dataTable
-    #lista_acao.dataTable
+    #lista_comite.dataTable,
+    #lista_acao.dataTable,
+    #lista_status.dataTable,
+    #lista_statuss.dataTable,
+    #lista_status_msg
      {
         border-collapse: collapse !important;
         overflow-x: auto;
@@ -450,7 +462,10 @@
     /* ---- tbody ------------------------------------------------ */
     #lista_consulta.dataTable tbody tr td ,
     #lista_comite.dataTable tbody tr td,
-    #lista_acao.dataTable tbody tr td
+    #lista_acao.dataTable tbody tr td,
+    #lista_status.dataTable tbody tr td,
+    #lista_statuss.dataTable tbody tr td,
+    #lista_status_msg.dataTable tbody tr td
      {
         background-color: var(--c-row-odd) !important;
         color: var(--c-text) !important;
@@ -462,25 +477,36 @@
 
     #lista_consulta.dataTable tbody tr:nth-child(even) td ,
     #lista_comite.dataTable tbody tr:nth-child(even) td,
-    #lista_acao.dataTable tbody tr:nth-child(even) td {
+    #lista_acao.dataTable tbody tr:nth-child(even) td ,
+    #lista_status.dataTable tbody tr:nth-child(even) td ,
+    #lista_statuss.dataTable tbody tr:nth-child(even) td ,
+    #lista_status_msg.dataTable tbody tr:nth-child(even) td {
         background-color: var(--c-row-evn) !important;
     }
 
     #lista_consulta.dataTable tbody tr:hover td, 
     #lista_comite.dataTable tbody tr:hover td,
-    #lista_acao.dataTable tbody tr:hover td {
+    #lista_acao.dataTable tbody tr:hover td ,
+    #lista_status.dataTable tbody tr:hover td ,
+    #lista_status_msg.dataTable tbody tr:hover td {
         background-color: var(--c-hover) !important;
     }
 
     #lista_consulta.dataTable tbody tr ,
     #lista_comite.dataTable tbody tr,
-    #lista_acao.dataTable tbody tr {
+    #lista_acao.dataTable tbody tr ,
+    #lista_status.dataTable tbody tr ,
+    #lista_statuss.dataTable tbody tr ,
+    #lista_status_msg.dataTable tbody tr {
         border: none !important;
     }
 
     #lista_consulta.dataTable tbody td:nth-child(10) ,
     #lista_comite.dataTable tbody td:nth-child(10), 
-    #lista_acao.dataTable tbody td:nth-child(10) {
+    #lista_acao.dataTable tbody td:nth-child(10) ,
+    #lista_status.dataTable tbody td:nth-child(10) ,
+    #lista_statuss.dataTable tbody td:nth-child(10) ,
+    #lista_status_msg.dataTable tbody td:nth-child(10) {
         white-space: nowrap;
         min-width: 90px;
         max-width: 90px;
@@ -489,7 +515,10 @@
     /* Data Upload e Data Finalização — quebra data / hora */
     #lista_consulta.dataTable tbody td:nth-child(4),
     #lista_comite.dataTable tbody td:nth-child(8), 
-    #lista_comite.dataTable tbody td:nth-child(8) {
+    #lista_comite.dataTable tbody td:nth-child(8) ,
+    #lista_status.dataTable tbody td:nth-child(8) ,
+    #lista_statuss.dataTable tbody td:nth-child(8) ,
+    #lista_status_msg.dataTable tbody td:nth-child(8) {
         white-space: normal !important;
         min-width: 75px !important;
         width: 75px !important;
@@ -526,7 +555,10 @@
     /* Reduz largura da coluna Status */
     #lista_consulta.dataTable thead th:nth-child(9),
     #lista_consulta.dataTable tbody td:nth-child(9), 
-    #lista_acao.dataTable tbody td:nth-child(9) {
+    #lista_acao.dataTable tbody td:nth-child(9),
+    #lista_status.dataTable tbody td:nth-child(9) ,
+    #lista_statuss.dataTable tbody td:nth-child(9) ,
+    #lista_status_msg.dataTable tbody td:nth-child(9) {
         min-width: 36px !important;
         width: 36px !important;
         text-align: center;
@@ -543,7 +575,8 @@
     #list_process_table.dataTable tbody tr td,
     #list_process_table_break.dataTable tbody tr td,
     #list_process_table_error.dataTable tbody tr td,
-    #list_process_table_list_paralizar.dataTable tbody tr td {
+    #list_process_table_list_paralizar.dataTable tbody tr td ,
+    #lista_status_msg.dataTable tbody tr td {
         background-color: #f8f9fb !important;
         color: var(--c-text) !important;
         font-size: 12px !important;
@@ -590,7 +623,10 @@
 
     #lista_consulta.dataTable thead th,
     #lista_comite.dataTable tbody td,
-    #lista_acao.dataTable tbody td {
+    #lista_acao.dataTable tbody td ,
+    #lista_status.dataTable tbody td ,
+    #lista_statuss.dataTable tbody td ,
+    #lista_status_msg.dataTable tbody td {
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 200px;
@@ -603,6 +639,9 @@
     #lista_consulta.dataTable thead th,
     #lista_comite.dataTable thead th,
     #lista_acao.dataTable thead th,
+    #lista_status.dataTable thead th,
+    #lista_statuss.dataTable thead th,
+    #lista_status_msg.dataTable thead th,
 
     /* ---- scrollbar -------------------------------------------- */
     .dt-scroll-body::-webkit-scrollbar,
@@ -688,6 +727,15 @@
     .btn-cancel {
         background: #c94f4f;
         color: #fff;
+    }
+
+    .btn-padrao {
+        width: 180px;
+        height: 40px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .btn-download {
@@ -1198,3 +1246,55 @@
         display: none !important;
         background: transparent !important;
     }
+
+
+    /* PARA O CHAT  */
+   /* Chat containers */
+.container_ {
+  border: 2px solid #7A7A7A;
+  background-color:#FFFFFF;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+/* Darker chat container */
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+
+/* Clear floats */
+.container_::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Style images */
+.container_ img {
+  float: left;
+  max-width: 60px;
+  width: 100%;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+/* Style the right image */
+.container_ img.right {
+  float: right;
+  margin-left: 20px;
+  margin-right:0;
+}
+
+/* Style time text */
+.time-right {
+  float: right;
+  color: #aaa;
+}
+
+/* Style time text */
+.time-left {
+  float: left;
+  color: #999;
+}
