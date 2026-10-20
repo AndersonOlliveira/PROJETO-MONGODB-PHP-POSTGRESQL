@@ -1,7 +1,7 @@
 <?php require_once('partial/cabecalho.php') ?>
 
 <head>
-    <link href="../../../css/proDecision/style_v1_consultas.css?v= <?= time(); ?>" rel="stylesheet">
+    <link href="css/proDecision/style_v1_consultas.css?v= <?= time(); ?>" rel="stylesheet">
 </head>
 
 <body>
@@ -130,7 +130,7 @@
 
 	<!-- MODAL PARA ABRIR O AÇÃO -->
 <div class="modal fade" id="modal_action" data-bs-backdrop="true" tabindex="-1" aria-labelledby="acao_ModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-fullscreen">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="acao_ModalLabel">Ações</h1>
@@ -150,7 +150,7 @@
 
 <!-- MODAL PARA ABRIR O COMITÊ -->
 <div class="modal fade" id="modal_comite" data-bs-backdrop="true" tabindex="-1" aria-labelledby="comite_ModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="comite_ModalLabel">Comitê</h1>
@@ -185,7 +185,7 @@
 
 <!-- MODAL PARA ABRIR O STATUS -->
 <div class="modal fade" id="modal_status" data-bs-backdrop="true" tabindex="-1" aria-labelledby="status_ModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="status_ModalLabel">Status</h1>
@@ -224,7 +224,7 @@
 
 <!-- MODAL PARA REALIZAR A RECONSULTA -->
 <div class="modal fade" id="modal_reconsultar" data-bs-backdrop="true" tabindex="-1" aria-labelledby="re_ModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="re_ModalLabel">Documentos</h1>
@@ -250,7 +250,7 @@
 
 <!-- MODAL PARA ABRIR O DOC -->
 <div class="modal fade" id="modal_doc" data-bs-backdrop="true" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Documentos</h1>
@@ -258,7 +258,7 @@
       </div>
          <div class="modal-body">
 		
-   <p>acesando documentos</p>
+   <p>acessando documentos</p>
 		<iframe
     id="doc_iframe"
     width="100%"
@@ -292,7 +292,7 @@
 
 <!-- MODAL PARA ABRIR O DOC LISTAR -->
 <div class="modal fade" id="modal_doc_listar" data-bs-backdrop="true" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Lista de Documentos</h1>
@@ -332,5 +332,5 @@
 </body>
 
 	<?php require_once('partial/footer.php') ?>
-        <script src="../../../Scripts/ProDecisionConsultas.js?v=<?= time(); ?>"></script>
-    <!-- <script src="Scripts/ProDecisionConsultas.js?v=<?= time(); ?>"></script> -->
+        <!-- <script src="../../../Scripts/ProDecisionConsultas.js?v=<?= time(); ?>"></script> -->
+    <script src="Scripts/ProDecisionConsultas.js?v=<?= time(); ?>"></script>

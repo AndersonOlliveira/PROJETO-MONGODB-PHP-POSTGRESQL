@@ -33,11 +33,12 @@
                                     <thead>
                                         <tr class="list-jobs">
                                             <th>Selecianar Agentes</th>
+                                            <th>#id</th>
                                             <th>Log</th>
                                             <th>Consulta</th>
                                             <th>Registro</th>
                                             <th>Score</th>
-                                            <th>Status</th>
+                                          
                                         </tr>
                                     </thead>
                                 </table>

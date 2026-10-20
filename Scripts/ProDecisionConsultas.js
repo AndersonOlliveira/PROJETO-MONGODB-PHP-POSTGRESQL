@@ -6,21 +6,22 @@ const App_consultas = {
     tipo_busca_c: '',
     dados: JSON.parse(localStorage.getItem('dados_clientes')) || [], //LISTA COM O RETORNO
     selecionados: [],
-    url_consulta : 'https://beta.proscore.com.br/prodecision/api/listar_consultas.php',
-    url_consulta_beta : 'https://beta.proscore.com.br/prodecision/api/listar_consultas.php',
-    url_doc : 'https://beta.proscore.com.br/prodecision/api/exibir_dados_consulta.php',
-    url_upload : "https://beta.proscore.com.br/prodecision/api/upload_documentacao.php",
-    url_agentes : "https://beta.proscore.com.br/prodecision/api/listar_agentes_comite_consulta.php",
-    url_agentes_insert : "https://beta.proscore.com.br/prodecision/api/inserir_analise_agente_comite.php",
-    url_agentes_selecionar : "https://beta.proscore.com.br/prodecision/api/selecionar_agentes_comite_consulta.php",
-    url_agentes_comite_acoes : "https://beta.proscore.com.br/prodecision/api/selecionar_agentes_comite_cnsid.php",
-    url_lista_documentos : "https://beta.proscore.com.br/prodecision/api/listar_documentacao.php",
-    url_atribuir : "https://beta.proscore.com.br/prodecision/api/atribuir_consulta_a_mim.php",
-    url_listar_alcadas : "https://beta.proscore.com.br/prodecision/api/verifica_alcadas_contrato.php",
-    url_acoes_consutlas : "https://beta.proscore.com.br/prodecision/api/executar_acao_consulta.php",
-    url_lista_status : "https://beta.proscore.com.br/prodecision/api/listar_acoes_consulta.php",
-    url_lista_status_all : "https://beta.proscore.com.br/prodecision/api/listar_acoes_consulta_all.php",
-    url_lista_comite_chat : "https://beta.proscore.com.br/prodecision/api/listar_consultas_comite_chat.php",
+    url_consulta : '/prodecision/api/listar_consultas.php',
+    url_consulta_beta : '/prodecision/api/listar_consultas.php',
+    url_doc : '/prodecision/api/exibir_dados_consulta.php',
+    url_upload : "/prodecision/api/upload_documentacao.php",
+    url_agentes : "/prodecision/api/listar_agentes_comite_consulta.php",
+    url_agentes_insert : "/prodecision/api/inserir_analise_agente_comite.php",
+    url_agentes_selecionar : "/prodecision/api/selecionar_agentes_comite_consulta.php",
+    url_agentes_comite_acoes : "/prodecision/api/selecionar_agentes_comite_cnsid.php",
+    url_lista_documentos : "/prodecision/api/listar_documentacao.php",
+    url_atribuir : "/prodecision/api/atribuir_consulta_a_mim.php",
+    url_verificar_atribuicao : "/prodecision/api/verifica_consulta_atribuida.php",
+    url_listar_alcadas : "/prodecision/api/verifica_alcadas_contrato.php",
+    url_acoes_consutlas : "/prodecision/api/executar_acao_consulta.php",
+    url_lista_status : "/prodecision/api/listar_acoes_consulta.php",
+    url_lista_status_all : "/prodecision/api/listar_acoes_consulta_all.php",
+    url_lista_comite_chat : "/prodecision/api/listar_consultas_comite_chat.php",
     tipo_button: 'radio-todos',
     tipoSelection: 'radio-selecionado',
     nivel_maximo: 3,
@@ -125,13 +126,13 @@ var status_ = [
                     // create_table_consultas("#lista_acao", dados);
                     // create_table_consultas("#lista_comite", dados);
                     // create_table_consultas("#lista_status", status_);
-                    lista_consultas_acao();
+                    // lista_consultas_acao();
                     // lista_status_all();
         } else {
             /* fallback: aguarda o jQuery do view_menu carregar */
             window.addEventListener('load', function() {
                 if (typeof $ !== 'undefined') {
-                    lista_consultas_acao();
+                    // lista_consultas_acao();
                     // lista_status_all();
                     // create_table_consultas("#lista_consulta",dados);
                     // create_table_consultas("#lista_acao", dados);
@@ -204,14 +205,7 @@ if (idTabela == '#lista_status'){
 }
   else if (idTabela == '#lista_consulta' || idTabela == '#lista_acao' ) {
  colunas = [
-    //   {
-    //       data: null,
-    //       orderable: false,
-    //       render: function (data, type, row, meta) {
-    //       return checkbox_tabela(data, type, row, meta);
-
-    //   }
-    //   },
+    
         { data: 'cnsid', defaultContent: '-' },
         { data: 'data_consulta', defaultContent: '-' ,
              data: null,
@@ -302,6 +296,7 @@ else if (idTabela == "#lista_comite"){
 
       }
       },
+       { data: 'cnsid', defaultContent: '-' },
        { data: 'data_consulta', defaultContent: '-',
          data: null,
             orderable: false,
@@ -311,7 +306,7 @@ else if (idTabela == "#lista_comite"){
             } 
 
         },
-        // { data: 'cnsid', defaultContent: '-' },
+       
         { data: 'consulta', defaultContent: '-' },
         { data: 'documento', defaultContent: '-' },
         { data: 'score', defaultContent: '-',
@@ -320,7 +315,8 @@ else if (idTabela == "#lista_comite"){
             render: function (data, type, row, meta) {
                 return switch_pontuacao(data, type, row, meta);
             }
-        }
+        },
+       
     ];
 
   
@@ -342,17 +338,17 @@ else if (idTabela == "#lista_comite"){
     //         return renderActions(data, type, row);
     //     }
     // });
-    colunas.push({
-        data: null,
-        orderable: false,
-        searchable: false,
-        render: function (data, type, row) {
+    // colunas.push({
+    //     data: null,
+    //     orderable: false,
+    //     searchable: false,
+    //     render: function (data, type, row) {
 
-            return parseInt(row.score)  > 500
-                ? 'aprovado'
-                : 'em análise';
-        }
-    });
+    //         return parseInt(row.score)  > 500
+    //             ? 'aprovado'
+    //             : 'aprovado';
+    //     }
+    // });
 }else if (idTabela == "#lista_status_msg"){
 
   colunas = [ 
@@ -586,13 +582,10 @@ function switch_pontuacao(data, type, row, meta) {
 
 function renderActions(data, type, row) {
     const cnsid = row.cnsid; 
+
+
     const rowData = encodeURIComponent(JSON.stringify(row));
 
-
-    // retorno_status = lista_status_cnid(cnsid);
-    // // console.log(cnsid);
-
-    
 
     return `
     <div class="acoes-cell"> 
@@ -628,14 +621,15 @@ function renderActions(data, type, row) {
 </div>
 `;
 
-}function render_status(data, type, row) {
+}
+
+function render_status(data, type, row) {
     const rowData = encodeURIComponent(JSON.stringify(row));
     return `
     <div class="acoes-cell"> 
       <button type="button" class="btn-status-dados btn-action" data-tipo-status-dados="${rowData}" title="Status"> 
-        <img src="img/relogio.png" width="14" height="14" class="icon" alt="">
-    </button> 
-    </div>`;
+        <img src="img/relogio.png" width="20" height="20" class="icon" alt="">
+    </button> `;
 
 }
 
@@ -659,7 +653,8 @@ function navegarParaAcao(rowDataString) {
     // if (rotaAtual === 'proDecisionStatus' || window.location.pathname.includes('/proDecisionStatus')) {
     //     lista_status_all();
     // }
-    window.location.href = `https://beta.proscore.com.br/prodecision/index.chp?r=proDecisionAcao&tctrid=${App_consultas.tctrid}&tctraut=${App_consultas.tctraut}`;
+    window.location.href = `/prodecision/index.chp?r=proDecisionAcao&tctrid=${App_consultas.tctrid}&tctraut=${App_consultas.tctraut}`;
+   // window.location.href = `https://beta.proscore.com.br/prodecision/index.chp?r=proDecisionAcao&tctrid=${App_consultas.tctrid}&tctraut=${App_consultas.tctraut}`;
 }
      
 function render_doc_consulta(data, type, row) {
@@ -746,7 +741,7 @@ function listar_agentes(lista){
 
                 let label = document.createElement('label');
                 label.htmlFor = 'item_' + val.nome_agente;
-                label.textContent = val.nome_agente;
+                label.textContent = '-'+val.nome_agente;
 
                 div.appendChild(checkbox);
                 div.appendChild(label);
@@ -773,6 +768,7 @@ listar_consultas();
 
 listar_consultas_chat();
 listar_agentes_comite_consulta();
+lista_consultas_acao();
 });
  
 function listar_consultas(){
@@ -1280,6 +1276,11 @@ function insert_motivo_agentes(status,justificativa,cnd_id){
 	    statusCode: {
 	    	200: function(response) {
                 console.log(response);
+
+                alert(response.status);
+
+                $("#modal_comite").modal("hide");
+
                 // console.log('tenho o retorno da api com os dados agentes');
                 // listar_agentes(response.agentes)
                 // create_table_consultas("#lista_consulta",response.agentes);
@@ -1591,12 +1592,15 @@ function lista_consultas_acao(){
     const dadosRecuperados = JSON.parse(sessionStorage.getItem('dadosLinha Selecionada'));
     // console.log(dadosRecuperados.cnsid);
 
+      if(dadosRecuperados){
+       
+              verificar_atribuir(dadosRecuperados.cnsid);
 
-    if(dadosRecuperados){
-         // INSIRO NO ATRIBUIR NO FORM 
+             
+       // INSIRO NO ATRIBUIR NO FORM 
          $("#id_cns").val(dadosRecuperados.cnsid);
         //PASSAR COMO SE FOR UM ARRAY 
-        create_table_consultas("#lista_acao", [dadosRecuperados]);
+           create_table_consultas("#lista_acao", [dadosRecuperados]);
          }
 
     console.log('VOU LISTA AS ACOES');
@@ -1674,6 +1678,10 @@ function atribuir_cnid(){
 }
  
 function listar_atribuicoes(){
+
+    console.log('LISTA AS ATRIBUICOES');
+    console.log(App_consultas.tctrid);
+    console.log(App_consultas.tctraut);
     //  console.log('TENHO O ENVIO DO FORMULARIO', formData);
 	let formData = new FormData();
 	formData.append('tctrid', App_consultas.tctrid);
@@ -1696,7 +1704,7 @@ function listar_atribuicoes(){
 
                     $("[id^='btnAlcada_']").prop('disabled', true);
 
-                    response.alcadas_do_contrato.forEach(function(alcada) {
+                     response.alcadas_do_contrato.forEach(function(alcada) {
                         $("#btnAlcada_" + alcada.id_alcada).prop('disabled', false);
                     });
               } else {
@@ -1757,6 +1765,11 @@ $(document).on('click', "[id^='btnAlcada_']", function() {
         $("#modalTitulo").text('Justificativa para Cancelamento');
         btnConfirmar.text('Cancelar Consulta').addClass('btn-warning');
     }
+    else if (botaoClicado === 'btnAlcada_1') { // CANCELAR
+        acaoAtual = 'Analisar';
+        $("#modalTitulo").text('Justificativa para Analisar');
+        btnConfirmar.text('Analisar').addClass('btn-warning');
+    }
 
   
     $("#aprovarModal").modal('show');
@@ -1779,6 +1792,8 @@ $("#btnConfirmarAcao").on('click', function() {
         executaFuncao(acaoAtual,justificativa);
     } else if (acaoAtual == 'cancelar') {
          executaFuncao(acaoAtual,justificativa);
+    } else if (acaoAtual == 'Analisar') {
+        executaFuncao(acaoAtual,justificativa);
     }
 
     // Fecha o modal após o envio
@@ -2170,4 +2185,62 @@ function ajustar_data(data_enviada){
     });
 
     return dataFormatada;
+}
+
+
+function verificar_atribuir(cnsid){
+
+    console.log('VERIFICAR SE JA FOI ATRIBUIDO',cnsid);
+
+
+
+    //  var jaAtribuido = true;
+
+    //   if(jaAtribuido){
+    //          listar_atribuicoes(App_consultas.tctrid, App_consultas.tctraut);
+        
+    //        $("#atribuido").attr('style','display:none');
+
+    //   }
+
+	let formData = new FormData();
+	formData.append('tctrid', App_consultas.tctrid);
+	formData.append('tctraut', App_consultas.tctraut);
+    formData.append('cnsid',  cnsid);
+   
+     $.ajax({
+		url: App_consultas.url_verificar_atribuicao,
+	    type: 'POST',
+	    data:  formData,
+	    processData: false,
+	    contentType: false,
+	    async: true,
+	    statusCode: {
+	    	200: function(response) {
+		   
+                console.log("LISTA PARA ATRIBUIRT"  , response.atribuida_a_mim);
+                if(response.atribuida_a_mim == "SIM"){
+                     
+                    listar_atribuicoes(App_consultas.tctrid, App_consultas.tctraut);
+        
+                     $("#atribuido").attr('style','display:none');
+                }
+               
+               
+            },
+		    422: function(response) {
+                
+		    	$.each( response.responseJSON.errors, function( key, value ) {
+		    		//erros
+		    	  	console.log(key+value);
+				});
+		    },
+		    401:function(response) {
+		      alert(response.responseText);
+		    },
+		    500: function(response) {
+		      alert(response.responseText);
+		    } 
+		}
+	});
 }

@@ -339,8 +339,8 @@
     }
 
      .dt-column-header{
-        text-align: center !important;
-        
+        text-align: left !important;
+     
      }
     /* ---- scroll horizontal para a tabela (responsivo) ---------*/
     .dt-scroll-body,
